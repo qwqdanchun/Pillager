@@ -37,13 +37,7 @@ jobs:
       shell: powershell
       run: Compress-7Zip "Pillager\bin\Release" -ArchiveFileName "Pillager.zip" -Format Zip
       
-    - name: Delete-tag-and-release
-      uses: dev-drprasad/delete-tag-and-release@v0.2.1
-      with:
-        delete_release: true
-        tag_name: AutoBuild
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     
     - name: Create Release
       id: create_release
