@@ -22,3 +22,5 @@
 ## 编译
 
 Release有Github Action自动编译的exe及shellcode，可以直接使用
+
+为了方便使用，Release附带了cs插件版本，使用Pillager命令即可执行
