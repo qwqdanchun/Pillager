@@ -94,7 +94,7 @@ jobs:
       run: Compress-7Zip "cs-plugin" -ArchiveFileName "cs-plugin.zip" -Format Zip
 
     - name: Upload Plugin Zip
-      id: upload-release-bin 
+      id: upload-plugin-zip 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
