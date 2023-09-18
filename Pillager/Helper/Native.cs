@@ -1,0 +1,246 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace Pillager.Helper
+{
+    public static class Native
+    {
+        [DllImport("ntdll", SetLastError = true)]
+        public static extern uint NtSuspendProcess([In] IntPtr Handle);
+        [DllImport("ntdll.dll", SetLastError = false)]
+        public static extern uint NtResumeProcess(IntPtr ProcessHandle);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool ReadFile(IntPtr hFile, [Out] byte[] lpBuffer, uint nNumberOfBytesToRead, out uint lpNumberOfBytesRead, IntPtr lpOverlapped);
+        [DllImport("kernel32.dll", EntryPoint = "SetFilePointer")]
+        public static extern int SetFilePointer(IntPtr hFile, int lDistanceToMove, int lpDistanceToMoveHigh, int dwMoveMethod);
+
+        [DllImport("kernel32.dll")]
+        public static extern int GetFileSize(IntPtr FileHandle, IntPtr Test);
+
+        internal const int PROCESS_TERMINATE = 0x0001;
+        internal const int PROCESS_CREATE_THREAD = 0x0002;
+        internal const int PROCESS_DUP_HANDLE = 0x0040;
+        internal const int PROCESS_CREATE_PROCESS = 0x0080;
+        internal const int PROCESS_SET_QUOTA = 0x0100;
+        internal const int PROCESS_SET_INFORMATION = 0x0200;
+        internal const int PROCESS_SUSPEND_RESUME = 0x0800;
+        internal const int PROCESS_QUERY_INFORMATION = 0x400;
+        internal const int PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
+        internal const int PROCESS_VM_OPERATION = 0x08;
+        internal const int PROCESS_VM_READ = 0x10;
+        internal const int PROCESS_VM_WRITE = 0x20;
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct SYSTEM_HANDLE_INFORMATION
+        { // Information Class 16
+            public ushort ProcessID;
+            public ushort CreatorBackTrackIndex;
+            public byte ObjectType;
+            public byte HandleAttribute;
+            public ushort Handle;
+            public IntPtr Object_Pointer;
+            public IntPtr AccessMask;
+        }
+
+        public enum OBJECT_INFORMATION_CLASS : int
+        {
+            ObjectBasicInformation = 0,
+            ObjectNameInformation = 1,
+            ObjectTypeInformation = 2,
+            ObjectAllTypesInformation = 3,
+            ObjectHandleInformation = 4
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FileNameInformation
+        {
+            public int NameLength;
+            public char Name;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct UNICODE_STRING
+        {
+            public ushort Length;
+            public ushort MaximumLength;
+            public IntPtr Buffer;
+
+            public override string ToString()
+            {
+                return Buffer != IntPtr.Zero ? Marshal.PtrToStringUni(Buffer, Length / 2) : null;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct GENERIC_MAPPING
+        {
+            public int GenericRead;
+            public int GenericWrite;
+            public int GenericExecute;
+            public int GenericAll;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OBJECT_TYPE_INFORMATION
+        {
+            public UNICODE_STRING Name;
+            int TotalNumberOfObjects;
+            int TotalNumberOfHandles;
+            int TotalPagedPoolUsage;
+            int TotalNonPagedPoolUsage;
+            int TotalNamePoolUsage;
+            int TotalHandleTableUsage;
+            int HighWaterNumberOfObjects;
+            int HighWaterNumberOfHandles;
+            int HighWaterPagedPoolUsage;
+            int HighWaterNonPagedPoolUsage;
+            int HighWaterNamePoolUsage;
+            int HighWaterHandleTableUsage;
+            int InvalidAttributes;
+            GENERIC_MAPPING GenericMapping;
+            int ValidAccess;
+            bool SecurityRequired;
+            bool MaintainHandleCount;
+            ushort MaintainTypeList;
+            POOL_TYPE PoolType;
+            int PagedPoolUsage;
+            int NonPagedPoolUsage;
+        }
+
+        public enum POOL_TYPE
+        {
+            NonPagedPool,
+            PagedPool,
+            NonPagedPoolMustSucceed,
+            DontUseThisType,
+            NonPagedPoolCacheAligned,
+            PagedPoolCacheAligned,
+            NonPagedPoolCacheAlignedMustS
+        }
+
+        public const int CNST_SYSTEM_HANDLE_INFORMATION = 0x10;
+        public const int DUPLICATE_SAME_ACCESS = 0x2;
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtQueryObject(IntPtr ObjectHandle, int ObjectInformationClass, IntPtr ObjectInformation, int ObjectInformationLength, ref int returnLength);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool GetHandleInformation(IntPtr hObject, out uint lpdwFlags);
+
+        [DllImport("ntdll.dll")]
+        public static extern uint NtQuerySystemInformation(int SystemInformationClass, IntPtr SystemInformation, int SystemInformationLength, ref int returnLength);
+
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr OpenProcess(PROCESS_ACCESS_FLAGS dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
+        public static extern IntPtr CreateFile(
+            string lpFileName,
+            int dwDesiredAccess,
+            FileShare dwShareMode,
+            IntPtr lpSecurityAttributes,
+            FileMode dwCreationDisposition,
+            int dwFlagsAndAttributes,
+            IntPtr hTemplateFile);
+        [DllImport("ntdll.dll")]
+        public static extern uint NtQueryInformationFile(IntPtr fileHandle, ref IO_STATUS_BLOCK IoStatusBlock,
+            IntPtr pInfoBlock, uint length, FILE_INFORMATION_CLASS fileInformation);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DuplicateHandle(IntPtr hSourceProcessHandle, IntPtr hSourceHandle, IntPtr hTargetProcessHandle, out IntPtr lpTargetHandle, uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwOptions);
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetCurrentProcess();
+
+        public const uint STATUS_SUCCESS = 0;
+        public const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+
+        [StructLayout(LayoutKind.Sequential, Pack = 0)]
+        public struct IO_STATUS_BLOCK
+        {
+            public uint Status;
+            public IntPtr Information;
+        }
+
+        [Flags]
+        public enum PROCESS_ACCESS_FLAGS : uint
+        {
+            PROCESS_ALL_ACCESS = 0x001F0FFF,
+            PROCESS_CREATE_PROCESS = 0x0080,
+            PROCESS_CREATE_THREAD = 0x0002,
+            PROCESS_DUP_HANDLE = 0x0040,
+            PROCESS_QUERY_INFORMATION = 0x0400,
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
+            PROCESS_SET_INFORMATION = 0x0200,
+            PROCESS_SET_QUOTA = 0x0100,
+            PROCESS_SUSPEND_RESUME = 0x0800,
+            PROCESS_TERMINATE = 0x0001,
+            PROCESS_VM_OPERATION = 0x0008,
+            PROCESS_VM_READ = 0x0010,
+            PROCESS_VM_WRITE = 0x0020,
+            SYNCHRONIZE = 0x00100000
+        }
+
+        public enum FILE_INFORMATION_CLASS
+        {
+            FileDirectoryInformation = 1,
+            FileFullDirectoryInformation = 2,
+            FileBothDirectoryInformation = 3,
+            FileBasicInformation = 4,
+            FileStandardInformation = 5,
+            FileInternalInformation = 6,
+            FileEaInformation = 7,
+            FileAccessInformation = 8,
+            FileNameInformation = 9,
+            FileRenameInformation = 10,
+            FileLinkInformation = 11,
+            FileNamesInformation = 12,
+            FileDispositionInformation = 13,
+            FilePositionInformation = 14,
+            FileFullEaInformation = 15,
+            FileModeInformation = 16,
+            FileAlignmentInformation = 17,
+            FileAllInformation = 18,
+            FileAllocationInformation = 19,
+            FileEndOfFileInformation = 20,
+            FileAlternateNameInformation = 21,
+            FileStreamInformation = 22,
+            FilePipeInformation = 23,
+            FilePipeLocalInformation = 24,
+            FilePipeRemoteInformation = 25,
+            FileMailslotQueryInformation = 26,
+            FileMailslotSetInformation = 27,
+            FileCompressionInformation = 28,
+            FileObjectIdInformation = 29,
+            FileCompletionInformation = 30,
+            FileMoveClusterInformation = 31,
+            FileQuotaInformation = 32,
+            FileReparsePointInformation = 33,
+            FileNetworkOpenInformation = 34,
+            FileAttributeTagInformation = 35,
+            FileTrackingInformation = 36,
+            FileIdBothDirectoryInformation = 37,
+            FileIdFullDirectoryInformation = 38,
+            FileValidDataLengthInformation = 39,
+            FileShortNameInformation = 40,
+            FileIoCompletionNotificationInformation = 41,
+            FileIoStatusBlockRangeInformation = 42,
+            FileIoPriorityHintInformation = 43,
+            FileSfioReserveInformation = 44,
+            FileSfioVolumeInformation = 45,
+            FileHardLinkInformation = 46,
+            FileProcessIdsUsingFileInformation = 47,
+            FileNormalizedNameInformation = 48,
+            FileNetworkPhysicalNameInformation = 49,
+            FileMaximumInformation = 50
+        }
+    }
+}

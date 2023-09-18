@@ -43,6 +43,8 @@
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\BCrypt.cs" />
     <Compile Include="Browsers\Chrome.cs" />
+    <Compile Include="Helper\LockedFile.cs" />
+    <Compile Include="Helper\Native.cs" />
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
