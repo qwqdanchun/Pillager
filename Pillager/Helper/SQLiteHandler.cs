@@ -134,6 +134,16 @@ namespace Pillager.Helper
             return tableNames.ToArray();
         }
 
+        public long GetRawID(int row_num)
+        {
+            if (row_num >= table_entries.Length)
+            {
+                return 0;
+            }
+
+            return table_entries[row_num].row_id;
+        }
+
         public string GetValue(int row_num, int field)
         {
             if (row_num >= table_entries.Length)
@@ -474,7 +484,8 @@ namespace Pillager.Helper
                         }
                         else
                         {
-                            table_entries[length + i].content[k] = Convert.ToString(ConvertToInteger(Convert.ToInt32(decimal.Add(decimal.Add(new decimal(num), new decimal(num7)), new decimal(num4))),
+                            int t = Convert.ToInt32(decimal.Add(decimal.Add(new decimal(num), new decimal(num7)), new decimal(num4)));
+                            table_entries[length + i].content[k] = Convert.ToString(ConvertToInteger(t,
                                 (int)_fieldArray[k].size));
                         }
 

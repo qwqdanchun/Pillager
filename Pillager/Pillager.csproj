@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Pillager</RootNamespace>
     <AssemblyName>Pillager</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -39,12 +39,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Browsers\FireFox.cs" />
     <Compile Include="Browsers\IE.cs" />
+    <Compile Include="Browsers\OldSogou.cs" />
     <Compile Include="Helper\AesGcm.cs" />
+    <Compile Include="Helper\Asn1Der.cs" />
     <Compile Include="Helper\BCrypt.cs" />
     <Compile Include="Browsers\Chrome.cs" />
+    <Compile Include="Helper\decryptMoz3DES.cs" />
     <Compile Include="Helper\LockedFile.cs" />
+    <Compile Include="Helper\Methods.cs" />
+    <Compile Include="Helper\models.cs" />
+    <Compile Include="Helper\MozillaPBE.cs" />
     <Compile Include="Helper\Native.cs" />
+    <Compile Include="Helper\Pbkdf2.cs" />
+    <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
