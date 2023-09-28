@@ -10,14 +10,23 @@
 
 目前支持：
 
-* IE/旧版Edge的密码，书签，历史记录提取
-* Chromium系浏览器的密码，书签，历史记录，cookies提取
+* IE
+* Edge
+* Chrome
+* Chrome Beta
+* Chromium
+* Brave-Browser
+* QQBrowser
+* SogouExplorer
+* Vivaldi
+* CocCoc
+* FireFox
 
 后续将会陆续添加支持的浏览器
 
 ## 优点
 
-体积小，长期维护，shellcode兼容.Net Framework 2.x/3.x/4.x , shellcode兼容x86/x64
+体积小，长期维护，shellcode兼容.Net Framework 2.x/3.x/4.x , shellcode兼容x86/x64，执行后文件输出至`%Temp%\Pillager.zip`
 
 ## 编译
 

