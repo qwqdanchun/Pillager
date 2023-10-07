@@ -55,6 +55,8 @@
     <Compile Include="Helper\Pbkdf2.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
+    <Compile Include="IM\QQ.cs" />
+    <Compile Include="IM\Telegram.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\SQLiteHandler.cs" />

