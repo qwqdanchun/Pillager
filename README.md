@@ -10,19 +10,19 @@
 
 目前支持：
 
-| Browser       | BookMarks | Cookies | Passwords | Historys |
-| :------------ | :-------: | :-----: | :-------: | :------: |
-| IE            |    ✅    |   ❌   |    ✅    |    ✅    |
-| Edge          |    ✅    |   ✅   |    ✅    |    ✅    |
-| Chrome        |    ✅    |   ✅   |    ✅    |    ✅    |
-| Chrome Beta   |    ✅    |   ✅   |    ✅    |    ✅    |
-| Chromium      |    ✅    |   ✅   |    ✅    |    ✅    |
-| Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |
-| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |
-| SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |
-| Vivaldi       |    ✅    |   ✅   |    ✅    |    ✅    |
-| CocCoc        |    ✅    |   ✅   |    ✅    |    ✅    |
-| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |
+| Browser       | BookMarks | Cookies | Passwords | Historys | Local Storage | Local Extension Settings |
+| :------------ | :-------: | :-----: | :-------: | :------: | :------: | :------: |
+| IE            |    ✅    |   ❌   |    ✅    |    ✅    |    ❌    |    ❌    |
+| Edge          |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| Chrome        |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| Chrome Beta   |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| Chromium      |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| Vivaldi       |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| CocCoc        |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
+| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |    ❌    |    ❌    |
 
 | IM       | Support            |
 | -------- | ------------------ |
