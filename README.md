@@ -10,7 +10,7 @@
 
 目前支持：
 
-| Browser       | BookMarks | Cookies | Passwords | Historys | Local Storage | Local Extension Settings |
+| Browser       | BookMarks | Cookies | Passwords | Historys | Local Storage | Extension Settings |
 | :------------ | :-------: | :-----: | :-------: | :------: | :------: | :------: |
 | IE            |    ✅    |   ❌   |    ✅    |    ✅    |    ❌    |    ❌    |
 | Edge          |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
