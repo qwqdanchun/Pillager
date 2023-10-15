@@ -16,11 +16,13 @@ namespace Pillager.IM
 
         public static void Save(string path)
         {
-            if (!Directory.Exists(IMPath)) return;
-            string savepath = Path.Combine(path, IMName);
-            Directory.CreateDirectory(savepath);
-            string[] sessionpaths =
+            try
             {
+                if (!Directory.Exists(IMPath)) return;
+                string savepath = Path.Combine(path, IMName);
+                Directory.CreateDirectory(savepath);
+                string[] sessionpaths =
+                {
                 "tdata\\key_datas",
                 "tdata\\D877F783D5D3EF8Cs",
                 "tdata\\D877F783D5D3EF8C\\maps",
@@ -33,19 +35,21 @@ namespace Pillager.IM
                 "tdata\\0CA814316818D8F6s",
                 "tdata\\0CA814316818D8F6\\maps",
             };
-            Directory.CreateDirectory(Path.Combine(savepath, "tdata")); 
-            Directory.CreateDirectory(savepath + "\\tdata\\D877F783D5D3EF8C");
-            Directory.CreateDirectory(savepath + "\\tdata\\A7FDF864FBC10B77");
-            Directory.CreateDirectory(savepath + "\\tdata\\F8806DD0C461824F");
-            Directory.CreateDirectory(savepath + "\\tdata\\C2B05980D9127787");
-            Directory.CreateDirectory(savepath + "\\tdata\\0CA814316818D8F6");
-            foreach (var sessionpath in sessionpaths)
-            {
-                if (File.Exists(Path.Combine(IMPath, sessionpath)))
+                Directory.CreateDirectory(Path.Combine(savepath, "tdata"));
+                Directory.CreateDirectory(savepath + "\\tdata\\D877F783D5D3EF8C");
+                Directory.CreateDirectory(savepath + "\\tdata\\A7FDF864FBC10B77");
+                Directory.CreateDirectory(savepath + "\\tdata\\F8806DD0C461824F");
+                Directory.CreateDirectory(savepath + "\\tdata\\C2B05980D9127787");
+                Directory.CreateDirectory(savepath + "\\tdata\\0CA814316818D8F6");
+                foreach (var sessionpath in sessionpaths)
                 {
-                    File.Copy(Path.Combine(IMPath, sessionpath), Path.Combine(savepath, sessionpath),true);
+                    if (File.Exists(Path.Combine(IMPath, sessionpath)))
+                    {
+                        File.Copy(Path.Combine(IMPath, sessionpath), Path.Combine(savepath, sessionpath), true);
+                    }
                 }
             }
+            catch { }
         }
     }
 }

