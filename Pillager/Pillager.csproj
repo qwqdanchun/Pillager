@@ -56,6 +56,7 @@
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="IM\QQ.cs" />
+    <Compile Include="IM\Skype.cs" />
     <Compile Include="IM\Telegram.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

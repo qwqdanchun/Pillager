@@ -28,6 +28,7 @@
 | -------- | ------------------ |
 | QQ       | ClientKey（Email） |
 | Telegram | tdata              |
+| Skype    | Token              |
 
 后续将会陆续添加支持的软件
 
