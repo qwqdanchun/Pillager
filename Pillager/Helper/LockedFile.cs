@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Windows.Forms;
-using static System.Net.WebRequestMethods;
 
 namespace Pillager.Helper
 {
