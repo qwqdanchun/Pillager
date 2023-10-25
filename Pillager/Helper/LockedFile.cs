@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Security.Cryptography;
+using System.Windows.Forms;
+using static System.Net.WebRequestMethods;
 
 namespace Pillager.Helper
 {
@@ -48,17 +50,33 @@ namespace Pillager.Helper
                     Marshal.FreeHGlobal(ptrHandleData);
                     ptrHandleData = Marshal.AllocHGlobal(nLength);
                 }
-
-                long handle_count = Marshal.ReadIntPtr(ptrHandleData).ToInt64();
-                IntPtr ptrHandleItem = new IntPtr(ptrHandleData.ToInt32() + Marshal.SizeOf(ptrHandleData));
-
-                for (long lIndex = 0; lIndex < handle_count; lIndex++)
+                if (IntPtr.Size == 8)
                 {
-                    Native.SYSTEM_HANDLE_INFORMATION oSystemHandleInfo = new Native.SYSTEM_HANDLE_INFORMATION();
-                    oSystemHandleInfo = (Native.SYSTEM_HANDLE_INFORMATION)Marshal.PtrToStructure(ptrHandleItem, oSystemHandleInfo.GetType());
-                    ptrHandleItem = new IntPtr(ptrHandleItem.ToInt32() + Marshal.SizeOf(new Native.SYSTEM_HANDLE_INFORMATION()));
-                    if (oSystemHandleInfo.ProcessID != pid) { continue; }
-                    aHandles.Add(oSystemHandleInfo);
+                    int handle_count = Marshal.ReadIntPtr(ptrHandleData).ToInt32();
+                    IntPtr ptrHandleItem = new IntPtr(ptrHandleData.ToInt64() + IntPtr.Size);
+
+                    for (long lIndex = 0; lIndex < handle_count; lIndex++)
+                    {
+                        Native.SYSTEM_HANDLE_INFORMATION oSystemHandleInfo = new Native.SYSTEM_HANDLE_INFORMATION();
+                        oSystemHandleInfo = (Native.SYSTEM_HANDLE_INFORMATION)Marshal.PtrToStructure(ptrHandleItem, oSystemHandleInfo.GetType());
+                        ptrHandleItem = new IntPtr(ptrHandleItem.ToInt64() + Marshal.SizeOf(oSystemHandleInfo.GetType()));
+                        if (oSystemHandleInfo.ProcessID != pid) { continue; }
+                        aHandles.Add(oSystemHandleInfo);
+                    }
+                }
+                else
+                {
+                    int handle_count = Marshal.ReadIntPtr(ptrHandleData).ToInt32();
+                    IntPtr ptrHandleItem = new IntPtr(ptrHandleData.ToInt32() + IntPtr.Size);
+
+                    for (long lIndex = 0; lIndex < handle_count; lIndex++)
+                    {
+                        Native.SYSTEM_HANDLE_INFORMATION oSystemHandleInfo = new Native.SYSTEM_HANDLE_INFORMATION();
+                        oSystemHandleInfo = (Native.SYSTEM_HANDLE_INFORMATION)Marshal.PtrToStructure(ptrHandleItem, oSystemHandleInfo.GetType());
+                        ptrHandleItem = new IntPtr(ptrHandleItem.ToInt32() + Marshal.SizeOf(new Native.SYSTEM_HANDLE_INFORMATION()));
+                        if (oSystemHandleInfo.ProcessID != pid) { continue; }
+                        aHandles.Add(oSystemHandleInfo);
+                    }
                 }
             }
             catch (Exception ex)
@@ -75,11 +93,15 @@ namespace Pillager.Helper
         private static string TryGetName(IntPtr Handle)
         {
             Native.IO_STATUS_BLOCK status = new Native.IO_STATUS_BLOCK();
-            uint bufferSize = 32 * 1024;
+            uint bufferSize = 1024;
             var bufferPtr = Marshal.AllocHGlobal((int)bufferSize);
             Native.NtQueryInformationFile(Handle, ref status, bufferPtr, bufferSize, Native.FILE_INFORMATION_CLASS.FileNameInformation);
             var nameInfo = (Native.FileNameInformation)Marshal.PtrToStructure(bufferPtr, typeof(Native.FileNameInformation));
-            return Marshal.PtrToStringUni(new IntPtr(bufferPtr.ToInt32() + 4), nameInfo.NameLength / 2);
+            if (nameInfo.NameLength > bufferSize || nameInfo.NameLength <= 0)
+            {
+                return null;
+            }
+            return Marshal.PtrToStringUni(new IntPtr((IntPtr.Size == 8 ? bufferPtr.ToInt64() : bufferPtr.ToInt32()) + 4), nameInfo.NameLength / 2);
         }
 
         public static IntPtr FindHandleByFileName(Native.SYSTEM_HANDLE_INFORMATION systemHandleInformation, string filename, IntPtr processHandle)
@@ -116,10 +138,8 @@ namespace Pillager.Helper
                     Marshal.FreeHGlobal(objectTypeInfo);
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            catch { }
+
             return IntPtr.Zero;
         }
 
@@ -127,7 +147,6 @@ namespace Pillager.Helper
         {
             IntPtr handle = IntPtr.Zero;
             List<Native.SYSTEM_HANDLE_INFORMATION> syshInfos = GetHandles(pid);
-
             IntPtr processHandle = GetProcessHandle(pid);
 
             for (int i = 0; i < syshInfos.Count; i++)
@@ -176,13 +195,18 @@ namespace Pillager.Helper
 
                 IntPtr readBuffer = bufferPtr;
                 int numEntries = Marshal.ReadInt32(readBuffer); // NumberOfProcessIdsInList
-                readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
-
+                if (IntPtr.Size == 8)
+                    readBuffer = new IntPtr(readBuffer.ToInt64() + IntPtr.Size);
+                else
+                    readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
                 for (int i = 0; i < numEntries; i++)
                 {
-                    int processId = Marshal.ReadIntPtr(readBuffer).ToInt32(); // A single ProcessIdList[] element
-                    result.Add(processId);
-                    readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
+                    IntPtr processId = Marshal.ReadIntPtr(readBuffer); // A single ProcessIdList[] element
+                    result.Add(processId.ToInt32());
+                    if (IntPtr.Size == 8)
+                        readBuffer = new IntPtr(readBuffer.ToInt64() + IntPtr.Size);
+                    else
+                        readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
                 }
             }
             catch { return result; }

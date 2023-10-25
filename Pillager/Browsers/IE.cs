@@ -3,7 +3,6 @@ using Pillager.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;

