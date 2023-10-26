@@ -39,6 +39,7 @@ namespace Pillager.Others
                 InterfaceGuid = interfaceList.InterfaceInfo[0].InterfaceGuid;
                 Native.WlanGetProfileList(clientHandle, InterfaceGuid, IntPtr.Zero, ref profileList);
                 wifiProfileList = new Native.WLAN_PROFILE_INFO_LIST(profileList);
+                if (wifiProfileList.dwNumberOfItems <= 0) return null;
                 sb.AppendLine("Found " + wifiProfileList.dwNumberOfItems + " SSIDs: ");
                 sb.AppendLine("============================");
                 sb.AppendLine("");
