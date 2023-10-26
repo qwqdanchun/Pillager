@@ -11,24 +11,28 @@
 目前支持：
 
 | Browser       | BookMarks | Cookies | Passwords | Historys | Local Storage | Extension Settings |
-| :------------ | :-------: | :-----: | :-------: | :------: | :------: | :------: |
-| IE            |    ✅    |   ❌   |    ✅    |    ✅    |    ❌    |    ❌    |
-| Edge          |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| Chrome        |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| Chrome Beta   |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| Chromium      |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| Vivaldi       |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| CocCoc        |    ✅    |   ✅   |    ✅    |    ✅    |    ✅    |    ✅    |
-| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |    ❌    |    ❌    |
+| :------------ | :-------: | :-----: | :-------: | :------: | :-----------: | :----------------: |
+| IE            |    ✅    |   ❌   |    ✅    |    ✅    |      ❌      |         ❌         |
+| Edge          |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| Chrome        |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| Chrome Beta   |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| Chromium      |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| Vivaldi       |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| CocCoc        |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
+| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |      ❌      |         ❌         |
 
 | IM       | Support            |
 | -------- | ------------------ |
 | QQ       | ClientKey（Email） |
 | Telegram | tdata              |
 | Skype    | Token              |
+
+| Tool      | Support             |
+| --------- | ------------------- |
+| MobaXterm | Password/Credential |
 
 后续将会陆续添加支持的软件
 
