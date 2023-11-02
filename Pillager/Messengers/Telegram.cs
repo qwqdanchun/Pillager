@@ -15,14 +15,19 @@ namespace Pillager.Messengers
             {
                 "tdata\\key_datas",
                 "tdata\\D877F783D5D3EF8Cs",
+                "tdata\\D877F783D5D3EF8C\\configs",
                 "tdata\\D877F783D5D3EF8C\\maps",
                 "tdata\\A7FDF864FBC10B77s",
+                "tdata\\A7FDF864FBC10B77\\configs",
                 "tdata\\A7FDF864FBC10B77\\maps",
                 "tdata\\F8806DD0C461824Fs",
+                "tdata\\F8806DD0C461824F\\configs",
                 "tdata\\F8806DD0C461824F\\maps",
                 "tdata\\C2B05980D9127787s",
+                "tdata\\C2B05980D9127787\\configs",
                 "tdata\\C2B05980D9127787\\maps",
                 "tdata\\0CA814316818D8F6s",
+                "tdata\\0CA814316818D8F6\\configs",
                 "tdata\\0CA814316818D8F6\\maps",
             };
 
