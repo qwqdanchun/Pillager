@@ -17,7 +17,7 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 | Chrome SxS    |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
 | Chromium      |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
 | Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |      🚧      |         🚧         |
-| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |      🚧      |         🚧         |
+| QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
 | SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |      🚧      |         🚧         |
 | 360ChromeX    |    ❌    |   ✅   |    ✅    |    ❌    |      ✅      |         ✅         |
 | Vivaldi       |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
@@ -31,7 +31,7 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 | Epic Privacy  |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | Uran          |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | Yandex        |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
-| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |      ❌      |         ❌         |
+| FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |      ❌      |         ✅         |
 
 注：✅表示经过测试，🚧表示理论上支持但未经测试，❌表示无此功能或不支持
 
@@ -70,7 +70,9 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 * 长期维护，有问题可以及时的反馈处理
 * 使用魔改版本的Donut，缩小shellcode体积，使shellcode兼容.Net Framework v3.5/v4.x，并去除AV/EDR对Donut提取的特征
 
+
 ## 404星链计划
+
 ![](https://github.com/knownsec/404StarLink-Project/raw/master/logo.png)
 
 Pillager 现已加入 [404星链计划](https://github.com/knownsec/404StarLink)

