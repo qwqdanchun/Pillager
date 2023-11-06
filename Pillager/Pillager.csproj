@@ -54,6 +54,7 @@
     <Compile Include="Helper\MozillaPBE.cs" />
     <Compile Include="Helper\Native.cs" />
     <Compile Include="Helper\Pbkdf2.cs" />
+    <Compile Include="Helper\RC4Crypt.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="Messengers\QQ.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\SQLiteHandler.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
+    <Compile Include="Tools\Xmanager.cs" />
     <Compile Include="ZIP\CompressionLevel.cs" />
     <Compile Include="ZIP\ShellHelper.cs" />
     <Compile Include="ZIP\ZipArchive.cs" />

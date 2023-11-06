@@ -190,7 +190,6 @@ namespace Pillager.Tools
             return null;
         }
 
-
         public static string DecryptWithMP(string SessionP, string Sesspasses, string Ciphertext)
         {
             byte[] bytes = Convert.FromBase64String(Sesspasses);

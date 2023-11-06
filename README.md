@@ -36,17 +36,18 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 注：✅表示经过测试，🚧表示理论上支持但未经测试，❌表示无此功能或不支持
 
 | IM       | Support            |
-| -------- | ------------------ |
+| :------: | :----------------: |
 | QQ       | ClientKey（Email） |
 | Telegram | tdata              |
 | Skype    | Token              |
 
 | Tool      | Support             |
-| --------- | ------------------- |
+| :-------: | :-----------------: |
 | MobaXterm | Password/Credential |
+| Xmanager  | Password            |
 
 | Others | Support  |
-| ------ | -------- |
+| :----: | :------: |
 | Wifi   | Password |
 
 后续将会陆续添加支持的软件
@@ -69,7 +70,6 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 * 支持大部分常见浏览器，常见聊天软件的信息提取，将陆续添加其他常用工具的信息收集
 * 长期维护，有问题可以及时的反馈处理
 * 使用魔改版本的Donut，缩小shellcode体积，使shellcode兼容.Net Framework v3.5/v4.x，并去除AV/EDR对Donut提取的特征
-
 
 ## 404星链计划
 
