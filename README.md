@@ -69,3 +69,8 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 * 支持大部分常见浏览器，常见聊天软件的信息提取，将陆续添加其他常用工具的信息收集
 * 长期维护，有问题可以及时的反馈处理
 * 使用魔改版本的Donut，缩小shellcode体积，使shellcode兼容.Net Framework v3.5/v4.x，并去除AV/EDR对Donut提取的特征
+
+## 404星链计划
+![](https://github.com/knownsec/404StarLink-Project/raw/master/logo.png)
+
+Pillager 现已加入 [404星链计划](https://github.com/knownsec/404StarLink)
