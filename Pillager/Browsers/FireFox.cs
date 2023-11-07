@@ -308,8 +308,8 @@ namespace Pillager.Browsers
                     if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite")))
                     {
                         File.Copy(Path.Combine(directory, "storage-sync-v2.sqlite"), Path.Combine(savepath, "storage-sync-v2.sqlite"));
-                        if (File.Exists(Path.Combine(directory, "storage-sync-v2..sqlite-shm")))
-                            File.Copy(Path.Combine(directory, "storage-sync-v2..sqlite-shm"), Path.Combine(savepath, "storage-sync-v2..sqlite-shm"));
+                        if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite-shm")))
+                            File.Copy(Path.Combine(directory, "storage-sync-v2.sqlite-shm"), Path.Combine(savepath, "storage-sync-v2.sqlite-shm"));
                         if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite-wal")))
                             File.Copy(Path.Combine(directory, "storage-sync-v2.sqlite-wal"), Path.Combine(savepath, "storage-sync-v2.sqlite-wal"));
                         break;
