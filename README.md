@@ -1,5 +1,11 @@
 # Pillager
 
+[![License](https://img.shields.io/github/license/qwqdanchun/Pillager.svg)](LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/qwqdanchun/Pillager)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/qwqdanchun/Pillager)
+[![Downloads](https://img.shields.io/github/downloads/qwqdanchun/Pillager/total.svg)](https://github.com/qwqdanchun/Pillager/releases)
+![Issues](https://img.shields.io/github/issues/qwqdanchun/Pillager)
+
 <img src=".\Pillager.png"/>
 
 ## 介绍
