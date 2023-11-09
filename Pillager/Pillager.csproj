@@ -57,6 +57,7 @@
     <Compile Include="Helper\RC4Crypt.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
+    <Compile Include="Messengers\Enigma.cs" />
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />
     <Compile Include="Messengers\Telegram.cs" />

