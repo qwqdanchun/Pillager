@@ -41,20 +41,21 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 
 注：✅表示经过测试，🚧表示理论上支持但未经测试，❌表示无此功能或不支持
 
-| IM       | Support            |
+|    IM    |      Support      |
 | :------: | :----------------: |
-| QQ       | ClientKey（Email） |
-| Telegram | tdata              |
-| Skype    | Token              |
+|    QQ    | ClientKey（Email） |
+| Telegram |       tdata       |
+|  Skype  |       Token       |
+|  Enigma  | DeviceID/Datebase |
 
-| Tool      | Support             |
+|   Tool   |       Support       |
 | :-------: | :-----------------: |
 | MobaXterm | Password/Credential |
-| Xmanager  | Password            |
+| Xmanager |      Password      |
 
-| Others | Support  |
+| Others | Support |
 | :----: | :------: |
-| Wifi   | Password |
+|  Wifi  | Password |
 
 后续将会陆续添加支持的软件
 
