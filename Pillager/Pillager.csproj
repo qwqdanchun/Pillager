@@ -37,6 +37,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Browsers\FireFox.cs" />
@@ -55,6 +56,15 @@
     <Compile Include="Helper\Native.cs" />
     <Compile Include="Helper\Pbkdf2.cs" />
     <Compile Include="Helper\RC4Crypt.cs" />
+    <Compile Include="Helper\tar-cs\DataWriter.cs" />
+    <Compile Include="Helper\tar-cs\IArchiveDataWriter.cs" />
+    <Compile Include="Helper\tar-cs\ITarHeader.cs" />
+    <Compile Include="Helper\tar-cs\LegacyTarWriter.cs" />
+    <Compile Include="Helper\tar-cs\TarException.cs" />
+    <Compile Include="Helper\tar-cs\TarHeader.cs" />
+    <Compile Include="Helper\tar-cs\TarWriter.cs" />
+    <Compile Include="Helper\tar-cs\UsTarHeader.cs" />
+    <Compile Include="Helper\Tar.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="Messengers\Enigma.cs" />
@@ -67,12 +77,6 @@
     <Compile Include="Helper\SQLiteHandler.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Xmanager.cs" />
-    <Compile Include="ZIP\CompressionLevel.cs" />
-    <Compile Include="ZIP\ShellHelper.cs" />
-    <Compile Include="ZIP\ZipArchive.cs" />
-    <Compile Include="ZIP\ZipArchiveEntry.cs" />
-    <Compile Include="ZIP\ZipArchiveMode.cs" />
-    <Compile Include="ZIP\ZipFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

