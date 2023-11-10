@@ -19,7 +19,18 @@ namespace Pillager.Helper
             foreach (FileInfo file in dir.GetFiles())
             {
                 string targetFilePath = Path.Combine(destinationDir, file.Name);
-                file.CopyTo(targetFilePath);
+                try
+                {
+                    file.CopyTo(targetFilePath);
+                }
+                catch
+                {
+                    byte[] filebytes = LockedFile.ReadLockedFile(file.FullName);
+                    if (filebytes != null)
+                    {
+                        File.WriteAllBytes(targetFilePath, filebytes);
+                    }
+                }
             }
 
             if (recursive)
