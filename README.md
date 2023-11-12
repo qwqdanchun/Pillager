@@ -80,6 +80,13 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 * 长期维护，有问题可以及时的反馈处理
 * 使用魔改版本的Donut，缩小shellcode体积，使shellcode兼容.Net Framework v3.5/v4.x，并去除AV/EDR对Donut提取的特征
 
+
+## Contributors
+
+<a href="https://github.com/qwqdanchun/Pillager/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=qwqdanchun/Pillager" />
+</a>
+
 ## 404星链计划
 
 ![](https://github.com/knownsec/404StarLink-Project/raw/master/logo.png)
