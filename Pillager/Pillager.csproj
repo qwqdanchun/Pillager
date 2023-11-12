@@ -76,6 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\SQLiteHandler.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
+    <Compile Include="Tools\Navicat.cs" />
     <Compile Include="Tools\Xmanager.cs" />
   </ItemGroup>
   <ItemGroup>

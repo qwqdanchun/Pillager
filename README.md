@@ -52,6 +52,7 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 | :-------: | :-----------------: |
 | MobaXterm | Password/Credential |
 | Xmanager |      Password      |
+|  Navicat  |      Password      |
 
 | Others | Support |
 | :----: | :------: |

