@@ -18,6 +18,6 @@ alias Pillager {
 
     $args   = bof_pack($bid, "b", $data2);
     beacon_inline_execute($bid, $data1, "go", $args);
-    btask($bid, "Results can be found at %temp%\\Pillager");
+    btask($bid, "Results can be found at %temp%\\Pillager.tar.gz");
 
 }
