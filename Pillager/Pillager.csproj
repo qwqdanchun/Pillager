@@ -43,6 +43,7 @@
     <Compile Include="Browsers\FireFox.cs" />
     <Compile Include="Browsers\IE.cs" />
     <Compile Include="Browsers\OldSogou.cs" />
+    <Compile Include="FTP\WinSCP.cs" />
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\Asn1Der.cs" />
     <Compile Include="Helper\BCrypt.cs" />

