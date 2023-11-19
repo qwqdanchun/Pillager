@@ -38,7 +38,7 @@ jobs:
       
     - name: Build Shellcode
       shell: powershell
-      run: .\donut\donut.exe -z 4 -i .\Pillager\bin\Release\Pillager.exe -o .\Pillager.bin
+      run: .\donut\donut.exe -z 3 -i .\Pillager\bin\Release\Pillager.exe -o .\Pillager.bin
       
     - name: Delete-tag-and-release
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
