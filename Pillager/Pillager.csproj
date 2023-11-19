@@ -78,6 +78,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\SQLiteHandler.cs" />
+    <Compile Include="Tools\FinalShell.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Navicat.cs" />
     <Compile Include="Tools\RDCMan.cs" />

