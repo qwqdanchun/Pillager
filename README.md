@@ -25,6 +25,7 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 | Brave-Browser |    ✅    |   ✅   |    ✅    |    ✅    |      🚧      |         🚧         |
 | QQBrowser     |    ✅    |   ✅   |    ✅    |    ✅    |      ✅      |         ✅         |
 | SogouExplorer |    ✅    |   ✅   |    ✅    |    ✅    |      🚧      |         🚧         |
+| 360Chrome     |    ❌    |   ✅   |    ✅    |    ❌    |      ✅      |         ✅         |
 | 360ChromeX    |    ❌    |   ✅   |    ✅    |    ❌    |      ✅      |         ✅         |
 | Vivaldi       |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | CocCoc        |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |

