@@ -67,7 +67,9 @@ namespace Pillager.Tools
             Array.Copy(head, key, 8);
             DESCryptoServiceProvider des = new DESCryptoServiceProvider();
             des.Key = key;
-            des.IV = TripleDesIV;
+            des.IV = TripleDesIV; 
+            des.Padding = PaddingMode.PKCS7;
+            des.Mode = CipherMode.ECB;
             MemoryStream ms = new MemoryStream();
             CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
             cs.Write(data, 0, data.Length);
