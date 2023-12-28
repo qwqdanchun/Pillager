@@ -15,7 +15,7 @@ namespace Pillager.FTP
             try
             {
                 string xmlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"FileZilla\recentservers.xml");
-                if (!File.Exists(xmlpath))
+                if (File.Exists(xmlpath))
                 {
                     string savepath = Path.Combine(path, FTPName);
                     Directory.CreateDirectory(savepath);
