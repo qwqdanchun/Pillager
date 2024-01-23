@@ -86,6 +86,7 @@
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Navicat.cs" />
     <Compile Include="Tools\RDCMan.cs" />
+    <Compile Include="Tools\SQLyog.cs" />
     <Compile Include="Tools\VSCode.cs" />
     <Compile Include="Tools\Xmanager.cs" />
   </ItemGroup>
