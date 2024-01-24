@@ -42,12 +42,12 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 
 注：✅表示经过测试，🚧表示理论上支持但未经测试，❌表示无此功能或不支持
 
-|         IM         |      Support      |
-| :-----------------: | :---------------: |
-| QQ(最新版本不可用)) |  ClientKey(Mail)  |
-|      Telegram      |       tdata       |
-|        Skype        |       Token       |
-|       Enigma       | DeviceID/Datebase |
+|    IM    |      Support      |
+| :------: | :---------------: |
+|    QQ    |     QQ Number     |
+| Telegram |       tdata       |
+|  Skype  |       Token       |
+|  Enigma  | DeviceID/Datebase |
 
 |    Tool    | Support |
 | :--------: | :------: |

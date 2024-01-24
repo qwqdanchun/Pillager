@@ -8,6 +8,8 @@ namespace Pillager.Helper
 {
     public static class Native
     {
+        [DllImport("shell32.dll")]
+        public static extern int SHGetFolderPath(IntPtr hwndOwner, int nFolder, IntPtr hToken, uint dwFlags, [Out] StringBuilder pszPath);
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool SetProcessDPIAware();
         [DllImport("ntdll", SetLastError = true)]
