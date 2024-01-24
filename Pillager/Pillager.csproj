@@ -73,6 +73,7 @@
     <Compile Include="Helper\VaultCli.cs" />
     <Compile Include="Mails\Foxmail.cs" />
     <Compile Include="Mails\MailMaster.cs" />
+    <Compile Include="Messengers\DingTalk.cs" />
     <Compile Include="Messengers\Enigma.cs" />
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />

