@@ -49,15 +49,19 @@ Pillager是一个适用于后渗透期间的信息收集工具，可以收集目
 |        Skype        |       Token       |
 |       Enigma       | DeviceID/Datebase |
 
-|    Tool    |    Support    |
-| :--------: | :-----------: |
-| MobaXterm |   Password   |
-|  Xmanager  |   Password   |
-|   RDCMan   |   Password   |
-| FinalShell |   Password   |
-|  Navicat  |   Password   |
-|   VSCode   | History Files |
-|   SQLyog   |   Password   |
+|    Tool    | Support |
+| :--------: | :------: |
+| MobaXterm | Password |
+|  Xmanager  | Password |
+|   RDCMan   | Password |
+| FinalShell | Password |
+|  Navicat  | Password |
+|   SQLyog   | Password |
+
+|      Software      |    Support    |
+| :----------------: | :-----------: |
+|       VSCode       | History Files |
+| Netease CloudMusic |   UserInfo   |
 
 |    Mail    | Support |
 | :--------: | :------: |

