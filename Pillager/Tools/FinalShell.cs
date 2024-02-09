@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Windows.Input;
-using System.Xml;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 
 namespace Pillager.Tools
 {
@@ -27,26 +22,26 @@ namespace Pillager.Tools
                 string password = ""; 
                 string host = "";
                 string port = "";
-                var user_names = new System.Text.RegularExpressions.Regex("\"user_name\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(connjson);
-                var passwords = new System.Text.RegularExpressions.Regex("\"password\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(connjson);
-                var hosts = new System.Text.RegularExpressions.Regex("\"host\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(connjson);
-                var ports = new System.Text.RegularExpressions.Regex("\"port\":(.*?),", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(connjson);
-                foreach (System.Text.RegularExpressions.Match prof in user_names)
+                var user_names = new Regex("\"user_name\":\"(.*?)\"", RegexOptions.Compiled).Matches(connjson);
+                var passwords = new Regex("\"password\":\"(.*?)\"", RegexOptions.Compiled).Matches(connjson);
+                var hosts = new Regex("\"host\":\"(.*?)\"", RegexOptions.Compiled).Matches(connjson);
+                var ports = new Regex("\"port\":(.*?),", RegexOptions.Compiled).Matches(connjson);
+                foreach (Match prof in user_names)
                 {
                     if (prof.Success)
                         user_name = prof.Groups[1].Value;
                 }
-                foreach (System.Text.RegularExpressions.Match prof in passwords)
+                foreach (Match prof in passwords)
                 {
                     if (prof.Success)
                         password = prof.Groups[1].Value;
                 }
-                foreach (System.Text.RegularExpressions.Match prof in hosts)
+                foreach (Match prof in hosts)
                 {
                     if (prof.Success)
                         host = prof.Groups[1].Value;
                 }
-                foreach (System.Text.RegularExpressions.Match prof in ports)
+                foreach (Match prof in ports)
                 {
                     if (prof.Success)
                         port = prof.Groups[1].Value;
@@ -83,20 +78,17 @@ namespace Pillager.Tools
             {
                 return null;
             }
-            else
-            {
-                string rs = "";
-                byte[] buf = Convert.FromBase64String(data);
-                byte[] head = new byte[8];
-                Array.Copy(buf, 0, head, 0, head.Length);
-                byte[] d = new byte[buf.Length - head.Length];
-                Array.Copy(buf, head.Length, d, 0, d.Length);
-                byte[] randombytes = ranDomKey(head);
-                byte[] bt = desDecode(d, randombytes);
-                rs = Encoding.ASCII.GetString(bt);
 
-                return rs;
-            }
+            byte[] buf = Convert.FromBase64String(data);
+            byte[] head = new byte[8];
+            Array.Copy(buf, 0, head, 0, head.Length);
+            byte[] d = new byte[buf.Length - head.Length];
+            Array.Copy(buf, head.Length, d, 0, d.Length);
+            byte[] randombytes = ranDomKey(head);
+            byte[] bt = desDecode(d, randombytes);
+            var rs = Encoding.ASCII.GetString(bt);
+
+            return rs;
         }
         static byte[] ranDomKey(byte[] head)
         {
@@ -111,7 +103,7 @@ namespace Pillager.Tools
 
             long n = random.nextLong();
             JavaRng r2 = new JavaRng(n);
-            long[] ld = new long[] { (long)head[4], r2.nextLong(), (long)head[7], (long)head[3], r2.nextLong(), (long)head[1], random.nextLong(), (long)head[2] };
+            long[] ld = { head[4], r2.nextLong(), head[7], head[3], r2.nextLong(), head[1], random.nextLong(), head[2] };
             using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
@@ -190,7 +182,7 @@ namespace Pillager.Tools
         public int nextInt(int bound)
         {
             if (bound <= 0)
-                throw new ArgumentOutOfRangeException("bound", bound, "bound must be positive");
+                throw new ArgumentOutOfRangeException(nameof(bound), bound, "bound must be positive");
 
             int r = next(31);
             int m = bound - 1;
@@ -204,24 +196,6 @@ namespace Pillager.Tools
                     ;
             }
             return r;
-        }
-
-        public int NextInt(int n)
-        {
-            if (n <= 0)
-                throw new ArgumentOutOfRangeException("n", n, "n must be positive");
-
-            if ((n & -n) == n)  // i.e., n is a power of 2
-                return (int)((n * (long)next(31)) >> 31);
-
-            int bits, val;
-
-            do
-            {
-                bits = next(31);
-                val = bits % n;
-            } while (bits - val + (n - 1) < 0);
-            return val;
         }
 
         private int next(int bits)

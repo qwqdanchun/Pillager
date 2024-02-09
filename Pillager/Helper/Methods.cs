@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace Pillager.Helper
 {
@@ -21,7 +18,7 @@ namespace Pillager.Helper
                 string targetFilePath = Path.Combine(destinationDir, file.Name);
                 try
                 {
-                    file.CopyTo(targetFilePath);
+                    File.WriteAllBytes(targetFilePath, File.ReadAllBytes(file.FullName));
                 }
                 catch
                 {

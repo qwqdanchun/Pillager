@@ -13,15 +13,13 @@ namespace Pillager.Helper
             {
                 int pid = GetProcessIDByFileName(fileName)[0];
                 IntPtr hfile = DuplicateHandleByFileName(pid, fileName);
-                uint read;
-                int oldFilePointer = 0;
-                oldFilePointer = Native.SetFilePointer(hfile, 0, 0, 1);
+                var oldFilePointer = Native.SetFilePointer(hfile, 0, 0, 1);
                 int size = Native.SetFilePointer(hfile, 0, 0, 2);
                 byte[] fileBuffer = new byte[size];
                 IntPtr hProcess = Native.OpenProcess(Native.PROCESS_ACCESS_FLAGS.PROCESS_SUSPEND_RESUME, false, pid);
                 Native.NtSuspendProcess(hProcess);
                 Native.SetFilePointer(hfile, 0, 0, 0);
-                Native.ReadFile(hfile, fileBuffer, (uint)size, out read, IntPtr.Zero);
+                Native.ReadFile(hfile, fileBuffer, (uint)size, out _, IntPtr.Zero);
                 Native.SetFilePointer(hfile, oldFilePointer, 0, 0);
                 Native.CloseHandle(hfile);
                 Native.NtResumeProcess(hProcess);
@@ -103,12 +101,10 @@ namespace Pillager.Helper
 
         public static IntPtr FindHandleByFileName(Native.SYSTEM_HANDLE_INFORMATION systemHandleInformation, string filename, IntPtr processHandle)
         {
-            IntPtr ipHandle = IntPtr.Zero;
             IntPtr openProcessHandle = processHandle;
-            IntPtr hObjectBasicInfo = IntPtr.Zero;
             try
             {
-                if (!Native.DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), Native.GetCurrentProcess(), out ipHandle, 0, false, Native.DUPLICATE_SAME_ACCESS))
+                if (!Native.DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), Native.GetCurrentProcess(), out var ipHandle, 0, false, Native.DUPLICATE_SAME_ACCESS))
                 {
                     return IntPtr.Zero;
                 }
@@ -146,9 +142,9 @@ namespace Pillager.Helper
             List<Native.SYSTEM_HANDLE_INFORMATION> syshInfos = GetHandles(pid);
             IntPtr processHandle = GetProcessHandle(pid);
 
-            for (int i = 0; i < syshInfos.Count; i++)
+            foreach (var t in syshInfos)
             {
-                handle = FindHandleByFileName(syshInfos[i], fileName, processHandle);
+                handle = FindHandleByFileName(t, fileName, processHandle);
                 if (handle != IntPtr.Zero)
                 {
                     Native.CloseHandle(processHandle);
@@ -192,18 +188,12 @@ namespace Pillager.Helper
 
                 IntPtr readBuffer = bufferPtr;
                 int numEntries = Marshal.ReadInt32(readBuffer); // NumberOfProcessIdsInList
-                if (IntPtr.Size == 8)
-                    readBuffer = new IntPtr(readBuffer.ToInt64() + IntPtr.Size);
-                else
-                    readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
+                readBuffer = IntPtr.Size == 8 ? new IntPtr(readBuffer.ToInt64() + IntPtr.Size) : new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
                 for (int i = 0; i < numEntries; i++)
                 {
                     IntPtr processId = Marshal.ReadIntPtr(readBuffer); // A single ProcessIdList[] element
                     result.Add(processId.ToInt32());
-                    if (IntPtr.Size == 8)
-                        readBuffer = new IntPtr(readBuffer.ToInt64() + IntPtr.Size);
-                    else
-                        readBuffer = new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
+                    readBuffer = IntPtr.Size == 8 ? new IntPtr(readBuffer.ToInt64() + IntPtr.Size) : new IntPtr(readBuffer.ToInt32() + IntPtr.Size);
                 }
             }
             catch { return result; }

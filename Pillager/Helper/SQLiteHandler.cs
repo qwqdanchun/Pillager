@@ -332,14 +332,13 @@ namespace Pillager.Helper
                 for (int j = 0; j <= num14; j++)
                 {
                     ushort startIndex = (ushort)ConvertToInteger(Convert.ToInt32(decimal.Add(decimal.Add(new decimal(Offset), 12M), new decimal(j * 2))), 2);
-                    if (decimal.Compare(new decimal(Offset), 100M) == 0)
-                    {
-                        ReadMasterTable(Convert.ToUInt64(decimal.Multiply(decimal.Subtract(new decimal(ConvertToInteger(startIndex, 4)), decimal.One), new decimal(page_size))));
-                    }
-                    else
-                    {
-                        ReadMasterTable(Convert.ToUInt64(decimal.Multiply(decimal.Subtract(new decimal(ConvertToInteger((int)(Offset + startIndex), 4)), decimal.One), new decimal(page_size))));
-                    }
+                    ReadMasterTable(decimal.Compare(new decimal(Offset), 100M) == 0
+                        ? Convert.ToUInt64(decimal.Multiply(
+                            decimal.Subtract(new decimal(ConvertToInteger(startIndex, 4)), decimal.One),
+                            new decimal(page_size)))
+                        : Convert.ToUInt64(decimal.Multiply(
+                            decimal.Subtract(new decimal(ConvertToInteger((int)(Offset + startIndex), 4)), decimal.One),
+                            new decimal(page_size))));
                 }
 
                 ReadMasterTable(Convert.ToUInt64(decimal.Multiply(decimal.Subtract(new decimal(ConvertToInteger(Convert.ToInt32(decimal.Add(new decimal(Offset), 8M)), 4)), decimal.One),

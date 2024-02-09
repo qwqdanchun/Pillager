@@ -248,7 +248,7 @@ namespace Pillager.Browsers
                 string[] keyValuePairs = bracketContent.Split(',');
                 foreach (string keyValueStr in keyValuePairs)
                 {
-                    string[] keyValue = keyValueStr.Split(new Char[] { ':' }, 2);
+                    string[] keyValue = keyValueStr.Split(new[] { ':' }, 2);
                     string key = keyValue[0];
                     string val = keyValue[1];
                     if (val == "null")

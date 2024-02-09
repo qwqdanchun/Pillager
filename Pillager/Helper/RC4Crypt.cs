@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Pillager.Helper
 {
@@ -52,7 +50,7 @@ namespace Pillager.Helper
             int i = 0;
             int j = 0;
 
-            return data.Select((b) =>
+            return data.Select(b =>
             {
                 i = (i + 1) & 255;
                 j = (j + s[i]) & 255;

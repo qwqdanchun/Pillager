@@ -1,11 +1,10 @@
-﻿using Pillager.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Pillager.Helper;
 
 namespace Pillager.Tools
 {
@@ -48,7 +47,6 @@ namespace Pillager.Tools
             foreach (var item in sectionMap)
             {
                 List<IniLine> iniLines = item.Value;
-                string password = "";
                 bool encrypted = false;
                 string encryptedpassword = "";
                 foreach (var line in iniLines)
@@ -58,7 +56,7 @@ namespace Pillager.Tools
                     if (line.key == "Isencrypted") encrypted = (line.value == "1");
                 }
                 if (string.IsNullOrEmpty(encryptedpassword)) continue;
-                password = encrypted ? NewDecrypt(encryptedpassword) : OldDecrypt(encryptedpassword);
+                string password = encrypted ? NewDecrypt(encryptedpassword) : OldDecrypt(encryptedpassword);
                 p.Set("Password", item.Key, password);
             }
             return p.ToString();

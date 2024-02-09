@@ -4,6 +4,7 @@
 
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace Pillager.Helper
     /// }
     /// </code>
     /// </example>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pbkdf", Justification = "Spelling is correct.")]
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pbkdf", Justification = "Spelling is correct.")]
     public class Pbkdf2 {
 
         /// <summary>
@@ -31,16 +32,13 @@ namespace Pillager.Helper
         /// <param name="salt">The key salt used to derive the key.</param>
         /// <param name="iterations">The number of iterations for the operation.</param>
         /// <exception cref="System.ArgumentNullException">Algorithm cannot be null - Password cannot be null. -or- Salt cannot be null.</exception>
-        public Pbkdf2(HMAC algorithm, Byte[] password, Byte[] salt, Int32 iterations) {
-            if (algorithm == null) { throw new ArgumentNullException("algorithm", "Algorithm cannot be null."); }
-            if (salt == null) { throw new ArgumentNullException("salt", "Salt cannot be null."); }
-            if (password == null) { throw new ArgumentNullException("password", "Password cannot be null."); }
-            this.Algorithm = algorithm;
-            this.Algorithm.Key = password;
-            this.Salt = salt;
-            this.IterationCount = iterations;
-            this.BlockSize = this.Algorithm.HashSize / 8;
-            this.BufferBytes = new byte[this.BlockSize];
+        public Pbkdf2(HMAC algorithm, byte[] password, byte[] salt, int iterations) {
+            Algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm), "Algorithm cannot be null.");
+            Algorithm.Key = password ?? throw new ArgumentNullException(nameof(password), "Password cannot be null.");
+            Salt = salt ?? throw new ArgumentNullException(nameof(salt), "Salt cannot be null.");
+            IterationCount = iterations;
+            BlockSize = Algorithm.HashSize / 8;
+            BufferBytes = new byte[BlockSize];
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace Pillager.Helper
         /// <param name="password">The password used to derive the key.</param>
         /// <param name="salt">The key salt used to derive the key.</param>
         /// <exception cref="System.ArgumentNullException">Algorithm cannot be null - Password cannot be null. -or- Salt cannot be null.</exception>
-        public Pbkdf2(HMAC algorithm, Byte[] password, Byte[] salt)
+        public Pbkdf2(HMAC algorithm, byte[] password, byte[] salt)
             : this(algorithm, password, salt, 1000) {
         }
 
@@ -62,7 +60,7 @@ namespace Pillager.Helper
         /// <param name="salt">The key salt used to derive the key.</param>
         /// <param name="iterations">The number of iterations for the operation.</param>
         /// <exception cref="System.ArgumentNullException">Algorithm cannot be null - Password cannot be null. -or- Salt cannot be null.</exception>
-        public Pbkdf2(HMAC algorithm, String password, String salt, Int32 iterations) :
+        public Pbkdf2(HMAC algorithm, string password, string salt, int iterations) :
             this(algorithm, UTF8Encoding.UTF8.GetBytes(password), UTF8Encoding.UTF8.GetBytes(salt), iterations) {
         }
 
@@ -73,7 +71,7 @@ namespace Pillager.Helper
         /// <param name="password">The password used to derive the key.</param>
         /// <param name="salt">The key salt used to derive the key.</param>
         /// <exception cref="System.ArgumentNullException">Algorithm cannot be null - Password cannot be null. -or- Salt cannot be null.</exception>
-        public Pbkdf2(HMAC algorithm, String password, String salt) :
+        public Pbkdf2(HMAC algorithm, string password, string salt) :
             this(algorithm, password, salt, 1000) {
         }
 
@@ -82,8 +80,8 @@ namespace Pillager.Helper
         private uint BlockIndex = 1;
 
         private byte[] BufferBytes;
-        private int BufferStartIndex = 0;
-        private int BufferEndIndex = 0;
+        private int BufferStartIndex;
+        private int BufferEndIndex;
 
 
         /// <summary>
@@ -94,13 +92,13 @@ namespace Pillager.Helper
         /// <summary>
         /// Gets salt bytes.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Byte array is proper return value in this case.")]
-        public Byte[] Salt { get; private set; }
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Byte array is proper return value in this case.")]
+        public byte[] Salt { get; private set; }
 
         /// <summary>
         /// Gets iteration count.
         /// </summary>
-        public Int32 IterationCount { get; private set; }
+        public int IterationCount { get; private set; }
 
 
         /// <summary>
@@ -108,32 +106,32 @@ namespace Pillager.Helper
         /// </summary>
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Byte array.</returns>
-        public Byte[] GetBytes(int count) {
+        public byte[] GetBytes(int count) {
             byte[] result = new byte[count];
             int resultOffset = 0;
-            int bufferCount = this.BufferEndIndex - this.BufferStartIndex;
+            int bufferCount = BufferEndIndex - BufferStartIndex;
 
             if (bufferCount > 0) { //if there is some data in buffer
                 if (count < bufferCount) { //if there is enough data in buffer
-                    Buffer.BlockCopy(this.BufferBytes, this.BufferStartIndex, result, 0, count);
-                    this.BufferStartIndex += count;
+                    Buffer.BlockCopy(BufferBytes, BufferStartIndex, result, 0, count);
+                    BufferStartIndex += count;
                     return result;
                 }
-                Buffer.BlockCopy(this.BufferBytes, this.BufferStartIndex, result, 0, bufferCount);
-                this.BufferStartIndex = this.BufferEndIndex = 0;
+                Buffer.BlockCopy(BufferBytes, BufferStartIndex, result, 0, bufferCount);
+                BufferStartIndex = BufferEndIndex = 0;
                 resultOffset += bufferCount;
             }
 
             while (resultOffset < count) {
                 int needCount = count - resultOffset;
-                this.BufferBytes = this.Func();
-                if (needCount > this.BlockSize) { //we one (or more) additional passes
-                    Buffer.BlockCopy(this.BufferBytes, 0, result, resultOffset, this.BlockSize);
-                    resultOffset += this.BlockSize;
+                BufferBytes = Func();
+                if (needCount > BlockSize) { //we one (or more) additional passes
+                    Buffer.BlockCopy(BufferBytes, 0, result, resultOffset, BlockSize);
+                    resultOffset += BlockSize;
                 } else {
-                    Buffer.BlockCopy(this.BufferBytes, 0, result, resultOffset, needCount);
-                    this.BufferStartIndex = needCount;
-                    this.BufferEndIndex = this.BlockSize;
+                    Buffer.BlockCopy(BufferBytes, 0, result, resultOffset, needCount);
+                    BufferStartIndex = needCount;
+                    BufferEndIndex = BlockSize;
                     return result;
                 }
             }
@@ -142,20 +140,20 @@ namespace Pillager.Helper
 
 
         private byte[] Func() {
-            var hash1Input = new byte[this.Salt.Length + 4];
-            Buffer.BlockCopy(this.Salt, 0, hash1Input, 0, this.Salt.Length);
-            Buffer.BlockCopy(GetBytesFromInt(this.BlockIndex), 0, hash1Input, this.Salt.Length, 4);
-            var hash1 = this.Algorithm.ComputeHash(hash1Input);
+            var hash1Input = new byte[Salt.Length + 4];
+            Buffer.BlockCopy(Salt, 0, hash1Input, 0, Salt.Length);
+            Buffer.BlockCopy(GetBytesFromInt(BlockIndex), 0, hash1Input, Salt.Length, 4);
+            var hash1 = Algorithm.ComputeHash(hash1Input);
 
             byte[] finalHash = hash1;
-            for (int i = 2; i <= this.IterationCount; i++) {
-                hash1 = this.Algorithm.ComputeHash(hash1, 0, hash1.Length);
-                for (int j = 0; j < this.BlockSize; j++) {
+            for (int i = 2; i <= IterationCount; i++) {
+                hash1 = Algorithm.ComputeHash(hash1, 0, hash1.Length);
+                for (int j = 0; j < BlockSize; j++) {
                     finalHash[j] = (byte)(finalHash[j] ^ hash1[j]);
                 }
             }
-            if (this.BlockIndex == uint.MaxValue) { throw new InvalidOperationException("Derived key too long."); }
-            this.BlockIndex += 1;
+            if (BlockIndex == uint.MaxValue) { throw new InvalidOperationException("Derived key too long."); }
+            BlockIndex += 1;
 
             return finalHash;
         }
@@ -163,10 +161,10 @@ namespace Pillager.Helper
         private static byte[] GetBytesFromInt(uint i) {
             var bytes = BitConverter.GetBytes(i);
             if (BitConverter.IsLittleEndian) {
-                return new byte[] { bytes[3], bytes[2], bytes[1], bytes[0] };
-            } else {
-                return bytes;
+                return new[] { bytes[3], bytes[2], bytes[1], bytes[0] };
             }
+
+            return bytes;
         }
 
     }

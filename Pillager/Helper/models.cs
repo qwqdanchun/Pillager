@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿
 
 // Adapted from SharpWeb (https://github.com/djhohnstein/SharpWeb)
 namespace Pillager.Helper

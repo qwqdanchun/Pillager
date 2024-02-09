@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
+
 // Adapted from firepwd.net (https://github.com/gourk/FirePwd.Net)
 
 namespace Pillager.Helper
@@ -8,8 +9,6 @@ namespace Pillager.Helper
     {
         public static string DESCBCDecryptor(byte[] key, byte[] iv, byte[] input)
         {
-            string plaintext = null;
-
             using (TripleDESCryptoServiceProvider tdsAlg = new TripleDESCryptoServiceProvider())
             {
                 tdsAlg.Key = key;
@@ -25,14 +24,12 @@ namespace Pillager.Helper
                     {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                         {
-                            plaintext = srDecrypt.ReadToEnd();
+                            return srDecrypt.ReadToEnd();
                         }
                     }
                 }
 
             }
-
-            return plaintext;
         }
 
         public static byte[] DESCBCDecryptorByte(byte[] key, byte[] iv, byte[] input)

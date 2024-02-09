@@ -1,9 +1,7 @@
-﻿using Pillager.Helper;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.Win32;
+using Pillager.Helper;
 
 namespace Pillager.Mails
 {
@@ -15,7 +13,7 @@ namespace Pillager.Mails
         {
             try
             {
-                string foxPath = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Foxmail.url.mailto\Shell\open\command")?.GetValue("").ToString();
+                string foxPath = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Foxmail.url.mailto\Shell\open\command")?.GetValue("").ToString();
                 foxPath = foxPath?.Remove(foxPath.LastIndexOf("Foxmail.exe", StringComparison.Ordinal)).Replace("\"", "");
                 return foxPath;
             }
