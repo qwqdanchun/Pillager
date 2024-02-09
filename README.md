@@ -42,6 +42,8 @@ Pillager is a tool for exporting and decrypting useful data from target computer
 | Epic Privacy  |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | Uran          |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | Yandex        |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
+| Opera         |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
+| Opera GX      |    🚧    |   🚧   |    🚧    |    🚧    |      🚧      |         🚧         |
 | FireFox       |    ✅    |   ✅   |    ✅    |    ✅    |      ❌      |         ✅         |
 
 ✅ Support,🚧 Haven't Tested,❌ Not Support
