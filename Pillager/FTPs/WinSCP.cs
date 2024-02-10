@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.Win32;
 
-namespace Pillager.FTP
+namespace Pillager.FTPs
 {
     internal class WinSCP
     {

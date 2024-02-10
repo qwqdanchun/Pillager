@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Pillager.FTP
+namespace Pillager.FTPs
 {
     internal class FileZilla
     {

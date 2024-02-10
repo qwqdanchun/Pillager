@@ -45,10 +45,10 @@
     <Compile Include="Browsers\FireFox.cs" />
     <Compile Include="Browsers\IE.cs" />
     <Compile Include="Browsers\OldSogou.cs" />
-    <Compile Include="FTP\CoreFTP.cs" />
-    <Compile Include="FTP\FileZilla.cs" />
-    <Compile Include="FTP\Snowflake.cs" />
-    <Compile Include="FTP\WinSCP.cs" />
+    <Compile Include="FTPs\CoreFTP.cs" />
+    <Compile Include="FTPs\FileZilla.cs" />
+    <Compile Include="FTPs\Snowflake.cs" />
+    <Compile Include="FTPs\WinSCP.cs" />
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\Asn1Der.cs" />
     <Compile Include="Browsers\Chrome.cs" />
@@ -89,6 +89,7 @@
     <Compile Include="Tools\RDCMan.cs" />
     <Compile Include="Tools\SQLyog.cs" />
     <Compile Include="Softwares\VSCode.cs" />
+    <Compile Include="Tools\TortoiseSVN.cs" />
     <Compile Include="Tools\Xmanager.cs" />
   </ItemGroup>
   <ItemGroup>

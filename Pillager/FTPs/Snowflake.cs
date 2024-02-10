@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 
-namespace Pillager.FTP
+namespace Pillager.FTPs
 {
     internal class Snowflake
     {
