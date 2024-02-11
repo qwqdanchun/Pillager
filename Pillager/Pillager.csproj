@@ -52,6 +52,7 @@
     <Compile Include="Helper\AesGcm.cs" />
     <Compile Include="Helper\Asn1Der.cs" />
     <Compile Include="Browsers\Chrome.cs" />
+    <Compile Include="Helper\Bcrypt.cs" />
     <Compile Include="Helper\Blowfish.cs" />
     <Compile Include="Helper\decryptMoz3DES.cs" />
     <Compile Include="Helper\Navicat11Cipher.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Navicat.cs" />
     <Compile Include="Tools\RDCMan.cs" />
+    <Compile Include="Tools\SecureCRT.cs" />
     <Compile Include="Tools\SQLyog.cs" />
     <Compile Include="Softwares\VSCode.cs" />
     <Compile Include="Tools\TortoiseSVN.cs" />

