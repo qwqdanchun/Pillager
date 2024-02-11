@@ -67,6 +67,7 @@ Pillager is a tool for exporting and decrypting useful data from target computer
   * FinalShell
   * Navicat
   * SQLyog
+  * SecureCRT
   * Outlook
   * MailBird
   * WinSCP
