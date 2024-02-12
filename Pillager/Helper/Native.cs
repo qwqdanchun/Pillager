@@ -7,6 +7,15 @@ namespace Pillager.Helper
 {
     public static class Native
     {
+        [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool RevertToSelf();
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool OpenProcessToken(IntPtr ProcessHandle, UInt32 DesiredAccess, out IntPtr TokenHandle);
+        [DllImport("advapi32.dll")]
+        public extern static bool DuplicateToken(IntPtr ExistingTokenHandle, int SECURITY_IMPERSONATION_LEVEL, ref IntPtr DuplicateTokenHandle);
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool SetThreadToken(IntPtr pHandle, IntPtr hToken);
         [DllImport("kernel32", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
