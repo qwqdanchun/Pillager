@@ -517,49 +517,6 @@ namespace Pillager.Helper
 
             return filename.Trim('/');
         }
-        // Reads the end-of-central-directory record
-        private bool ReadFileInfo()
-        {
-            if (ZipFileStream.Length < 22)
-                return false;
-
-            try
-            {
-                ZipFileStream.Seek(-17, SeekOrigin.End);
-                BinaryReader br = new BinaryReader(ZipFileStream);
-                do
-                {
-                    ZipFileStream.Seek(-5, SeekOrigin.Current);
-                    uint sig = br.ReadUInt32();
-                    if (sig == 0x06054b50)
-                    {
-                        ZipFileStream.Seek(6, SeekOrigin.Current);
-
-                        ushort entries = br.ReadUInt16();
-                        int centralSize = br.ReadInt32();
-                        uint centralDirOffset = br.ReadUInt32();
-                        ushort commentSize = br.ReadUInt16();
-
-                        // check if comment field is the very last data in file
-                        if (ZipFileStream.Position + commentSize != ZipFileStream.Length)
-                            return false;
-
-                        // Copy entire central directory to a memory buffer
-                        ExistingFiles = entries;
-                        CentralDirImage = new byte[centralSize];
-                        ZipFileStream.Seek(centralDirOffset, SeekOrigin.Begin);
-                        ZipFileStream.Read(CentralDirImage, 0, centralSize);
-
-                        // Leave the pointer at the begining of central dir, to append new files
-                        ZipFileStream.Seek(centralDirOffset, SeekOrigin.Begin);
-                        return true;
-                    }
-                } while (ZipFileStream.Position > 0);
-            }
-            catch { }
-
-            return false;
-        }
         #endregion
 
         #region IDisposable Members

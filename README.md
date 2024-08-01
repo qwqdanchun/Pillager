@@ -60,6 +60,7 @@ Pillager is a tool for exporting and decrypting useful data from target computer
   * MailMaster
   * Foxmail
   * FileZilla
+  * Teams
 * Password Recovery
   * MobaXterm
   * Xmanager
@@ -74,10 +75,12 @@ Pillager is a tool for exporting and decrypting useful data from target computer
   * DBeaver
   * CoreFTP
   * Snowflake
+  * HeidiSQL
 * Personal Infomation
   * QQ
   * VSCode
   * Netease CloudMusic
+  * Win10Ms_Pinyin
 
 Will add more ......
 
@@ -86,6 +89,11 @@ Will add more ......
 * Wifi
 * ScreenShot
 * InstalledApp
+* ClipBoard
+* FileList
+* RecentFile
+* SystemInfo
+* TaskList
 
 ## Usage
 

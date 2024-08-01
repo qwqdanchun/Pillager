@@ -21,7 +21,7 @@ namespace Pillager.Helper
             if (File.Exists(baseName))
             {
                 db_bytes = File.ReadAllBytes(baseName);
-                if (Encoding.Default.GetString(db_bytes, 0, 15).CompareTo("SQLite format 3") != 0)
+                if (Encoding.UTF8.GetString(db_bytes, 0, 15).CompareTo("SQLite format 3") != 0)
                 {
                     throw new Exception("Not a valid SQLite 3 Database File");
                 }
@@ -284,7 +284,7 @@ namespace Pillager.Helper
 
                     if (decimal.Compare(new decimal(encoding), decimal.One) == 0)
                     {
-                        master_table_entries[length + i].item_name = Encoding.Default.GetString(db_bytes,
+                        master_table_entries[length + i].item_name = Encoding.UTF8.GetString(db_bytes,
                             Convert.ToInt32(decimal.Add(decimal.Add(new decimal(num), new decimal(num5)), new decimal(numArray[0]))), (int)numArray[1]);
                     }
                     else if (decimal.Compare(new decimal(encoding), 2M) == 0)
@@ -304,7 +304,7 @@ namespace Pillager.Helper
                                 new decimal(numArray[2]))), (int)numArray[3]);
                     if (decimal.Compare(new decimal(encoding), decimal.One) == 0)
                     {
-                        master_table_entries[length + i].sql_statement = Encoding.Default.GetString(db_bytes,
+                        master_table_entries[length + i].sql_statement = Encoding.UTF8.GetString(db_bytes,
                             Convert.ToInt32(decimal.Add(
                                 decimal.Add(decimal.Add(decimal.Add(decimal.Add(new decimal(num), new decimal(num5)), new decimal(numArray[0])), new decimal(numArray[1])), new decimal(numArray[2])),
                                 new decimal(numArray[3]))), (int)numArray[4]);
@@ -477,7 +477,7 @@ namespace Pillager.Helper
                             }
                             else
                             {
-                                table_entries[length + i].content[k] = Encoding.Default.GetString(db_bytes,
+                                table_entries[length + i].content[k] = Encoding.UTF8.GetString(db_bytes,
                                     Convert.ToInt32(decimal.Add(decimal.Add(new decimal(num), new decimal(num7)), new decimal(num4))), (int)_fieldArray[k].size);
                             }
                         }

