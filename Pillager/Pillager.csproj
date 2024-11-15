@@ -58,9 +58,11 @@
     <Compile Include="Browsers\Chrome.cs" />
     <Compile Include="Helper\Bcrypt.cs" />
     <Compile Include="Helper\Blowfish.cs" />
+    <Compile Include="Helper\ChromeKeyDecryption.cs" />
     <Compile Include="Helper\ICommandOnce.cs" />
     <Compile Include="Helper\decryptMoz3DES.cs" />
     <Compile Include="Helper\ICommand.cs" />
+    <Compile Include="Helper\Impersonator.cs" />
     <Compile Include="Helper\JavaRng.cs" />
     <Compile Include="Helper\Navicat11Cipher.cs" />
     <Compile Include="Helper\NtfsReader.cs" />

