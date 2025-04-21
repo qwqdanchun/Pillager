@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -688,6 +688,20 @@ namespace Pillager.Helper
         [DllImport("vaultcli.dll", EntryPoint = "VaultGetItem")]
         public static extern int VaultGetItem_WIN7(IntPtr vaultHandle, ref Guid schemaId, IntPtr pResourceElement, IntPtr pIdentityElement, IntPtr zero, int arg5, ref IntPtr passwordVaultPtr);
 
+        #endregion
+
+        #region File Mapping
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr CreateFileMapping(IntPtr hFile, IntPtr lpFileMappingAttributes, uint flProtect, uint dwMaximumSizeHigh, uint dwMaximumSizeLow, string lpName);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr MapViewOfFile(IntPtr hFileMappingObject, uint dwDesiredAccess, uint dwFileOffsetHigh, uint dwFileOffsetLow, uint dwNumberOfBytesToMap);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool UnmapViewOfFile(IntPtr lpBaseAddress);
+
+        public const uint FILE_MAP_READ = 0x0004;
+        public const uint PAGE_READONLY = 0x02;
         #endregion
 
         #region DPI
