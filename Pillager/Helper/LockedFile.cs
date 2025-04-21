@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -19,11 +19,60 @@ namespace Pillager.Helper
                 IntPtr hProcess = Native.OpenProcess(Native.PROCESS_ACCESS_FLAGS.PROCESS_SUSPEND_RESUME, false, pid);
                 Native.NtSuspendProcess(hProcess);
                 Native.SetFilePointer(hfile, 0, 0, 0);
-                Native.ReadFile(hfile, fileBuffer, (uint)size, out _, IntPtr.Zero);
+                bool readSuccess = Native.ReadFile(hfile, fileBuffer, (uint)size, out _, IntPtr.Zero);
                 Native.SetFilePointer(hfile, oldFilePointer, 0, 0);
                 Native.CloseHandle(hfile);
                 Native.NtResumeProcess(hProcess);
                 Native.CloseHandle(hProcess);
+                
+                if (readSuccess)
+                    return fileBuffer;
+                else
+                    return ReadLockedFileWithMapping(fileName, pid, size);
+            }
+            catch { return null; }
+        }
+
+        public static byte[] ReadLockedFileWithMapping(string fileName, int pid, int fileSize)
+        {
+            try
+            {
+                IntPtr hfile = DuplicateHandleByFileName(pid, fileName);
+                IntPtr hProcess = Native.OpenProcess(Native.PROCESS_ACCESS_FLAGS.PROCESS_SUSPEND_RESUME, false, pid);
+                Native.NtSuspendProcess(hProcess);
+                
+                // Create file mapping
+                IntPtr hMapping = Native.CreateFileMapping(hfile, IntPtr.Zero, Native.PAGE_READONLY, 0, 0, null);
+                if (hMapping == IntPtr.Zero)
+                {
+                    Native.CloseHandle(hfile);
+                    Native.NtResumeProcess(hProcess);
+                    Native.CloseHandle(hProcess);
+                    return null;
+                }
+                
+                // Map view of file
+                IntPtr viewPtr = Native.MapViewOfFile(hMapping, Native.FILE_MAP_READ, 0, 0, (uint)fileSize);
+                if (viewPtr == IntPtr.Zero)
+                {
+                    Native.CloseHandle(hMapping);
+                    Native.CloseHandle(hfile);
+                    Native.NtResumeProcess(hProcess);
+                    Native.CloseHandle(hProcess);
+                    return null;
+                }
+                
+                // Read content from mapped view
+                byte[] fileBuffer = new byte[fileSize];
+                Marshal.Copy(viewPtr, fileBuffer, 0, fileSize);
+                
+                // Cleanup
+                Native.UnmapViewOfFile(viewPtr);
+                Native.CloseHandle(hMapping);
+                Native.CloseHandle(hfile);
+                Native.NtResumeProcess(hProcess);
+                Native.CloseHandle(hProcess);
+                
                 return fileBuffer;
             }
             catch { return null; }
